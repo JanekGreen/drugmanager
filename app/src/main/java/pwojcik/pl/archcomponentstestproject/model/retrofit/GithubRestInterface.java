@@ -1,7 +1,7 @@
 package pwojcik.pl.archcomponentstestproject.model.retrofit;
 
 import pwojcik.pl.archcomponentstestproject.Utils.UrlUtil;
-import pwojcik.pl.archcomponentstestproject.model.restObject.GitHubUser;
+import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -13,5 +13,5 @@ import retrofit2.http.Path;
 public interface GithubRestInterface {
 
     @GET(UrlUtil.GET_USER)
-    Call<GitHubUser> getUser(@Path("user") String user);
+    Call<GithubUser> getUser(@Path("user") String user);
 }

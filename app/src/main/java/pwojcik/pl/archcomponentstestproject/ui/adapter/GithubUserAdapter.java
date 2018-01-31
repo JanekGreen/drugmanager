@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pwojcik.pl.archcomponentstestproject.R;
-import pwojcik.pl.archcomponentstestproject.model.restObject.GitHubUser;
+import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
 
 
 /**
@@ -21,9 +21,9 @@ import pwojcik.pl.archcomponentstestproject.model.restObject.GitHubUser;
 
 public class GithubUserAdapter extends RecyclerView.Adapter<GithubUserAdapter.GithubUserViewVolder> {
 
-    private GitHubUser user = new GitHubUser();
+    private GithubUser user = new GithubUser();
 
-    public void setUser(GitHubUser  user){
+    public void setUser(GithubUser user){
         this.user = user;
     }
     @Override

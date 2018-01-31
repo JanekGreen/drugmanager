@@ -17,7 +17,7 @@ import butterknife.OnClick;
 import pwojcik.pl.archcomponentstestproject.R;
 import pwojcik.pl.archcomponentstestproject.viewmodel.GitHubUserViewModel;
 import pwojcik.pl.archcomponentstestproject.ui.adapter.GithubUserAdapter;
-import pwojcik.pl.archcomponentstestproject.model.restObject.GitHubUser;
+import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.etLogin)EditText etLogin;
@@ -33,15 +33,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         gitHubUserViewModel = ViewModelProviders.of(this).get(GitHubUserViewModel.class);
-        gitHubUserViewModel.getData().observe(this, new Observer<GitHubUser>() {
+        gitHubUserViewModel.getData().observe(this, new Observer<GithubUser>() {
             @Override
-            public void onChanged(@Nullable GitHubUser gitHubUser) {
-                if(gitHubUser == null){
+            public void onChanged(@Nullable GithubUser githubUser) {
+                if(githubUser == null){
                     Toast.makeText(MainActivity.this,
                             "Nie znaleziono użytkownika o nicku "+etLogin.getText().toString(),Toast.LENGTH_LONG).show();
                     return;
                 }
-                githubUserAdapter.setUser(gitHubUser);
+                githubUserAdapter.setUser(githubUser);
                 githubUserAdapter.notifyDataSetChanged();
             }
         });

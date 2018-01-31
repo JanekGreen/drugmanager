@@ -1,46 +1,39 @@
-package pwojcik.pl.archcomponentstestproject.model.restObject;
+package pwojcik.pl.archcomponentstestproject.model.dbEntity;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
-public class GitHubUser {
+@Entity
+public class GithubUserDb {
 
-    @SerializedName("login")
-    @Expose
-    private String login;
-    @SerializedName("id")
-    @Expose
+    @PrimaryKey
     private Integer id;
-    @SerializedName("avatar_url")
-    @Expose
+    private String login;
     private String avatarUrl;
-    @SerializedName("gravatar_id")
-    @Expose
     private String gravatarId;
-    @SerializedName("url")
-    @Expose
     private String url;
-    @SerializedName("html_url")
-    @Expose
     private String htmlUrl;
-    @SerializedName("public_repos")
-    @Expose
     private Integer publicRepos;
-    @SerializedName("public_gists")
-    @Expose
     private Integer publicGists;
-    @SerializedName("followers")
-    @Expose
     private Integer followers;
-    @SerializedName("following")
-    @Expose
     private Integer following;
-    @SerializedName("created_at")
-    @Expose
     private String createdAt;
-    @SerializedName("updated_at")
-    @Expose
     private String updatedAt;
+
+    public GithubUserDb(Integer id, String login, String avatarUrl, String gravatarId, String url, String htmlUrl, Integer publicRepos, Integer publicGists, Integer followers, Integer following, String createdAt, String updatedAt) {
+        this.id = id;
+        this.login = login;
+        this.avatarUrl = avatarUrl;
+        this.gravatarId = gravatarId;
+        this.url = url;
+        this.htmlUrl = htmlUrl;
+        this.publicRepos = publicRepos;
+        this.publicGists = publicGists;
+        this.followers = followers;
+        this.following = following;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     public String getLogin() {
         return login;
