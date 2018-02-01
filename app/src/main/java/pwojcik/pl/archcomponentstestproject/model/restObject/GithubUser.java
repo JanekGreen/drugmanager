@@ -42,7 +42,8 @@ public class GithubUser {
     @Expose
     private String updatedAt;
 
-    public GithubUser(){}
+    public GithubUser(){
+    }
     public GithubUser(Integer id, String login, String avatarUrl, String gravatarId, String url, String htmlUrl, Integer publicRepos, Integer publicGists, Integer followers, Integer following, String createdAt, String updatedAt) {
         this.login = login;
         this.id = id;
