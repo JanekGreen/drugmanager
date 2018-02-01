@@ -33,6 +33,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         gitHubUserViewModel = ViewModelProviders.of(this).get(GitHubUserViewModel.class);
+        subscribeUiGithubUsers();
+        setupUi();
+
+    }
+
+    @OnClick(R.id.btnSearch)
+    public void onClicked(){
+        String input = etLogin.getText().toString();
+        if(!input.isEmpty()){
+            gitHubUserViewModel.loadUser(input);
+        }
+    }
+    private void setupUi(){
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        rvMainList.setLayoutManager(llm);
+        githubUserAdapter = new GithubUserAdapter();
+        rvMainList.setAdapter(githubUserAdapter);
+    }
+
+    private void subscribeUiGithubUsers(){
+
         gitHubUserViewModel.getData().observe(this, new Observer<GithubUser>() {
             @Override
             public void onChanged(@Nullable GithubUser githubUser) {
@@ -45,19 +67,5 @@ public class MainActivity extends AppCompatActivity {
                 githubUserAdapter.notifyDataSetChanged();
             }
         });
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        rvMainList.setLayoutManager(llm);
-        githubUserAdapter = new GithubUserAdapter();
-        rvMainList.setAdapter(githubUserAdapter);
-
-    }
-
-    @OnClick(R.id.btnSearch)
-    public void onClicked(){
-        String input = etLogin.getText().toString();
-        if(!input.isEmpty()){
-            gitHubUserViewModel.loadUser(input);
-        }
     }
 }
