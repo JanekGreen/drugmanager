@@ -2,6 +2,7 @@ package pwojcik.pl.archcomponentstestproject.model.retrofit;
 
 import pwojcik.pl.archcomponentstestproject.Utils.UrlUtil;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -16,6 +17,7 @@ public class GitHubRestService {
             retrofit = new Retrofit.Builder()
                     .baseUrl(UrlUtil.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
         }
         return retrofit;

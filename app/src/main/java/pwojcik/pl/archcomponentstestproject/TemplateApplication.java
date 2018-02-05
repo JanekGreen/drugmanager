@@ -7,7 +7,7 @@ import android.content.Context;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import pwojcik.pl.archcomponentstestproject.model.dbEntity.AppDatabase;
+import pwojcik.pl.archcomponentstestproject.model.persistence.AppDatabase;
 
 /**
  * Created by pawel on 01.02.18.
@@ -15,12 +15,10 @@ import pwojcik.pl.archcomponentstestproject.model.dbEntity.AppDatabase;
 
 public class TemplateApplication extends Application {
     private static AppDatabase db;
-    private static ExecutorService executor;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        executor = Executors.newSingleThreadExecutor();
     }
 
     public static AppDatabase getInstance(Context context) {
@@ -33,7 +31,4 @@ public class TemplateApplication extends Application {
         return db;
     }
 
-    public static ExecutorService getExecutor() {
-        return executor;
-    }
 }

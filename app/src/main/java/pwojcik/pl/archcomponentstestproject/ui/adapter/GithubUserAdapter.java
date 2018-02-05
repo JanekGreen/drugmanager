@@ -9,15 +9,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
-import java.util.Locale;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pwojcik.pl.archcomponentstestproject.R;
-import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
-
-import static java.time.format.FormatStyle.MEDIUM;
+import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 
 
 /**
@@ -46,7 +41,7 @@ public class GithubUserAdapter extends RecyclerView.Adapter<GithubUserAdapter.Gi
         String date = user.getCreatedAt().substring(0, user.getCreatedAt().indexOf("T"));
         String dateParts[] = date.split("-");
         StringBuilder sb = new StringBuilder();
-        date = sb.append(dateParts[2]).append("-").append(dateParts[1]).append("-").append(dateParts[0]).toString();
+        date = sb.append("Data utworzenia: ").append(dateParts[2]).append("-").append(dateParts[1]).append("-").append(dateParts[0]).toString();
         holder.tvCreateDate.setText(date);
         holder.tvUrl.setText(user.getHtmlUrl());
         holder.tvRepoCount.setText(String.valueOf(user.getPublicRepos()));

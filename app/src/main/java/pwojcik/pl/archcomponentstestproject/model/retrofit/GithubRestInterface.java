@@ -1,7 +1,9 @@
 package pwojcik.pl.archcomponentstestproject.model.retrofit;
 
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import pwojcik.pl.archcomponentstestproject.Utils.UrlUtil;
-import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
+import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -13,5 +15,5 @@ import retrofit2.http.Path;
 public interface GithubRestInterface {
 
     @GET(UrlUtil.GET_USER)
-    Call<GithubUser> getUser(@Path("user") String user);
+    Flowable<GithubUser> getUser(@Path("user") String user);
 }

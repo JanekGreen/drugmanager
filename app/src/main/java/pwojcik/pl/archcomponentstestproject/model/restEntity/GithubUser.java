@@ -1,4 +1,4 @@
-package pwojcik.pl.archcomponentstestproject.model.restObject;
+package pwojcik.pl.archcomponentstestproject.model.restEntity;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

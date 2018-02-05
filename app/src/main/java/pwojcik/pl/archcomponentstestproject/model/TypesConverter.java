@@ -1,7 +1,7 @@
 package pwojcik.pl.archcomponentstestproject.model;
 
-import pwojcik.pl.archcomponentstestproject.model.dbEntity.GithubUserDb;
-import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
+import pwojcik.pl.archcomponentstestproject.model.persistence.GithubUserDb;
+import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 
 /**
  * Created by pawel on 31.01.18.

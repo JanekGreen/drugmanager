@@ -1,8 +1,7 @@
-package pwojcik.pl.archcomponentstestproject.model.dbEntity;
+package pwojcik.pl.archcomponentstestproject.model.persistence;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
-import android.content.Context;
 
 /**
  * Created by pawel on 31.01.18.

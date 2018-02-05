@@ -1,4 +1,4 @@
-package pwojcik.pl.archcomponentstestproject.model.dbEntity;
+package pwojcik.pl.archcomponentstestproject.model.persistence;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -7,7 +7,7 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
+import io.reactivex.Flowable;
 
 /**
  * Created by pawel on 31.01.18.
@@ -19,7 +19,7 @@ public interface GithubUserDao {
     List<GithubUserDb> getAll();
 
     @Query("SELECT * from GithubUserDb where login=:login")
-    GithubUserDb getUserByLogin(String login);
+    Flowable<GithubUserDb> getUserByLogin(String login);
 
     @Insert
     void addUser(GithubUserDb user);

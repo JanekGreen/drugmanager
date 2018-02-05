@@ -2,7 +2,7 @@ package pwojcik.pl.archcomponentstestproject.repository;
 
 import android.arch.lifecycle.LiveData;
 
-import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
+import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 
 /**
  * Created by wojci on 29.01.2018.

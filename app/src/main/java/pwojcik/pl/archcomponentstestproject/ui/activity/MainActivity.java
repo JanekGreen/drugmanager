@@ -15,9 +15,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pwojcik.pl.archcomponentstestproject.R;
-import pwojcik.pl.archcomponentstestproject.viewmodel.GitHubUserViewModel;
+import pwojcik.pl.archcomponentstestproject.Utils.DisposableManager;
+import pwojcik.pl.archcomponentstestproject.ui.viewmodel.GitHubUserViewModel;
 import pwojcik.pl.archcomponentstestproject.ui.adapter.GithubUserAdapter;
-import pwojcik.pl.archcomponentstestproject.model.restObject.GithubUser;
+import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.etLogin)EditText etLogin;
@@ -51,6 +52,12 @@ public class MainActivity extends AppCompatActivity {
         rvMainList.setLayoutManager(llm);
         githubUserAdapter = new GithubUserAdapter();
         rvMainList.setAdapter(githubUserAdapter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DisposableManager.getInstance().dispose();
     }
 
     private void subscribeUiGithubUsers(){
