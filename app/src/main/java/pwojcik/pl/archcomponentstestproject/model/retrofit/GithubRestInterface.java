@@ -15,5 +15,5 @@ import retrofit2.http.Path;
 public interface GithubRestInterface {
 
     @GET(UrlUtil.GET_USER)
-    Flowable<GithubUser> getUser(@Path("user") String user);
+    Maybe<GithubUser> getUser(@Path("user") String user);
 }

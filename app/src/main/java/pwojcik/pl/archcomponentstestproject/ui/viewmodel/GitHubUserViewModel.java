@@ -28,10 +28,11 @@ public class GitHubUserViewModel extends AndroidViewModel {
 
     public LiveData<GithubUser> loadUser(String user) {
         return githubRestRepository.getUser(user);
-
-
     }
 
+    public void deleteAll(){
+        githubRestRepository.deleteAll();
+    }
     public LiveData<GithubUser> getData() {
         return githubRestRepository.getData();
     }

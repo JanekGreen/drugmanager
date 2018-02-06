@@ -34,7 +34,9 @@ public class GithubUserDb {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
+    public GithubUserDb(){
+        this.login= "Paweł Wójcik";
+    }
     public String getLogin() {
         return login;
     }

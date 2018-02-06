@@ -3,11 +3,14 @@ package pwojcik.pl.archcomponentstestproject.model.persistence;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 
 /**
  * Created by pawel on 31.01.18.
@@ -19,11 +22,14 @@ public interface GithubUserDao {
     List<GithubUserDb> getAll();
 
     @Query("SELECT * from GithubUserDb where login=:login")
-    Flowable<GithubUserDb> getUserByLogin(String login);
+    Maybe<GithubUserDb> getUserByLogin(String login);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void addUser(GithubUserDb user);
 
     @Delete
     void  deleteUser(GithubUserDb user);
+
+    @Query("DELETE FROM GithubUserDb")
+    void  deleteAll();
 }

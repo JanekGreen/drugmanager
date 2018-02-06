@@ -2,6 +2,8 @@ package pwojcik.pl.archcomponentstestproject.repository;
 
 import android.arch.lifecycle.LiveData;
 
+import java.util.List;
+
 import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 
 /**
@@ -11,4 +13,5 @@ import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 public interface GithubRestRepository {
     LiveData<GithubUser> getUser(String user);
     LiveData<GithubUser> getData();
+    void deleteAll();
 }

@@ -2,13 +2,19 @@ package pwojcik.pl.archcomponentstestproject.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.os.Looper;
+import android.widget.Toast;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.logging.Handler;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -19,6 +25,7 @@ import pwojcik.pl.archcomponentstestproject.model.persistence.GithubUserDao;
 import pwojcik.pl.archcomponentstestproject.model.persistence.GithubUserDb;
 import pwojcik.pl.archcomponentstestproject.model.restEntity.GithubUser;
 import pwojcik.pl.archcomponentstestproject.model.retrofit.GithubRestInterface;
+import pwojcik.pl.archcomponentstestproject.ui.activity.MainActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,19 +49,17 @@ public class GitHubRestRepositoryImpl implements GithubRestRepository {
     @Override
     public LiveData<GithubUser> getUser(final String user) {
 
-                //database
-
-                DisposableManager.getInstance().add(githubUserDao.getUserByLogin(user)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
+        DisposableManager.getInstance().add(
+                githubUserDao.getUserByLogin(user)
                 .map(TypesConverter::makeGithubUser)
-                .subscribe(githubUser -> data.setValue(githubUser)));
-
-                //rest
-                DisposableManager.getInstance().add(githubRestInterface.getUser(user)
-                .observeOn(AndroidSchedulers.mainThread())
+                .switchIfEmpty(githubRestInterface.getUser(user))
                 .subscribeOn(Schedulers.io())
-                .subscribe(githubUser -> data.setValue(githubUser)));
+                .doOnSuccess(githubUser-> githubUserDao.addUser(TypesConverter.makeGithubUserDb(githubUser)))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(githubUser -> data.setValue(githubUser),
+                        e->System.err.println(e.getMessage()))
+        );
+
 
 
         return data;
@@ -65,4 +70,12 @@ public class GitHubRestRepositoryImpl implements GithubRestRepository {
         return data;
     }
 
+    @Override
+    public void deleteAll() {
+       Thread thread = new Thread(()->githubUserDao.deleteAll());
+       thread.start();
+       data.setValue(null);
+
     }
+
+}

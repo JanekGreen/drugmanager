@@ -65,14 +65,13 @@ public class MainActivity extends AppCompatActivity {
         gitHubUserViewModel.getData().observe(this, new Observer<GithubUser>() {
             @Override
             public void onChanged(@Nullable GithubUser githubUser) {
-                if(githubUser == null){
-                    Toast.makeText(MainActivity.this,
-                            "Nie znaleziono użytkownika o nicku "+etLogin.getText().toString(),Toast.LENGTH_LONG).show();
-                    return;
-                }
                 githubUserAdapter.setUser(githubUser);
                 githubUserAdapter.notifyDataSetChanged();
             }
         });
+    }
+    @OnClick(R.id.btnRemove)
+    public void onRemoveClicked(){
+        gitHubUserViewModel.deleteAll();
     }
 }
