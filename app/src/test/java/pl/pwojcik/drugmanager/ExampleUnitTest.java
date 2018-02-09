@@ -1,4 +1,4 @@
-package pl.pwojcik.architecturecomponentstestproject;
+package pl.pwojcik.drugmanager;
 
 import org.junit.Test;
 

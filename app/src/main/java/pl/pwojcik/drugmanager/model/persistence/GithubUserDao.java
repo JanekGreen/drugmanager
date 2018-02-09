@@ -1,4 +1,4 @@
-package pl.pwojcik.architecturecomponentstestproject.model.persistence;
+package pl.pwojcik.drugmanager.model.persistence;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;

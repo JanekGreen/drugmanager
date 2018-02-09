@@ -1,16 +1,16 @@
-package pl.pwojcik.architecturecomponentstestproject;
+package pl.pwojcik.drugmanager;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
-import pl.pwojcik.architecturecomponentstestproject.model.persistence.AppDatabase;
+import pl.pwojcik.drugmanager.model.persistence.AppDatabase;
 
 /**
  * Created by pawel on 01.02.18.
  */
 
-public class TemplateApplication extends Application {
+public class DrugmanagerApplication extends Application {
     private static AppDatabase db;
 
     @Override

@@ -1,7 +1,7 @@
-package pl.pwojcik.architecturecomponentstestproject.model;
+package pl.pwojcik.drugmanager.model;
 
-import pl.pwojcik.architecturecomponentstestproject.model.persistence.GithubUserDb;
-import pl.pwojcik.architecturecomponentstestproject.model.restEntity.GithubUser;
+import pl.pwojcik.drugmanager.model.persistence.GithubUserDb;
+import pl.pwojcik.drugmanager.model.restEntity.GithubUser;
 
 /**
  * Created by pawel on 31.01.18.

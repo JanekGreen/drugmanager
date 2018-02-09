@@ -1,4 +1,4 @@
-package pl.pwojcik.architecturecomponentstestproject.utils;
+package pl.pwojcik.drugmanager.utils;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;

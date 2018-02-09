@@ -1,8 +1,8 @@
-package pl.pwojcik.architecturecomponentstestproject.model.retrofit;
+package pl.pwojcik.drugmanager.model.retrofit;
 
 import io.reactivex.Maybe;
-import pl.pwojcik.architecturecomponentstestproject.utils.UrlUtil;
-import pl.pwojcik.architecturecomponentstestproject.model.restEntity.GithubUser;
+import pl.pwojcik.drugmanager.utils.UrlUtil;
+import pl.pwojcik.drugmanager.model.restEntity.GithubUser;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 

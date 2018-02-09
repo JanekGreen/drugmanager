@@ -1,4 +1,4 @@
-package pl.pwojcik.architecturecomponentstestproject;
+package pl.pwojcik.drugmanager;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

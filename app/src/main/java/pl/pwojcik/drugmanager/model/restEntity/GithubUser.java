@@ -1,28 +1,52 @@
-package pl.pwojcik.architecturecomponentstestproject.model.persistence;
+package pl.pwojcik.drugmanager.model.restEntity;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-@Entity
-public class GithubUserDb {
+public class GithubUser {
 
-    @PrimaryKey
-    private Integer id;
+    @SerializedName("login")
+    @Expose
     private String login;
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("avatar_url")
+    @Expose
     private String avatarUrl;
+    @SerializedName("gravatar_id")
+    @Expose
     private String gravatarId;
+    @SerializedName("url")
+    @Expose
     private String url;
+    @SerializedName("html_url")
+    @Expose
     private String htmlUrl;
+    @SerializedName("public_repos")
+    @Expose
     private Integer publicRepos;
+    @SerializedName("public_gists")
+    @Expose
     private Integer publicGists;
+    @SerializedName("followers")
+    @Expose
     private Integer followers;
+    @SerializedName("following")
+    @Expose
     private Integer following;
+    @SerializedName("created_at")
+    @Expose
     private String createdAt;
+    @SerializedName("updated_at")
+    @Expose
     private String updatedAt;
 
-    public GithubUserDb(Integer id, String login, String avatarUrl, String gravatarId, String url, String htmlUrl, Integer publicRepos, Integer publicGists, Integer followers, Integer following, String createdAt, String updatedAt) {
-        this.id = id;
+    public GithubUser(){
+    }
+    public GithubUser(Integer id, String login, String avatarUrl, String gravatarId, String url, String htmlUrl, Integer publicRepos, Integer publicGists, Integer followers, Integer following, String createdAt, String updatedAt) {
         this.login = login;
+        this.id = id;
         this.avatarUrl = avatarUrl;
         this.gravatarId = gravatarId;
         this.url = url;
@@ -34,9 +58,7 @@ public class GithubUserDb {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    public GithubUserDb(){
-        this.login= "Paweł Wójcik";
-    }
+
     public String getLogin() {
         return login;
     }

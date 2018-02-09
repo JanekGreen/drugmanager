@@ -1,15 +1,15 @@
-package pl.pwojcik.architecturecomponentstestproject.repository;
+package pl.pwojcik.drugmanager.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import pl.pwojcik.architecturecomponentstestproject.utils.DisposableManager;
-import pl.pwojcik.architecturecomponentstestproject.model.TypesConverter;
-import pl.pwojcik.architecturecomponentstestproject.model.persistence.GithubUserDao;
-import pl.pwojcik.architecturecomponentstestproject.model.restEntity.GithubUser;
-import pl.pwojcik.architecturecomponentstestproject.model.retrofit.GithubRestInterface;
+import pl.pwojcik.drugmanager.utils.DisposableManager;
+import pl.pwojcik.drugmanager.model.TypesConverter;
+import pl.pwojcik.drugmanager.model.persistence.GithubUserDao;
+import pl.pwojcik.drugmanager.model.restEntity.GithubUser;
+import pl.pwojcik.drugmanager.model.retrofit.GithubRestInterface;
 
 /**
  * Created by wojci on 29.01.2018.

@@ -1,4 +1,4 @@
-package pl.pwojcik.architecturecomponentstestproject.utils;
+package pl.pwojcik.drugmanager.utils;
 
 /**
  * Created by wojci on 29.01.2018.

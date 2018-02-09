@@ -1,6 +1,6 @@
-package pl.pwojcik.architecturecomponentstestproject.model.retrofit;
+package pl.pwojcik.drugmanager.model.retrofit;
 
-import pl.pwojcik.architecturecomponentstestproject.utils.UrlUtil;
+import pl.pwojcik.drugmanager.utils.UrlUtil;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;

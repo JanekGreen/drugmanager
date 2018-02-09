@@ -1,4 +1,4 @@
-package pl.pwojcik.architecturecomponentstestproject.ui.activity;
+package pl.pwojcik.drugmanager.ui.activity;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -13,10 +13,10 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import pl.pwojcik.architecturecomponentstestproject.utils.DisposableManager;
-import pl.pwojcik.architecturecomponentstestproject.ui.viewmodel.GitHubUserViewModel;
-import pl.pwojcik.architecturecomponentstestproject.ui.adapter.GithubUserAdapter;
-import pl.pwojcik.architecturecomponentstestproject.model.restEntity.GithubUser;
+import pl.pwojcik.drugmanager.utils.DisposableManager;
+import pl.pwojcik.drugmanager.ui.viewmodel.GitHubUserViewModel;
+import pl.pwojcik.drugmanager.ui.adapter.GithubUserAdapter;
+import pl.pwojcik.drugmanager.model.restEntity.GithubUser;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class MainActivity extends AppCompatActivity {

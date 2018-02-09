@@ -1,8 +1,8 @@
-package pl.pwojcik.architecturecomponentstestproject.repository;
+package pl.pwojcik.drugmanager.repository;
 
 import android.arch.lifecycle.LiveData;
 
-import pl.pwojcik.architecturecomponentstestproject.model.restEntity.GithubUser;
+import pl.pwojcik.drugmanager.model.restEntity.GithubUser;
 
 /**
  * Created by wojci on 29.01.2018.

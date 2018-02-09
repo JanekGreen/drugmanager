@@ -1,4 +1,4 @@
-package pl.pwojcik.architecturecomponentstestproject.ui.adapter;
+package pl.pwojcik.drugmanager.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import pl.pwojcik.architecturecomponentstestproject.model.restEntity.GithubUser;
+import pl.pwojcik.drugmanager.model.restEntity.GithubUser;
 import pwojcik.pl.archcomponentstestproject.R;
 
 
