@@ -30,11 +30,11 @@ dependencies {
     })
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    compile 'com.android.support:appcompat-v7:26.+'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.google.code.gson:gson:2.6.1'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     // ViewModel and LiveData
     compile 'android.arch.lifecycle:extensions:1.1.0'
     // alternatively, just ViewModel
@@ -51,6 +51,8 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'android.arch.persistence.room:rxjava2:1.1.0-alpha1'
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    // Android vision api
+    compile 'com.google.android.gms:play-services-vision:11.8.0'
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.0-alpha1'
     // ReactiveStreams support for LiveData
     implementation 'android.arch.lifecycle:reactivestreams:1.1.0'
