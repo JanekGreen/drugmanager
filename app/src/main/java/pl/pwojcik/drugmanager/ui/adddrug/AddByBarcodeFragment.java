@@ -1,0 +1,135 @@
+package pl.pwojcik.drugmanager.ui.adddrug;
+
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
+
+import java.io.IOException;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import pwojcik.pl.archcomponentstestproject.R;
+
+
+public class AddByBarcodeFragment extends Fragment {
+
+    private static AddByBarcodeFragment barcodeCaptureFragment;
+
+    @BindView(R.id.svCameraPreview)
+    SurfaceView svCameraPreview;
+    private BarcodeDetector barcodeDetector;
+    private CameraSource cameraSource;
+
+    public static AddByBarcodeFragment getInstance() {
+
+        if (barcodeCaptureFragment == null) {
+            barcodeCaptureFragment = new AddByBarcodeFragment();
+        }
+
+        return barcodeCaptureFragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_add_by_barcode, container, false);
+        ButterKnife.bind(this, view);
+
+         barcodeDetector = new BarcodeDetector
+                .Builder(getContext())
+                 .setBarcodeFormats(Barcode.EAN_8 | Barcode.EAN_13)
+                 .build();
+
+         if(!barcodeDetector.isOperational()){
+             System.err.println("Barcode detector not working");
+         }
+
+        cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
+                .setFacing(CameraSource.CAMERA_FACING_BACK)
+                .setAutoFocusEnabled(true)
+                .setRequestedPreviewSize(1600, 1024)
+                .setRequestedFps(15.0f)
+                .build();
+
+        if(cameraSource == null){
+            System.err.println("Camera source is null");
+        }
+        svCameraPreview.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder surfaceHolder) {
+                if (ActivityCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    System.err.println("Permissions are not added");
+                    return;
+                }
+                try {
+                    cameraSource.start(svCameraPreview.getHolder());
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+                    @Override
+                    public void release() {
+
+                    }
+
+                    @Override
+                    public void receiveDetections(Detector.Detections<Barcode> detections) {
+                        final SparseArray<Barcode> barcodes = detections.getDetectedItems();
+                        if(barcodes.size()>0){
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(getContext(),
+                                        barcodes.valueAt(0).displayValue,
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            });
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+                cameraSource.stop();
+
+            }
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+}

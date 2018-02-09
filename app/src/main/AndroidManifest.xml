@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pwojcik.pl.archcomponentstestproject">
+
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -11,13 +13,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="pl.pwojcik.drugmanager.ui.activity.MainActivity">
+        <activity android:name="pl.pwojcik.drugmanager.ui.activity.MainActivity" />
+        <activity
+            android:name="pl.pwojcik.drugmanager.ui.druglist.DrugListActivity"
+            android:label="@string/title_activity_main_drugmanager">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity"
+            android:label="@string/title_activity_get_drug_info"></activity>
     </application>
 
 </manifest>
