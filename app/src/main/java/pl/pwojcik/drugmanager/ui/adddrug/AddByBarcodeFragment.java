@@ -2,8 +2,11 @@ package pl.pwojcik.drugmanager.ui.adddrug;
 
 
 import android.Manifest;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
@@ -20,9 +23,12 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.pwojcik.drugmanager.DrugmanagerApplication;
+import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pwojcik.pl.archcomponentstestproject.R;
 
 
@@ -34,6 +40,7 @@ public class AddByBarcodeFragment extends Fragment {
     SurfaceView svCameraPreview;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
+    AddByBarcodeViewModel addByBarcodeViewModel;
 
     public static AddByBarcodeFragment getInstance() {
 
@@ -47,8 +54,8 @@ public class AddByBarcodeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        addByBarcodeViewModel = ViewModelProviders.of(this).get(AddByBarcodeViewModel.class);
+        subscribeToData();
     }
 
     @Override
@@ -85,13 +92,16 @@ public class AddByBarcodeFragment extends Fragment {
                     System.err.println("Permissions are not added");
                     return;
                 }
-                try {
-                    cameraSource.start(svCameraPreview.getHolder());
+                    DrugmanagerApplication.getExecutorSingleThread()
+                            .submit(()->{
 
+                    try {
+                            cameraSource.start(svCameraPreview.getHolder());
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
 
                 barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
                     @Override
@@ -104,10 +114,9 @@ public class AddByBarcodeFragment extends Fragment {
                         final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                         if(barcodes.size()>0){
                             getActivity().runOnUiThread(() -> {
-                                Toast.makeText(getContext(),
-                                        barcodes.valueAt(0).displayValue,
-                                        Toast.LENGTH_LONG)
-                                        .show();
+
+                                addByBarcodeViewModel
+                                        .getDrugByEan(barcodes.valueAt(0).displayValue);
                             });
                         }
                     }
@@ -120,7 +129,9 @@ public class AddByBarcodeFragment extends Fragment {
 
             @Override
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-                cameraSource.stop();
+
+                DrugmanagerApplication.getExecutorSingleThread()
+                        .submit((()->cameraSource.stop()));
 
             }
         });
@@ -131,5 +142,12 @@ public class AddByBarcodeFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    private void subscribeToData(){
+        addByBarcodeViewModel.getData().observe(this, drug -> {
+            if(drug!=null)
+                System.out.println(drug.getName());
+        });
     }
 }

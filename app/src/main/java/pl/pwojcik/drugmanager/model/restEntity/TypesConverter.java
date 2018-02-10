@@ -1,4 +1,4 @@
-package pl.pwojcik.drugmanager.model;
+package pl.pwojcik.drugmanager.model.restEntity;
 
 import pl.pwojcik.drugmanager.model.persistence.GithubUserDb;
 import pl.pwojcik.drugmanager.model.restEntity.GithubUser;

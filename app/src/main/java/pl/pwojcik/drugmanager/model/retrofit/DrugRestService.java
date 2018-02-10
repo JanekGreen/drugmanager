@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by wojci on 29.01.2018.
  */
 
-public class GitHubRestService {
+public class DrugRestService {
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient() {
@@ -22,7 +22,7 @@ public class GitHubRestService {
         }
         return retrofit;
     }
-    public static GithubRestInterface getGithubService(){
-        return GitHubRestService.getClient().create(GithubRestInterface.class);
+    public static DrugRestInterface getDrugRestService(){
+        return DrugRestService.getClient().create(DrugRestInterface.class);
     }
 }

@@ -5,6 +5,6 @@ package pl.pwojcik.drugmanager.utils;
  */
 
 public class UrlUtil {
-    public static final String BASE_URL ="https://api.github.com";
-    public static final String GET_USER ="/users/{user}";
+    public static final String BASE_URL ="http://194.182.65.130:8080/drugmanager/";
+    public static final String GET_DRUG ="drugs/{ean}";
 }
