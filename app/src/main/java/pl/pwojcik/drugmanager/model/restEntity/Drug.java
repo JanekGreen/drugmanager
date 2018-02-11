@@ -5,42 +5,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class Drug {
 
-@SerializedName("id")
-@Expose
-private Integer id;
-@SerializedName("internalId")
-@Expose
-private Integer internalId;
 @SerializedName("name")
 @Expose
 private String name;
 @SerializedName("commonName")
 @Expose
 private String commonName;
-@SerializedName("type")
-@Expose
-private String type;
-@SerializedName("targetSpec")
-@Expose
-private String targetSpec;
-@SerializedName("okrKar")
-@Expose
-private String okrKar;
 @SerializedName("dosage")
 @Expose
 private String dosage;
-@SerializedName("expirationDate")
-@Expose
-private String expirationDate;
-@SerializedName("procedureType")
-@Expose
-private String procedureType;
-@SerializedName("permissionNumber")
-@Expose
-private Integer permissionNumber;
-@SerializedName("atc")
-@Expose
-private String atc;
 @SerializedName("producer")
 @Expose
 private String producer;
@@ -60,148 +33,75 @@ private String characteristics;
 @Expose
 private String usageType;
 
-public Integer getId() {
-return id;
-}
+    public String getName() {
+        return name;
+    }
 
-public void setId(Integer id) {
-this.id = id;
-}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-public Integer getInternalId() {
-return internalId;
-}
+    public String getCommonName() {
+        return commonName;
+    }
 
-public void setInternalId(Integer internalId) {
-this.internalId = internalId;
-}
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
 
-public String getName() {
-return name;
-}
+    public String getDosage() {
+        return dosage;
+    }
 
-public void setName(String name) {
-this.name = name;
-}
+    public void setDosage(String dosage) {
+        this.dosage = dosage;
+    }
 
-public String getCommonName() {
-return commonName;
-}
+    public String getProducer() {
+        return producer;
+    }
 
-public void setCommonName(String commonName) {
-this.commonName = commonName;
-}
+    public void setProducer(String producer) {
+        this.producer = producer;
+    }
 
-public String getType() {
-return type;
-}
+    public String getPackQuantity() {
+        return packQuantity;
+    }
 
-public void setType(String type) {
-this.type = type;
-}
+    public void setPackQuantity(String packQuantity) {
+        this.packQuantity = packQuantity;
+    }
 
-public String getTargetSpec() {
-return targetSpec;
-}
+    public String getActiveSubstance() {
+        return activeSubstance;
+    }
 
-public void setTargetSpec(String targetSpec) {
-this.targetSpec = targetSpec;
-}
+    public void setActiveSubstance(String activeSubstance) {
+        this.activeSubstance = activeSubstance;
+    }
 
-public String getOkrKar() {
-return okrKar;
-}
+    public String getFeaflet() {
+        return feaflet;
+    }
 
-public void setOkrKar(String okrKar) {
-this.okrKar = okrKar;
-}
+    public void setFeaflet(String feaflet) {
+        this.feaflet = feaflet;
+    }
 
-public String getDosage() {
-return dosage;
-}
+    public String getCharacteristics() {
+        return characteristics;
+    }
 
-public void setDosage(String dosage) {
-this.dosage = dosage;
-}
+    public void setCharacteristics(String characteristics) {
+        this.characteristics = characteristics;
+    }
 
-public String getExpirationDate() {
-return expirationDate;
-}
+    public String getUsageType() {
+        return usageType;
+    }
 
-public void setExpirationDate(String expirationDate) {
-this.expirationDate = expirationDate;
-}
-
-public String getProcedureType() {
-return procedureType;
-}
-
-public void setProcedureType(String procedureType) {
-this.procedureType = procedureType;
-}
-
-public Integer getPermissionNumber() {
-return permissionNumber;
-}
-
-public void setPermissionNumber(Integer permissionNumber) {
-this.permissionNumber = permissionNumber;
-}
-
-public String getAtc() {
-return atc;
-}
-
-public void setAtc(String atc) {
-this.atc = atc;
-}
-
-public String getProducer() {
-return producer;
-}
-
-public void setProducer(String producer) {
-this.producer = producer;
-}
-
-public String getPackQuantity() {
-return packQuantity;
-}
-
-public void setPackQuantity(String packQuantity) {
-this.packQuantity = packQuantity;
-}
-
-public String getActiveSubstance() {
-return activeSubstance;
-}
-
-public void setActiveSubstance(String activeSubstance) {
-this.activeSubstance = activeSubstance;
-}
-
-public String getFeaflet() {
-return feaflet;
-}
-
-public void setFeaflet(String feaflet) {
-this.feaflet = feaflet;
-}
-
-public String getCharacteristics() {
-return characteristics;
-}
-
-public void setCharacteristics(String characteristics) {
-this.characteristics = characteristics;
-}
-
-public String getUsageType() {
-return usageType;
-}
-
-public void setUsageType(String usageType) {
-this.usageType = usageType;
-}
-
+    public void setUsageType(String usageType) {
+        this.usageType = usageType;
+    }
 }

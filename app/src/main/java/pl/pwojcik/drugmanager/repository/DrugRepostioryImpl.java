@@ -1,6 +1,7 @@
 package pl.pwojcik.drugmanager.repository;
 
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -26,6 +27,7 @@ public class DrugRepostioryImpl implements DrugRepository {
 
         return drugRestInterface.getDrugByEan(ean)
             .subscribeOn(Schedulers.io())
+            .filter(Objects::nonNull)
             .observeOn(AndroidSchedulers.mainThread());
 
     }

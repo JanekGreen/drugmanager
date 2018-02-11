@@ -8,6 +8,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.model.retrofit.DrugRestService;
@@ -18,7 +19,7 @@ import pl.pwojcik.drugmanager.repository.DrugRepostioryImpl;
  * Created by pawel on 10.02.18.
  */
 
-public class AddByBarcodeViewModel extends AndroidViewModel{
+public class AddByBarcodeViewModel extends AndroidViewModel {
 
     private DrugRepository drugRepository;
     private MutableLiveData<Drug> drugLiveData = new MutableLiveData<>();
@@ -28,14 +29,21 @@ public class AddByBarcodeViewModel extends AndroidViewModel{
         drugRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService());
     }
 
-    public LiveData<Drug> getDrugByEan(String ean){
+    public LiveData<Drug> getDrugByEan(String ean) {
+
         drugRepository.getDrugByEan(ean)
                 .subscribe(drug ->
                                 drugLiveData.setValue(drug),
-                                e-> System.err.println(e.getMessage()));
-         return drugLiveData;
+                        e -> {
+                            System.err.println(e.getMessage());
+                            Toast.makeText(getApplication().getApplicationContext(),
+                                    e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                );
+        return drugLiveData;
     }
-    public LiveData<Drug> getData(){
+
+    public LiveData<Drug> getData() {
         return drugLiveData;
     }
 }
