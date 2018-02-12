@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Objects;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.model.retrofit.DrugRestInterface;
+import pl.pwojcik.drugmanager.utils.EAN13Validator;
 
 /**
  * Created by pawel on 10.02.18.
@@ -15,7 +17,9 @@ import pl.pwojcik.drugmanager.model.retrofit.DrugRestInterface;
 
 public class DrugRepostioryImpl implements DrugRepository {
 
-    DrugRestInterface drugRestInterface;
+    private DrugRestInterface drugRestInterface;
+    private String currentEan =null;
+
 
 
     public DrugRepostioryImpl(DrugRestInterface drugRestInterface) {
@@ -23,12 +27,19 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public Maybe<Drug> getDrugByEan(String ean) {
+    public io.reactivex.Observable<Drug> getDrugByEan(String ean) {
+        if(isNewBarcodeScanned(ean) && isEanValid(ean)) {
 
-        return drugRestInterface.getDrugByEan(ean)
-            .subscribeOn(Schedulers.io())
-            .filter(Objects::nonNull)
-            .observeOn(AndroidSchedulers.mainThread());
+            Observable<Drug> result = drugRestInterface.getDrugByEan(ean)
+                    .subscribeOn(Schedulers.io())
+                    .filter(Objects::nonNull)
+                    .observeOn(AndroidSchedulers.mainThread());
+            currentEan = ean;
+
+            return result;
+        }
+
+        return io.reactivex.Observable.empty();
 
     }
 
@@ -36,4 +47,18 @@ public class DrugRepostioryImpl implements DrugRepository {
     public List<Drug> getDrugListByName(String name) {
         return null;
     }
+
+
+    private boolean isNewBarcodeScanned(String ean) {
+
+        return currentEan == null || !ean.equals(currentEan);
+    }
+
+    private boolean isEanValid(String ean){
+        EAN13Validator ean13Validator = new EAN13Validator(ean);
+        return ean13Validator .isValid();
+    }
+
 }
+
+

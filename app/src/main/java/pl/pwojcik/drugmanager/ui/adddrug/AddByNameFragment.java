@@ -13,17 +13,6 @@ import pwojcik.pl.archcomponentstestproject.R;
 public class AddByNameFragment extends Fragment {
 
     private static AddByNameFragment barcodeCaptureFragment;
-
-
-    public static AddByNameFragment getInstance() {
-
-        if(barcodeCaptureFragment == null){
-            barcodeCaptureFragment = new AddByNameFragment();
-        }
-
-        return barcodeCaptureFragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

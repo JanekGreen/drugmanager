@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 
 import java.util.List;
 
+
 import io.reactivex.Maybe;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 
@@ -12,6 +13,6 @@ import pl.pwojcik.drugmanager.model.restEntity.Drug;
  */
 
 public interface DrugRepository {
-    Maybe<Drug>  getDrugByEan(String ean);
+    io.reactivex.Observable<Drug> getDrugByEan(String ean);
     List<Drug> getDrugListByName(String name);
 }

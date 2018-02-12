@@ -1,6 +1,7 @@
 package pl.pwojcik.drugmanager.model.retrofit;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.utils.UrlUtil;
 import retrofit2.http.GET;
@@ -13,5 +14,5 @@ import retrofit2.http.Path;
 public interface DrugRestInterface {
 
     @GET(UrlUtil.GET_DRUG)
-    Maybe<Drug> getDrugByEan(@Path("ean") String ean);
+    Observable<Drug> getDrugByEan(@Path("ean") String ean);
 }

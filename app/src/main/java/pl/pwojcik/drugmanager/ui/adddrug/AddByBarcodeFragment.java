@@ -5,6 +5,7 @@ import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
@@ -14,7 +15,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -31,7 +31,6 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class AddByBarcodeFragment extends Fragment {
 
-    private static AddByBarcodeFragment barcodeCaptureFragment;
 
     @BindView(R.id.svCameraPreview)
     SurfaceView svCameraPreview;
@@ -41,31 +40,31 @@ public class AddByBarcodeFragment extends Fragment {
     TextView getTvDetectedDrugProducer;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
-    AddByBarcodeViewModel addByBarcodeViewModel;
-
-    public static AddByBarcodeFragment getInstance() {
-
-        if (barcodeCaptureFragment == null) {
-            barcodeCaptureFragment = new AddByBarcodeFragment();
-        }
-
-        return barcodeCaptureFragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        addByBarcodeViewModel = ViewModelProviders.of(this).get(AddByBarcodeViewModel.class);
-        subscribeToData();
-    }
+    private AddByBarcodeViewModel addByBarcodeViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_by_barcode,
-                                    container,
-                                    false);
+                container,
+                false);
         ButterKnife.bind(this, view);
+
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        System.out.println("onViewCreated called");
+
+        // handling live data stuff
+
+        addByBarcodeViewModel = ViewModelProviders.of(this).get(AddByBarcodeViewModel.class);
+        subscribeToData();
+
+        // barcode detection code
 
         barcodeDetector = new BarcodeDetector
                 .Builder(getContext())
@@ -74,7 +73,7 @@ public class AddByBarcodeFragment extends Fragment {
 
         if (!barcodeDetector.isOperational()) {
             System.err.println("Barcode detector not working");
-            return view;
+           return;
         }
 
         cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
@@ -86,19 +85,20 @@ public class AddByBarcodeFragment extends Fragment {
 
         if (cameraSource == null) {
             System.err.println("Camera source is null");
-
-            return view;
-
+            return;
         }
         svCameraPreview.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
+
                 if (ActivityCompat.checkSelfPermission(getContext(),
                         Manifest.permission.CAMERA)
                         != PackageManager.PERMISSION_GRANTED) {
                     System.err.println("Permissions are not added");
                     return;
                 }
+
+
                 DrugmanagerApplication.getExecutorSingleThread()
                         .submit(() -> {
 
@@ -118,13 +118,14 @@ public class AddByBarcodeFragment extends Fragment {
 
                     @Override
                     public void receiveDetections(Detector.Detections<Barcode> detections) {
-                        final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                            if (barcodes.size() > 0 && !isDrugFound()) {
-                                getActivity().runOnUiThread(() -> {
-                                    addByBarcodeViewModel
-                                            .getDrugByEan(barcodes.valueAt(0).displayValue);
-                                });
 
+                            final SparseArray<Barcode> barcodes = detections.getDetectedItems();
+                            if (barcodes.size() > 0) {
+                                    getActivity().runOnUiThread(() -> {
+                                        addByBarcodeViewModel
+                                                .getDrugByEan(barcodes.valueAt(0).displayValue);
+
+                                    });
                             }
                     }
                 });
@@ -143,19 +144,12 @@ public class AddByBarcodeFragment extends Fragment {
             }
         });
 
-        return view;
     }
 
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-    boolean isDrugFound() {
-        return !tvDetectedDrugName
-                        .getText()
-                        .toString()
-                        .isEmpty();
+        addByBarcodeViewModel.getData().removeObservers(this);
     }
 
     private void subscribeToData() {

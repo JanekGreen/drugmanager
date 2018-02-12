@@ -20,10 +20,12 @@ public class AddDrugActivity extends AppCompatActivity {
             = item -> {
         switch (item.getItemId()) {
             case R.id.nav_capture_by_name:
-                fragment = AddByNameFragment.getInstance();
+                if(!(fragment instanceof AddByNameFragment))
+                    fragment = new AddByNameFragment();
                 break;
             case R.id.nav_capture_by_barcode:
-                fragment = AddByBarcodeFragment.getInstance();
+                if(!(fragment instanceof AddByBarcodeFragment))
+                    fragment = new AddByBarcodeFragment();
                 break;
         }
 
@@ -36,7 +38,7 @@ public class AddDrugActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_drug);
         ButterKnife.bind(this);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        this.fragment = AddByBarcodeFragment.getInstance();
+        this.fragment = new AddByBarcodeFragment();
         setFragment();
     }
 
