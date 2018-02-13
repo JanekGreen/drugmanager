@@ -72,7 +72,7 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
             }
         }
         transaction.replace(R.id.fragment_container, currentFragment, tag);
-        transaction.addToBackStack(null);
+        //transaction.addToBackStack(null);
         transaction.commit();
 
         return true;

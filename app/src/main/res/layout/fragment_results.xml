@@ -17,18 +17,47 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal|center_vertical"
             android:text="Polopiryna"
-            android:textColor="@color/colorBlack"
-            android:textSize="35sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+        <TextView
+            android:id="@+id/tvCaptionName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Nazwa leku"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <TextView
+            android:id="@+id/tvUsageType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:text="Tabletki"
+            />
+        <TextView
+            android:id="@+id/tvCaptionUsageType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Rodzaj preparatu"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <TextView
             android:id="@+id/tvDetectedDrugProducer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal|center_vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:text="Polpharma SA"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            />
+
+        <TextView
+            android:id="@+id/tvCaptionProducer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Producent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btnAddDrug"

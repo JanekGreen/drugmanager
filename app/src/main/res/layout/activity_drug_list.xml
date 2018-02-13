@@ -8,31 +8,26 @@
     tools:context="pl.pwojcik.drugmanager.ui.druglist.DrugListActivity">
 
 
+    <android.support.design.widget.TabLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+    </android.support.design.widget.TabLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
         android:clickable="true"
         android:focusable="true"
-        app:elevation="6dp"
-        app:backgroundTint="@color/colorPrimaryDark"
         android:src="@mipmap/ic_add_white_18dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:elevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:elevation="2dp"
-        android:background="?android:attr/windowBackground"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/nav_main" />
 
 </android.support.constraint.ConstraintLayout>

@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import pwojcik.pl.archcomponentstestproject.R;
@@ -85,6 +86,11 @@ public class SearchTypeListDialogFragment extends BottomSheetDialogFragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.text.setText(String.valueOf(TYPE_NAMES[position]));
+            if(position == 0){
+               holder.text.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_photo_camera_black_24dp, 0, 0, 0);
+            }else{
+                holder.text.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search_black_24dp, 0, 0, 0);
+            }
         }
 
         @Override
