@@ -68,6 +68,15 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound{
 
     private boolean setFragment(String tag){
         FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        switch (tag){
+            case ADD_NAME_TAG_NAME:
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+                break;
+            case ADD_BARCODE_TAG_NAME:
+                transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+                break;
+        }
          currentFragment= manager.findFragmentByTag(tag);
         if(currentFragment == null){
             switch (tag){
@@ -77,11 +86,9 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound{
                         break;
                     case ADD_BARCODE_TAG_NAME:
                             currentFragment = new AddByBarcodeFragment();
-                            System.out.println("CREATING");
                         break;
                 }
             }
-        FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.fragment_container, currentFragment,tag);
         transaction.addToBackStack(null);
         transaction.commit();
