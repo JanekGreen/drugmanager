@@ -32,7 +32,6 @@ public class DrugRepostioryImpl implements DrugRepository {
 
             Observable<Drug> result = drugRestInterface.getDrugByEan(ean)
                     .subscribeOn(Schedulers.io())
-                    .filter(Objects::nonNull)
                     .observeOn(AndroidSchedulers.mainThread());
             currentEan = ean;
 

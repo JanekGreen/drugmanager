@@ -23,7 +23,7 @@ public class DrugViewModel extends AndroidViewModel {
     public DrugViewModel(@NonNull Application application) {
         super(application);
         drugRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService());
-        drugLiveData.setValue(new Drug());
+        drugLiveData.setValue(null);
     }
 
     void getDrugByEan(String ean) {

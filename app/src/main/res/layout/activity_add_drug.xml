@@ -29,43 +29,6 @@
 
             </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/resultLayout"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.4"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvDetectedDrugName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:text=""
-                    android:textColor="@color/colorBlack"
-                    android:textSize="50sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvDetectedDrugProducer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:text=""
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
-
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btnAddDrug"
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:elevation="6dp"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Dodaj"
-                    android:textColor="#fff"
-                    app:backgroundTint="@color/colorPrimaryDark"/>
-
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
     <android.support.design.widget.BottomNavigationView
