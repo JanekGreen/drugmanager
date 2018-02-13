@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.ui.adddrug;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -31,39 +31,36 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class AddByBarcodeFragment extends Fragment {
 
-
     @BindView(R.id.svCameraPreview)
     SurfaceView svCameraPreview;
-    @BindView(R.id.tvDetectedDrugName)
-    TextView tvDetectedDrugName;
-    @BindView(R.id.tvDetectedDrugProducer)
-    TextView getTvDetectedDrugProducer;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
-    private AddByBarcodeViewModel addByBarcodeViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add_by_barcode,
-                container,
-                false);
-        ButterKnife.bind(this, view);
 
+        View view = inflater.inflate(R.layout.fragment_add_by_barcode, container, false);
+        ButterKnife.bind(this, view);
 
         return view;
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        System.out.println("onViewCreated called");
-
-        // handling live data stuff
-
-        addByBarcodeViewModel = ViewModelProviders.of(this).get(AddByBarcodeViewModel.class);
-        subscribeToData();
-
         // barcode detection code
 
         barcodeDetector = new BarcodeDetector
@@ -73,7 +70,7 @@ public class AddByBarcodeFragment extends Fragment {
 
         if (!barcodeDetector.isOperational()) {
             System.err.println("Barcode detector not working");
-           return;
+            return;
         }
 
         cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
@@ -98,7 +95,6 @@ public class AddByBarcodeFragment extends Fragment {
                     return;
                 }
 
-
                 DrugmanagerApplication.getExecutorSingleThread()
                         .submit(() -> {
 
@@ -119,14 +115,17 @@ public class AddByBarcodeFragment extends Fragment {
                     @Override
                     public void receiveDetections(Detector.Detections<Barcode> detections) {
 
-                            final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                            if (barcodes.size() > 0) {
-                                    getActivity().runOnUiThread(() -> {
-                                        addByBarcodeViewModel
-                                                .getDrugByEan(barcodes.valueAt(0).displayValue);
+                        final SparseArray<Barcode> barcodes = detections.getDetectedItems();
+                        if (barcodes.size() > 0) {
+                            getActivity().runOnUiThread(() -> {
+                                if(getActivity() instanceof IDrugFound){
+                                    ((IDrugFound)getActivity())
+                                            .getDrugData(barcodes.valueAt(0).displayValue);
+                                }
 
-                                    });
-                            }
+
+                            });
+                        }
                     }
                 });
             }
@@ -140,24 +139,8 @@ public class AddByBarcodeFragment extends Fragment {
 
                 DrugmanagerApplication.getExecutorSingleThread()
                         .submit((() -> cameraSource.stop()));
-
             }
         });
-
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        addByBarcodeViewModel.getData().removeObservers(this);
-    }
-
-    private void subscribeToData() {
-        addByBarcodeViewModel.getData()
-                .observe(this, drug -> {
-                    assert drug != null;
-                    tvDetectedDrugName.setText(drug.getName());
-                    getTvDetectedDrugProducer.setText(drug.getProducer());
-                });
-    }
 }

@@ -10,9 +10,8 @@ import android.view.ViewGroup;
 import pwojcik.pl.archcomponentstestproject.R;
 
 
-public class AddByNameFragment extends Fragment {
+public class AddByNameFragment extends Fragment implements IDrugFound {
 
-    private static AddByNameFragment barcodeCaptureFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,4 +24,8 @@ public class AddByNameFragment extends Fragment {
     }
 
 
+    @Override
+    public void getDrugData(String ean) {
+
+    }
 }

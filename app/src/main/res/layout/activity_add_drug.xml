@@ -1,31 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:weightSum="1.0"
     tools:context="pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity">
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="0.5">
 
     </FrameLayout>
+    <LinearLayout
+        android:id="@+id/resultLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.4">
+        <TextView
+            android:id="@+id/tvDetectedDrugName"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:text="" />
+        <TextView
+            android:id="@+id/tvDetectedDrugProducer"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:text="" />
+
+    </LinearLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/getDrugInfoNav"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
         android:background="?android:attr/windowBackground"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/nav_capture" >
 
     </android.support.design.widget.BottomNavigationView>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

@@ -15,14 +15,15 @@ import pl.pwojcik.drugmanager.repository.DrugRepostioryImpl;
  * Created by pawel on 10.02.18.
  */
 
-public class AddByBarcodeViewModel extends AndroidViewModel {
+public class DrugViewModel extends AndroidViewModel {
 
     private DrugRepository drugRepository;
     private MutableLiveData<Drug> drugLiveData = new MutableLiveData<>();
 
-    public AddByBarcodeViewModel(@NonNull Application application) {
+    public DrugViewModel(@NonNull Application application) {
         super(application);
         drugRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService());
+        drugLiveData.setValue(new Drug());
     }
 
     void getDrugByEan(String ean) {

@@ -1,35 +1,51 @@
 package pl.pwojcik.drugmanager.ui.adddrug;
 
+import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pwojcik.pl.archcomponentstestproject.R;
 
-public class AddDrugActivity extends AppCompatActivity {
+public class AddDrugActivity extends AppCompatActivity implements IDrugFound{
+
+    public final static String ADD_BARCODE_TAG_NAME="GET_BY_BARCODE";
+    public final static String ADD_NAME_TAG_NAME="GET_BY_NAME";
+
 
     @BindView(R.id.getDrugInfoNav)
     BottomNavigationView navigation;
-    private Fragment fragment = null;
+    @BindView(R.id.tvDetectedDrugName)
+    TextView tvDetectedDrugName;
+    @BindView(R.id.tvDetectedDrugProducer)
+    TextView getTvDetectedDrugProducer;
+
+    private DrugViewModel drugViewModel;
+    private Fragment currentFragment = null;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
         switch (item.getItemId()) {
             case R.id.nav_capture_by_name:
-                if(!(fragment instanceof AddByNameFragment))
-                    fragment = new AddByNameFragment();
-                break;
+                if(!(currentFragment instanceof AddByNameFragment))
+                  return setFragment(ADD_NAME_TAG_NAME);
+               return true;
             case R.id.nav_capture_by_barcode:
-                if(!(fragment instanceof AddByBarcodeFragment))
-                    fragment = new AddByBarcodeFragment();
-                break;
+                if(!(currentFragment instanceof AddByBarcodeFragment))
+                 return setFragment(ADD_BARCODE_TAG_NAME);
+
         }
 
-       return setFragment();
+       return false;
     };
 
     @Override
@@ -38,20 +54,51 @@ public class AddDrugActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_drug);
         ButterKnife.bind(this);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        this.fragment = new AddByBarcodeFragment();
-        setFragment();
+        drugViewModel = ViewModelProviders.of(this).get(pl.pwojcik.drugmanager.ui.adddrug.DrugViewModel.class);
+        subscribeToData();
+        if(savedInstanceState == null) {
+            setFragment(ADD_BARCODE_TAG_NAME);
+        }
     }
 
-    private boolean setFragment(){
-        if(this.fragment == null){
-            return false;
-        }
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction();
-        transaction.replace(R.id.fragment_container,fragment);
+    @Override
+    public void getDrugData(String ean) {
+       drugViewModel.getDrugByEan(ean);
+    }
+
+    private boolean setFragment(String tag){
+        FragmentManager manager = getSupportFragmentManager();
+         currentFragment= manager.findFragmentByTag(tag);
+        if(currentFragment == null){
+            switch (tag){
+                    case ADD_NAME_TAG_NAME:
+                            currentFragment = new AddByNameFragment();
+                            System.out.println("CREATING");
+                        break;
+                    case ADD_BARCODE_TAG_NAME:
+                            currentFragment = new AddByBarcodeFragment();
+                            System.out.println("CREATING");
+                        break;
+                }
+            }
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.fragment_container, currentFragment,tag);
+        transaction.addToBackStack(null);
         transaction.commit();
+
         return true;
 
+    }
+
+    private void subscribeToData() {
+        drugViewModel.getData().removeObservers(this);
+        drugViewModel.getData()
+                .observe(this, drug -> {
+                    System.out.println("State changed!" + drugViewModel.getData().hasActiveObservers());
+                    assert drug != null;
+                    tvDetectedDrugName.setText(drug.getName());
+                    getTvDetectedDrugProducer.setText(drug.getProducer());
+                });
     }
 
 }
