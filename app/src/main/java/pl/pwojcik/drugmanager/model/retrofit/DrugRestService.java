@@ -1,13 +1,8 @@
 package pl.pwojcik.drugmanager.model.retrofit;
 
-import java.io.IOException;
-
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import pl.pwojcik.drugmanager.utils.UrlUtil;
+import pl.pwojcik.drugmanager.utils.Constants;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -28,7 +23,7 @@ public class DrugRestService {
                     .addInterceptor(interceptor).build();
 
             retrofit = new Retrofit.Builder()
-                    .baseUrl(UrlUtil.BASE_URL)
+                    .baseUrl(Constants.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client)
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
