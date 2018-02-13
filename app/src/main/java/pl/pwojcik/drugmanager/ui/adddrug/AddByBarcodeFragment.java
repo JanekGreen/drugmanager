@@ -2,8 +2,6 @@ package pl.pwojcik.drugmanager.ui.adddrug;
 
 
 import android.Manifest;
-import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
