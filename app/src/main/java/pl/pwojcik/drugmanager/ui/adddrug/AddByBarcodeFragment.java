@@ -115,14 +115,10 @@ public class AddByBarcodeFragment extends Fragment {
 
                         final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                         if (barcodes.size() > 0) {
-                            getActivity().runOnUiThread(() -> {
                                 if(getActivity() instanceof IDrugFound){
                                     ((IDrugFound)getActivity())
                                             .getDrugData(barcodes.valueAt(0).displayValue);
                                 }
-
-
-                            });
                         }
                     }
                 });

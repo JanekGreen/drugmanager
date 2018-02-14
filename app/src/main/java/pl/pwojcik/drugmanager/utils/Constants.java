@@ -11,4 +11,6 @@ public class Constants {
     public final static String ADD_BARCODE_TAG_NAME="GET_BY_BARCODE";
     public final static String ADD_NAME_TAG_NAME="GET_BY_NAME";
     public final static String RESULTS_FRAGMENT="RESULTS_FRAGMENT";
+
+    public static final int INTENT_REQUEST_CODE = 17;
 }

@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -36,16 +38,26 @@ public class ResultsFragment extends Fragment {
                              Bundle savedInstanceState) {
         drugViewModel = ViewModelProviders.of(getActivity()).get(DrugViewModel.class);
         drugViewModel.getData().observe(this, drug -> {
-          if(drug!=null){
-              tvDetectedDrugName.setText(drug.getName());
-              tvDetectedDrugProducer.setText(drug.getProducer());
-              tvUsageType.setText(drug.getUsageType());
+            if (drug != null) {
+                tvDetectedDrugName.setText(drug.getName());
+                tvDetectedDrugProducer.setText(drug.getProducer());
+                tvUsageType.setText(drug.getUsageType());
 
-          }
+            }
         });
         View view = inflater.inflate(R.layout.fragment_results, container, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         return view;
     }
 
+    @OnClick(R.id.btnAddDrug)
+    public void onBtnAddDrugClicked() {
+        System.out.println("Btn onBtnAddDrugClicked");
+        AlarmHelper alarmHelper = new AlarmHelper(getContext());
+        alarmHelper.setAlarmForTimeRepeating(19,51,0,9,0);
+        alarmHelper.cancelAlarm(9);
+
+
+
+    }
 }

@@ -89,7 +89,7 @@ public class SearchTypeListDialogFragment extends BottomSheetDialogFragment {
             if(position == 0){
                holder.text.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_photo_camera_black_24dp, 0, 0, 0);
             }else{
-                holder.text.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search_black_24dp, 0, 0, 0);
+                holder.text.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_keyboard_black_24dp, 0, 0, 0);
             }
         }
 
