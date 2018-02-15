@@ -2,14 +2,16 @@ package pl.pwojcik.drugmanager.ui.adddrug;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByBarcodeFragment;
+import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByNameFragment;
+import pl.pwojcik.drugmanager.ui.adddrug.fragment.ResultsFragment;
+import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pwojcik.pl.archcomponentstestproject.R;
 
 import static pl.pwojcik.drugmanager.utils.Constants.ADD_BARCODE_TAG_NAME;
@@ -27,7 +29,7 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_drug);
         ButterKnife.bind(this);
-        drugViewModel = ViewModelProviders.of(this).get(pl.pwojcik.drugmanager.ui.adddrug.DrugViewModel.class);
+        drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
         subscribeToData();
         Bundle bundle = getIntent().getExtras();
         String searchTypeSelected = bundle != null ? bundle.getString("SEARCH_TYPE_FRAGMENT") : null;
@@ -39,6 +41,7 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
 
     @Override
     public void getDrugData(String ean) {
+        System.out.println("Get drug by ean "+ean);
         drugViewModel.getDrugByEan(ean);
     }
 
@@ -80,8 +83,8 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
     }
 
     private void subscribeToData() {
-        drugViewModel.getData().removeObservers(this);
-        drugViewModel.getData()
+        drugViewModel.getDrugData().removeObservers(this);
+        drugViewModel.getDrugData()
                 .observe(this, drug -> {
                     System.out.println("STATE CHANGED!");
                     if (drug != null) {

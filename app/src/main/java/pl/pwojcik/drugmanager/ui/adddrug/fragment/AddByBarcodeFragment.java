@@ -1,4 +1,4 @@
-package pl.pwojcik.drugmanager.ui.adddrug;
+package pl.pwojcik.drugmanager.ui.adddrug.fragment;
 
 
 import android.Manifest;
@@ -24,6 +24,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
+import pl.pwojcik.drugmanager.ui.adddrug.IDrugFound;
 import pwojcik.pl.archcomponentstestproject.R;
 
 

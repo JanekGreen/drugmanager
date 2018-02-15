@@ -1,14 +1,17 @@
 package pl.pwojcik.drugmanager.repository;
 
 import java.util.List;
-import java.util.Objects;
 
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import pl.pwojcik.drugmanager.model.persistence.DrugTimeDao;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimeDao;
+import pl.pwojcik.drugmanager.model.persistence.DrugDbDao;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
-import pl.pwojcik.drugmanager.model.retrofit.DrugRestInterface;
+import pl.pwojcik.drugmanager.retrofit.DrugRestInterface;
 import pl.pwojcik.drugmanager.utils.EAN13Validator;
 
 /**
@@ -17,20 +20,29 @@ import pl.pwojcik.drugmanager.utils.EAN13Validator;
 
 public class DrugRepostioryImpl implements DrugRepository {
 
+
+    private final DefinedTimeDao definedTimeDao;
     private DrugRestInterface drugRestInterface;
+    private DrugTimeDao drugTimeDao;
+    private DrugDbDao drugDbDao;
     private String currentEan =null;
 
 
+    public DrugRepostioryImpl(DrugRestInterface drugRestInterface,
+                              DrugTimeDao drugTimeDao,
+                              DrugDbDao drugDbDao, DefinedTimeDao definedTimeDao) {
 
-    public DrugRepostioryImpl(DrugRestInterface drugRestInterface) {
         this.drugRestInterface = drugRestInterface;
+        this.drugTimeDao = drugTimeDao;
+        this.drugDbDao = drugDbDao;
+        this.definedTimeDao = definedTimeDao;
     }
 
     @Override
-    public io.reactivex.Observable<Drug> getDrugByEan(String ean) {
+    public io.reactivex.Flowable<Drug> getDrugByEan(String ean) {
         if(isNewBarcodeScanned(ean) && isEanValid(ean)) {
 
-            Observable<Drug> result = drugRestInterface.getDrugByEan(ean)
+            Flowable<Drug> result = drugRestInterface.getDrugByEan(ean)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
             currentEan = ean;
@@ -38,13 +50,20 @@ public class DrugRepostioryImpl implements DrugRepository {
             return result;
         }
 
-        return io.reactivex.Observable.empty();
+        return io.reactivex.Flowable.empty();
 
     }
 
     @Override
     public List<Drug> getDrugListByName(String name) {
         return null;
+    }
+
+    @Override
+    public Single<List<DefinedTime>> getDefinedTimes() {
+        return definedTimeDao.getAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
 

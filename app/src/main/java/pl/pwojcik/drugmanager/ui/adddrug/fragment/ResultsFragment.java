@@ -1,25 +1,34 @@
-package pl.pwojcik.drugmanager.ui.adddrug;
+package pl.pwojcik.drugmanager.ui.adddrug.fragment;
 
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
+import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
+import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ResultsFragment extends Fragment {
+public class ResultsFragment extends Fragment implements DefinedTimeAdapter.SwitchChangeCallback {
 
     @BindView(R.id.tvDetectedDrugName)
     TextView tvDetectedDrugName;
@@ -29,6 +38,9 @@ public class ResultsFragment extends Fragment {
     TextView tvDetectedDrugProducer;
     @BindView(R.id.tvUsageType)
     TextView tvUsageType;
+    @BindView(R.id.rvDefinedTimes)
+    RecyclerView rvDefinedTimes;
+    private DefinedTimeAdapter definedTimeAdapter;
 
 
     private DrugViewModel drugViewModel;
@@ -36,28 +48,38 @@ public class ResultsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        definedTimeAdapter = new DefinedTimeAdapter();
+        definedTimeAdapter.setSwitchChangeCallback(this);
+
+
         drugViewModel = ViewModelProviders.of(getActivity()).get(DrugViewModel.class);
-        drugViewModel.getData().observe(this, drug -> {
+        drugViewModel.getDefinedTimesData().observe(this, definedTimes -> {
+            definedTimeAdapter.setDefinedTimes(definedTimes);
+            definedTimeAdapter.notifyDataSetChanged();
+        });
+        drugViewModel.getDrugData().observe(this, drug -> {
             if (drug != null) {
                 tvDetectedDrugName.setText(drug.getName());
                 tvDetectedDrugProducer.setText(drug.getProducer());
                 tvUsageType.setText(drug.getUsageType());
-
             }
         });
         View view = inflater.inflate(R.layout.fragment_results, container, false);
         ButterKnife.bind(this, view);
+
+        rvDefinedTimes.setAdapter(definedTimeAdapter);
+        rvDefinedTimes.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
 
     @OnClick(R.id.btnAddDrug)
     public void onBtnAddDrugClicked() {
-        System.out.println("Btn onBtnAddDrugClicked");
-        AlarmHelper alarmHelper = new AlarmHelper(getContext());
-        alarmHelper.setAlarmForTimeRepeating(19,51,0,9,0);
-        alarmHelper.cancelAlarm(9);
 
+    }
 
-
+    @Override
+    public void onCheckedChangedCallback(long definedTimeId, boolean isSelected) {
+        System.out.println("checkChanged definedTimeId"+definedTimeId+" isSelected "+isSelected);
     }
 }

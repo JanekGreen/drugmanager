@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="pl.pwojcik.drugmanager.ui.adddrug.AddByBarcodeFragment">
+    tools:context="pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByBarcodeFragment">
 
         <SurfaceView
             android:id="@+id/svCameraPreview"

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pl.pwojcik.drugmanager.ui.adddrug.AddByBarcodeFragment">
+    tools:context="pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByBarcodeFragment">
 
     <TextView
         android:layout_width="match_parent"

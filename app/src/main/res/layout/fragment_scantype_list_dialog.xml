@@ -7,5 +7,5 @@
     android:clipToPadding="false"
     android:paddingBottom="@dimen/list_item_spacing_half"
     android:paddingTop="@dimen/list_item_spacing_half"
-    tools:context="pl.pwojcik.drugmanager.ui.adddrug.SearchTypeListDialogFragment"
+    tools:context="pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment"
     tools:listitem="@layout/fragment_scantype_list_dialog_item" />

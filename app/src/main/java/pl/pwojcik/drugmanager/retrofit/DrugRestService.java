@@ -1,4 +1,4 @@
-package pl.pwojcik.drugmanager.model.retrofit;
+package pl.pwojcik.drugmanager.retrofit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

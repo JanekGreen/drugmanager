@@ -6,6 +6,8 @@ import java.util.List;
 
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 
 /**
@@ -13,6 +15,7 @@ import pl.pwojcik.drugmanager.model.restEntity.Drug;
  */
 
 public interface DrugRepository {
-    io.reactivex.Observable<Drug> getDrugByEan(String ean);
+    io.reactivex.Flowable<Drug> getDrugByEan(String ean);
     List<Drug> getDrugListByName(String name);
+    Single<List<DefinedTime>> getDefinedTimes();
 }

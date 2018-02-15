@@ -2,18 +2,12 @@ package pl.pwojcik.drugmanager.ui.druglist;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
-import pl.pwojcik.drugmanager.ui.adddrug.SearchTypeListDialogFragment;
+import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pwojcik.pl.archcomponentstestproject.R;
 
