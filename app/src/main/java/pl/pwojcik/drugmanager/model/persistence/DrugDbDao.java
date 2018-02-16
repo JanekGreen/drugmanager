@@ -26,6 +26,12 @@ public interface DrugDbDao {
     @Query("SELECT * from drugs where id in (:ids)")
     Maybe<List<DrugDb>> getDrugsForIds(List<Long> ids);
 
+    @Query("SELECT count (*) from drugs where drugs.name = :name")
+    int drugCountInLocalDatabase(String name);
+
+    @Query("SELECT id from drugs where drugs.name = :name")
+    Long getDrugIdForName(String name);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      long insertDrug(DrugDb drugDb);
 

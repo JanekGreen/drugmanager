@@ -20,9 +20,15 @@ public class DrugTime {
     @ColumnInfo(name = "id")
     private long id;
     @ColumnInfo(name = "drug_id")
-    private int drugId;
+    private long drugId;
     @ColumnInfo(name = "time_id")
-    private int time_id;
+    private long time_id;
+
+    public DrugTime(long drugId, long time_id) {
+        this.drugId = drugId;
+        this.time_id = time_id;
+    }
+    public DrugTime(){}
 
     public long getId() {
         return id;
@@ -32,19 +38,19 @@ public class DrugTime {
         this.id = id;
     }
 
-    public int getDrugId() {
+    public long getDrugId() {
         return drugId;
     }
 
-    public void setDrugId(int drugId) {
+    public void setDrugId(long drugId) {
         this.drugId = drugId;
     }
 
-    public int getTime_id() {
+    public long getTime_id() {
         return time_id;
     }
 
-    public void setTime_id(int time_id) {
+    public void setTime_id(long time_id) {
         this.time_id = time_id;
     }
 }

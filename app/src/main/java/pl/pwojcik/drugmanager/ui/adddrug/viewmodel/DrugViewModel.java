@@ -6,10 +6,12 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import java.util.HashSet;
 import java.util.List;
 
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.retrofit.DrugRestService;
 import pl.pwojcik.drugmanager.repository.DrugRepository;
@@ -23,8 +25,8 @@ public class DrugViewModel extends AndroidViewModel {
 
     private DrugRepository drugRepository;
     private MutableLiveData<Drug> drugLiveData = new MutableLiveData<>();
-    MutableLiveData<List<DefinedTime>> definedTimeLiveData = new MutableLiveData<>();
-
+    private MutableLiveData<List<DefinedTime>> definedTimeLiveData = new MutableLiveData<>();
+    private HashSet<Long> selectedTimesIds;
 
     public DrugViewModel(@NonNull Application application) {
         super(application);
@@ -32,6 +34,7 @@ public class DrugViewModel extends AndroidViewModel {
                 DrugmanagerApplication.getInstance(application).getDrugTimeDao(), DrugmanagerApplication.getInstance(application).getDrugDbDao(),
                 DrugmanagerApplication.getInstance(application).getDefinedTimesDao());
 
+        selectedTimesIds = new HashSet<>();
         drugLiveData.setValue(null);
     }
 
@@ -51,16 +54,35 @@ public class DrugViewModel extends AndroidViewModel {
     public MutableLiveData<Drug> getDrugData() {
         return drugLiveData;
     }
-    public MutableLiveData<List<DefinedTime>> getDefinedTimesData() {
-            drugRepository
-                    .getDefinedTimes()
-                    .subscribe(definedTimes -> definedTimeLiveData.setValue(definedTimes),
-                            throwable ->{
-                                System.err.println(throwable.getMessage());
-                                Toast.makeText(getApplication().getApplicationContext(),
-                                        throwable.getMessage(), Toast.LENGTH_LONG).show();
 
-                            });
+    public MutableLiveData<List<DefinedTime>> getDefinedTimesData() {
+        drugRepository
+                .getDefinedTimes()
+                .subscribe(definedTimes -> definedTimeLiveData.setValue(definedTimes),
+                        throwable -> {
+                            System.err.println(throwable.getMessage());
+                            Toast.makeText(getApplication().getApplicationContext(),
+                                    throwable.getMessage(), Toast.LENGTH_LONG).show();
+
+                        });
         return definedTimeLiveData;
     }
+
+    public void addSelectedTimeForDrug(long definedTimeId, boolean isSelected){
+        if(!isSelected){
+            if(selectedTimesIds.contains(definedTimeId)) {
+                selectedTimesIds.remove(definedTimeId);
+            }
+        } else {
+            selectedTimesIds.add(definedTimeId);
+        }
+    }
+
+    public void saveDrugTimeData(){
+        drugRepository
+                .saveDrugTimeData(selectedTimesIds,
+                        TypeConverter.makeDrugDatabaseEntity(drugLiveData.getValue()));
+
+    }
+
 }

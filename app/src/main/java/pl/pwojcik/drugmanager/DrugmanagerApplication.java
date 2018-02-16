@@ -24,7 +24,7 @@ public class DrugmanagerApplication extends Application {
         super.onCreate();
         if(db==null)
             getInstance(getApplicationContext());
-      /*  DefinedTime definedTime = new DefinedTime();
+/*        DefinedTime definedTime = new DefinedTime();
         definedTime.setName("Rano");
         definedTime.setTime("8:00");
         definedTime.setRequestCode(1);

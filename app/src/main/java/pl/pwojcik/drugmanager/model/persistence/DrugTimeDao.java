@@ -22,6 +22,6 @@ public interface DrugTimeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDrugTime(DrugTime drugTime);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertDrugTime(DrugTime... drugTime);
+    void insertDrugTime(List<DrugTime> drugTimes);
 
 }

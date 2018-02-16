@@ -75,11 +75,12 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
 
     @OnClick(R.id.btnAddDrug)
     public void onBtnAddDrugClicked() {
-
+        drugViewModel.saveDrugTimeData();
     }
 
     @Override
     public void onCheckedChangedCallback(long definedTimeId, boolean isSelected) {
         System.out.println("checkChanged definedTimeId"+definedTimeId+" isSelected "+isSelected);
+        drugViewModel.addSelectedTimeForDrug(definedTimeId,isSelected);
     }
 }
