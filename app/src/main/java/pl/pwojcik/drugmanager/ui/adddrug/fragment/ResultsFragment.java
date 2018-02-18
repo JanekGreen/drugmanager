@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
@@ -41,7 +43,7 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
     @BindView(R.id.rvDefinedTimes)
     RecyclerView rvDefinedTimes;
     private DefinedTimeAdapter definedTimeAdapter;
-
+    private boolean blockAdding = true;
 
     private DrugViewModel drugViewModel;
 
@@ -57,6 +59,16 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
         drugViewModel.getDefinedTimesData().observe(this, definedTimes -> {
             definedTimeAdapter.setDefinedTimes(definedTimes);
             definedTimeAdapter.notifyDataSetChanged();
+        });
+        drugViewModel.getSelectedTimesIds().observe(this,selectedIds->{
+            if(selectedIds !=null) {
+                if(selectedIds.isEmpty()){
+                    blockAdding = true;
+                }else{
+                    blockAdding = false;
+                }
+                definedTimeAdapter.setDrugTimes(selectedIds.keySet());
+            }
         });
         drugViewModel.getDrugData().observe(this, drug -> {
             if (drug != null) {
@@ -75,7 +87,13 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
 
     @OnClick(R.id.btnAddDrug)
     public void onBtnAddDrugClicked() {
-        drugViewModel.saveDrugTimeData();
+        if(!blockAdding) {
+            drugViewModel.saveDrugTimeData();
+        } else{
+
+            Toast.makeText(getContext(),"Wybierz pory w jakich brać leki", Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     @Override

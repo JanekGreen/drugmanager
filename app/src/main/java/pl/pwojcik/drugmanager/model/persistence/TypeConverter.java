@@ -16,7 +16,21 @@ public class TypeConverter {
         drugDb.setFeaflet(drug.getFeaflet());
         drugDb.setPackQuantity(drug.getPackQuantity());
         drugDb.setProducer(drug.getProducer());
+        drugDb.setUsageType(drug.getUsageType());
         drugDb.setName(drug.getName());
         return drugDb;
+    }
+
+    public static Drug makeDrugFromDatabaseEntity(DrugDb drugDb){
+        Drug drug = new Drug();
+        drug.setActiveSubstance(drugDb.getActiveSubstance());
+        drug.setCharacteristics(drugDb.getCharacteristics());
+        drug.setDosage(drugDb.getDosage());
+        drug.setFeaflet(drugDb.getFeaflet());
+        drug.setPackQuantity(drugDb.getPackQuantity());
+        drug.setProducer(drugDb.getProducer());
+        drug.setUsageType(drugDb.getUsageType());
+        drug.setName(drugDb.getName());
+        return drug;
     }
 }

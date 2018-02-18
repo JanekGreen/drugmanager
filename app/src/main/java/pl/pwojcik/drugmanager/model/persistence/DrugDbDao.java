@@ -8,7 +8,9 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 /**
  * Created by pawel on 15.02.18.
@@ -31,6 +33,13 @@ public interface DrugDbDao {
 
     @Query("SELECT id from drugs where drugs.name = :name")
     Long getDrugIdForName(String name);
+
+    @Query("SELECT * from drugs where pack_quantity like :ean")
+    Maybe<DrugDb> geDrugByEanFromLocalDatabase(String ean);
+
+    @Query("SELECT MAX(id) as id from drugs")
+    Maybe<Long> getNextId();
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      long insertDrug(DrugDb drugDb);

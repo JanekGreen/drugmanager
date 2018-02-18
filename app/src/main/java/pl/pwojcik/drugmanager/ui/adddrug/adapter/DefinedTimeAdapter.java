@@ -9,12 +9,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DrugTime;
+import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -23,6 +27,7 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.DefinedTimeViewHolder> {
    private List<DefinedTime> definedTimes;
+   private Set<Long> drugTimes;
    private SwitchChangeCallback switchChangeCallback;
 
 
@@ -31,6 +36,10 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
     }
     public DefinedTimeAdapter(){
 
+    }
+
+    public void setDrugTimes(Set<Long> drugTimes) {
+        this.drugTimes = drugTimes;
     }
 
     public void setSwitchChangeCallback(SwitchChangeCallback switchChangeCallback) {
@@ -54,8 +63,14 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
 
     @Override
     public void onBindViewHolder(DefinedTimeViewHolder holder, int position) {
-        holder.tvDefinedTime.setText(definedTimes.get(position).getName());
-        holder.tvTime.setText(definedTimes.get(position).getTime());
+
+        DefinedTime definedTime = definedTimes.get(position);
+        holder.tvDefinedTime.setText(definedTime.getName());
+        holder.tvTime.setText(definedTime.getTime());
+        if(drugTimes.contains(definedTime.getId())){
+          holder.swSelected.setChecked(true);
+
+        }
     }
 
     @Override

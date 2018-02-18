@@ -6,11 +6,16 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.retrofit.DrugRestService;
@@ -26,7 +31,7 @@ public class DrugViewModel extends AndroidViewModel {
     private DrugRepository drugRepository;
     private MutableLiveData<Drug> drugLiveData = new MutableLiveData<>();
     private MutableLiveData<List<DefinedTime>> definedTimeLiveData = new MutableLiveData<>();
-    private HashSet<Long> selectedTimesIds;
+    private MutableLiveData<HashMap<Long,DrugTime>> selectedTimesIds;
 
     public DrugViewModel(@NonNull Application application) {
         super(application);
@@ -34,7 +39,8 @@ public class DrugViewModel extends AndroidViewModel {
                 DrugmanagerApplication.getInstance(application).getDrugTimeDao(), DrugmanagerApplication.getInstance(application).getDrugDbDao(),
                 DrugmanagerApplication.getInstance(application).getDefinedTimesDao());
 
-        selectedTimesIds = new HashSet<>();
+        selectedTimesIds = new MutableLiveData<>();
+        selectedTimesIds.setValue(new HashMap<>());
         drugLiveData.setValue(null);
     }
 
@@ -70,19 +76,32 @@ public class DrugViewModel extends AndroidViewModel {
 
     public void addSelectedTimeForDrug(long definedTimeId, boolean isSelected){
         if(!isSelected){
-            if(selectedTimesIds.contains(definedTimeId)) {
-                selectedTimesIds.remove(definedTimeId);
+            if(selectedTimesIds.getValue()!= null && selectedTimesIds.getValue().containsKey(definedTimeId)) {
+               HashMap<Long,DrugTime> tmp = selectedTimesIds.getValue();
+               tmp.remove(definedTimeId);
+               selectedTimesIds.setValue(tmp);
             }
         } else {
-            selectedTimesIds.add(definedTimeId);
+            DrugTime drugTime = new DrugTime();
+            drugTime.setTime_id(definedTimeId);
+
+            assert selectedTimesIds.getValue()!=null;
+            HashMap<Long,DrugTime> tmp = selectedTimesIds.getValue();
+            tmp.put(definedTimeId,drugTime);
+            getSelectedTimesIds().setValue(tmp);
+
         }
     }
 
     public void saveDrugTimeData(){
         drugRepository
-                .saveDrugTimeData(selectedTimesIds,
+                .saveNewDrugTimeData(selectedTimesIds.getValue(),
                         TypeConverter.makeDrugDatabaseEntity(drugLiveData.getValue()));
 
+    }
+
+    public MutableLiveData<HashMap<Long,DrugTime>> getSelectedTimesIds(){
+        return selectedTimesIds;
     }
 
 }
