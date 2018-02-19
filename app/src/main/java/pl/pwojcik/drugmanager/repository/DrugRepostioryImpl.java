@@ -73,18 +73,22 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public void saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
+    public io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
 
 
-        io.reactivex.Observable.just(drugDb)
+        return io.reactivex.Observable.just(drugDb)
                 .subscribeOn(Schedulers.io())
                 .flatMap(drug -> io.reactivex.Observable.just(drugDbDao.insertDrug(drugDb)))
                 .zipWith(io.reactivex.Observable.just(selectedIds.values()), (drugId, drugTimes) -> {
                     drugTimes.forEach(drugTime -> drugTime.setDrugId(drugId));
                     return drugTimes;
                 })
-                .doOnNext(drugTimes -> drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes)))
-                .subscribe();
+                .doOnNext(drugTimes -> {
+                    drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes));
+                    //todo update definedTimes set alarms
+                });
+
+
     }
 
 }

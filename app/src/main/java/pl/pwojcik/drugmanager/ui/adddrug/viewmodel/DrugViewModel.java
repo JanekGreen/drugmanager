@@ -6,6 +6,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -89,8 +90,8 @@ public class DrugViewModel extends AndroidViewModel {
         }
     }
 
-    public void saveDrugTimeData(){
-        drugRepository
+    public io.reactivex.Observable<Collection<DrugTime>> saveDrugTimeData(){
+      return  drugRepository
                 .saveNewDrugTimeData(selectedTimesIds.getValue(),
                         TypeConverter.makeDrugDatabaseEntity(drugLiveData.getValue()));
 

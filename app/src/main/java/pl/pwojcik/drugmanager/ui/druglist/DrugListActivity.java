@@ -64,7 +64,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-              String selectedTime = spinner.getSelectedItem().toString();
+              String selectedTime = spinner.getSelectedItem().toString()
+                      .substring(0,spinner.getSelectedItem().toString().indexOf(" "));
               Bundle args = new Bundle();
                 args.putString("SELECTED_TIME", selectedTime);
                 Fragment fragment = DrugListFragment.newInstance();

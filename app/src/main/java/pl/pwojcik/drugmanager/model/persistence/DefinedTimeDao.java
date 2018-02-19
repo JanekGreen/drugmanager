@@ -20,10 +20,15 @@ public interface DefinedTimeDao {
     @Query("SELECT * from defined_times")
     Maybe<List<DefinedTime>> getAll();
 
+    @Query("SELECT id from defined_times where defined_times.name = :name")
+    Maybe<Long> getDefinedTimeIdForName(String name);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDefinedTime(DefinedTime definedTime);
+
     @Insert
     void insertDefinedTimes(DefinedTime... definedTimes);
+
     @Delete
     void deleteDefinedTime(DefinedTime definedTime);
 

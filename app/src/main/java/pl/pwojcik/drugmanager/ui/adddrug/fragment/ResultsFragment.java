@@ -3,6 +3,7 @@ package pl.pwojcik.drugmanager.ui.adddrug.fragment;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -60,11 +62,11 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
             definedTimeAdapter.setDefinedTimes(definedTimes);
             definedTimeAdapter.notifyDataSetChanged();
         });
-        drugViewModel.getSelectedTimesIds().observe(this,selectedIds->{
-            if(selectedIds !=null) {
-                if(selectedIds.isEmpty()){
+        drugViewModel.getSelectedTimesIds().observe(this, selectedIds -> {
+            if (selectedIds != null) {
+                if (selectedIds.isEmpty()) {
                     blockAdding = true;
-                }else{
+                } else {
                     blockAdding = false;
                 }
                 definedTimeAdapter.setDrugTimes(selectedIds.keySet());
@@ -87,18 +89,25 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
 
     @OnClick(R.id.btnAddDrug)
     public void onBtnAddDrugClicked() {
-        if(!blockAdding) {
-            drugViewModel.saveDrugTimeData();
-        } else{
+        if (!blockAdding) {
+            drugViewModel.saveDrugTimeData()
+                    .doAfterTerminate(() -> {
+                        Intent intent = new Intent(getContext(), DrugListActivity.class);
+                        startActivity(intent);
+                    })
+                    .subscribe(collection -> System.out.print("Saved"),
+                            throwable ->Toast.makeText(getContext(),throwable.getMessage(),Toast.LENGTH_SHORT).show());
 
-            Toast.makeText(getContext(),"Wybierz pory w jakich brać leki", Toast.LENGTH_SHORT)
+        } else {
+
+            Toast.makeText(getContext(), "Wybierz pory w jakich brać leki", Toast.LENGTH_SHORT)
                     .show();
         }
     }
 
     @Override
     public void onCheckedChangedCallback(long definedTimeId, boolean isSelected) {
-        System.out.println("checkChanged definedTimeId"+definedTimeId+" isSelected "+isSelected);
-        drugViewModel.addSelectedTimeForDrug(definedTimeId,isSelected);
+        System.out.println("checkChanged definedTimeId" + definedTimeId + " isSelected " + isSelected);
+        drugViewModel.addSelectedTimeForDrug(definedTimeId, isSelected);
     }
 }

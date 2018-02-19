@@ -21,7 +21,7 @@ import pwojcik.pl.archcomponentstestproject.R;
 /**
  * Created by pawel on 19.02.18.
  */
-public class DrugListFragment extends Fragment {
+public class DrugListFragment extends Fragment{
 
     @BindView(R.id.rvDrugList)
     RecyclerView rvDrugList;
@@ -52,7 +52,7 @@ public class DrugListFragment extends Fragment {
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         drugListViewModel.getDrugsForTime(selectedTime)
                 .subscribe(drugsForTime -> {
-                    rvDrugList.setAdapter(new DrugListAdapter(getContext(),drugsForTime));
+                    rvDrugList.setAdapter(new DrugListAdapter(drugsForTime));
 
                         },
                         e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
@@ -60,4 +60,5 @@ public class DrugListFragment extends Fragment {
 
 
     }
+
 }

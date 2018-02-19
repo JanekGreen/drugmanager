@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.repository;
 
 import android.arch.lifecycle.LiveData;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,5 +23,5 @@ public interface DrugRepository {
     io.reactivex.Flowable<Drug> getDrugByEan(String ean);
     List<Drug> getDrugListByName(String name);
     Maybe<List<DefinedTime>> getDefinedTimes();
-    void saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
+    io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
 }

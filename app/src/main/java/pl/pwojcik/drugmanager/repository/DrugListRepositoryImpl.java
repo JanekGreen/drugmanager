@@ -32,7 +32,7 @@ public class DrugListRepositoryImpl implements DrugListRepository {
                 .subscribeOn(Schedulers.io())
                 .flatMap(definedTimes ->
                     Maybe.just(definedTimes.stream()
-                            .map(DefinedTime::getName)
+                            .map(definedTime ->definedTime.getName()+" - "+definedTime.getTime())
                             .collect(Collectors.toList()))
                 )
                 .observeOn(AndroidSchedulers.mainThread());

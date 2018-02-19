@@ -24,8 +24,7 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugListViewHolder> {
    private List<DrugDb> drugsForTime;
-   private Context context;
-
+    
     @Override
     public DrugListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -33,9 +32,8 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
         return new DrugListViewHolder(itemView);
     }
 
-    public DrugListAdapter(Context context, List<DrugDb> drugsForTime) {
+    public DrugListAdapter(List<DrugDb> drugsForTime) {
         this.drugsForTime = drugsForTime;
-        this.context = context;
     }
 
     @Override
