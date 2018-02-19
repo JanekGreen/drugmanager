@@ -113,4 +113,9 @@ public class DrugDb {
     public void setNote(String note) {
         this.note = note;
     }
+
+    @Override
+    public String toString() {
+        return name+" "+producer+" "+usageType+" "+dosage+" "+packQuantity+" "+activeSubstance;
+    }
 }

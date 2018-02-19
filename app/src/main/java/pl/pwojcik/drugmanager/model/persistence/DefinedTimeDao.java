@@ -8,6 +8,7 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -17,7 +18,7 @@ import io.reactivex.Single;
 @Dao
 public interface DefinedTimeDao {
     @Query("SELECT * from defined_times")
-    Single<List<DefinedTime>> getAll();
+    Maybe<List<DefinedTime>> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDefinedTime(DefinedTime definedTime);

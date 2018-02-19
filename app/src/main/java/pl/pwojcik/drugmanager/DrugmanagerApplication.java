@@ -4,12 +4,10 @@ import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import pl.pwojcik.drugmanager.model.persistence.AppDatabase;
-import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 
 /**
  * Created by pawel on 01.02.18.
@@ -23,7 +21,7 @@ public class DrugmanagerApplication extends Application {
     public void onCreate() {
         super.onCreate();
         if(db==null)
-            getInstance(getApplicationContext());
+            getDbInstance(getApplicationContext());
         /*
         DefinedTime definedTime = new DefinedTime();
         definedTime.setName("Rano");
@@ -37,7 +35,7 @@ public class DrugmanagerApplication extends Application {
 
     }
 
-    public static AppDatabase getInstance(Context context) {
+    public static AppDatabase getDbInstance(Context context) {
         if (db == null) {
             db = Room
                     .databaseBuilder(context, AppDatabase.class, "alarmmanagerDB")

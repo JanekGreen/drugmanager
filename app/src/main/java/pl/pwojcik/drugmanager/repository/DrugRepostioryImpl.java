@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Observable;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
@@ -65,7 +66,7 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public Single<List<DefinedTime>> getDefinedTimes() {
+    public Maybe<List<DefinedTime>> getDefinedTimes() {
         return definedTimeDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

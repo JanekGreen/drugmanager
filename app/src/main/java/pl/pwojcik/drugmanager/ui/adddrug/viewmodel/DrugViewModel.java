@@ -6,13 +6,9 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
@@ -36,8 +32,8 @@ public class DrugViewModel extends AndroidViewModel {
     public DrugViewModel(@NonNull Application application) {
         super(application);
         drugRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService(),
-                DrugmanagerApplication.getInstance(application).getDrugTimeDao(), DrugmanagerApplication.getInstance(application).getDrugDbDao(),
-                DrugmanagerApplication.getInstance(application).getDefinedTimesDao());
+                DrugmanagerApplication.getDbInstance(application).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(application).getDrugDbDao(),
+                DrugmanagerApplication.getDbInstance(application).getDefinedTimesDao());
 
         selectedTimesIds = new MutableLiveData<>();
         selectedTimesIds.setValue(new HashMap<>());

@@ -14,19 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name="pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver"/>
+        <receiver android:name="pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver" />
+
+        <activity
+            android:name="pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity"
+            android:label="@string/title_activity_get_drug_info" />
         <activity
             android:name="pl.pwojcik.drugmanager.ui.druglist.DrugListActivity"
-            android:label="@string/title_activity_main_drugmanager">
+            android:label="@string/title_activity_drug_list2"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity"
-            android:label="@string/title_activity_get_drug_info"></activity>
     </application>
 
 </manifest>

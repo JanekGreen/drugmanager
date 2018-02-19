@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
+    android:layout_weight="1.0"
+    android:layout_margin="@dimen/list_item_spacing"
+    android:orientation="horizontal">
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/initialLetterIcon"
+        android:layout_width="@dimen/letter_icon_size"
+        android:layout_height="@dimen/letter_icon_size"
+        app:mli_letter_color="@color/colorWhite"
+        app:mli_shape_color="@color/colorPrimaryDark"
+        app:mli_shape_type="circle" />
+
+    <LinearLayout
+        android:id="@+id/llContent"
+        android:layout_width="match_parent"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvDrugName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:text="Nazwa leku" />
+
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:text="Detaliczne informacje na temat leku" />
+    </LinearLayout>
+
+</LinearLayout>

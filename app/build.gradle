@@ -63,5 +63,7 @@ dependencies {
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.0-alpha1'
     // ReactiveStreams support for LiveData
     implementation 'android.arch.lifecycle:reactivestreams:1.1.0'
+    // material letter icon
+    compile 'com.github.ivbaranov:materiallettericon:0.2.3'
     testCompile 'junit:junit:4.12'
 }
