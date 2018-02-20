@@ -13,6 +13,7 @@
         android:id="@+id/initialLetterIcon"
         android:layout_width="@dimen/letter_icon_size"
         android:layout_height="@dimen/letter_icon_size"
+        app:mli_letters_number="3"
         app:mli_letter_color="@color/colorWhite"
         app:mli_shape_color="@color/colorPrimaryDark"
         app:mli_shape_type="circle" />

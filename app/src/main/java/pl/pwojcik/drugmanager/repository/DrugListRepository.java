@@ -13,4 +13,7 @@ import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 public interface DrugListRepository {
     Maybe<List<String>> getAllDefinedTimes();
     Maybe<List<DrugDb>> getDrugsForTime(String timeName);
+    Maybe<Long> getDefinedTimeIdForName(String name);
+    void removeDrugTime(long definedTimeId, long drugId);
+    void restoreDrugTimeItem(long drugId, long drugTimeId);
 }

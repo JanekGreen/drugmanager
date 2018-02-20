@@ -23,5 +23,8 @@ public interface DrugTimeDao {
     void insertDrugTime(DrugTime drugTime);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDrugTime(List<DrugTime> drugTimes);
+    @Query("DELETE from drug_time where drug_id =:drugId and time_id= :drugTimeId")
+    void removeDrugTime(long drugId, long drugTimeId);
+
 
 }

@@ -51,12 +51,24 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
 
     }
 
+    public DrugDb removeItem(int position){
+        DrugDb removedItem = drugsForTime.remove(position);
+        notifyItemRemoved(position);
+        return  removedItem;
+    }
+
+    public void restoreItem(DrugDb item, int position){
+        drugsForTime.add(position, item);
+        notifyItemInserted(position);
+    }
+
+
     @Override
     public int getItemCount() {
         return drugsForTime != null? drugsForTime.size(): 0;
     }
 
-    class DrugListViewHolder extends RecyclerView.ViewHolder {
+    public class DrugListViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.tvDrugName)
         TextView tvDrugName;
