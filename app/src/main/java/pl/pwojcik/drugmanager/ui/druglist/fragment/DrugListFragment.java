@@ -17,11 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
+import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
@@ -30,7 +31,7 @@ import pwojcik.pl.archcomponentstestproject.R;
 /**
  * Created by pawel on 19.02.18.
  */
-public class DrugListFragment extends Fragment implements DrugListAdapterTouchHelper.RecyclerItemTouchHelperListener {
+public class DrugListFragment extends Fragment implements DrugListAdapterTouchHelper.RecyclerItemTouchHelperListener, DrugListAdapter.OnDrugListAdapterItemClick {
 
     @BindView(R.id.rvDrugList)
     RecyclerView rvDrugList;
@@ -39,6 +40,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
 
     private DrugListViewModel drugListViewModel;
     private String selectedTimeName;
+    private ArrayList<DrugDb> drugsForTimeGlobal;
 
     public DrugListFragment() {
     }
@@ -68,7 +70,10 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
         drugListViewModel.getDrugsForTime(selectedTimeName)
                 .subscribe(drugsForTime -> {
-                            rvDrugList.setAdapter(new DrugListAdapter(drugsForTime));
+                            drugsForTimeGlobal = new ArrayList<>(drugsForTime);
+                            DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
+                            rvDrugList.setAdapter(drugListAdapter);
+                            drugListAdapter.setOnDrugListAdapterItemClick(this);
 
                         },
                         e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
@@ -83,11 +88,12 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
             DrugListAdapter drugListAdapter = (DrugListAdapter) rvDrugList.getAdapter();
             DrugDb removedItem = drugListAdapter.removeItem(position);
             long drugId = removedItem.getId();
-            HashMap<Long, Long> drugIdDefinedTimeIdPair = new HashMap<>();
+            ArrayList<DrugTime> drugTime_ = new ArrayList<>();
             drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
                     .doOnSuccess(definedTimeId -> {
+                        drugListViewModel.getDrugTime(drugId,definedTimeId)
+                                .subscribe(drugTime_::add);
                         drugListViewModel.removeDrugTime(definedTimeId, drugId);
-                        drugIdDefinedTimeIdPair.put(drugId, definedTimeId);
                     })
                     .subscribe();
             Snackbar snackbar = Snackbar
@@ -95,7 +101,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
             snackbar.setAction("COFNIJ!", view -> {
 
                 drugListAdapter.restoreItem(removedItem, position);
-                drugListViewModel.restoreDrugTime(drugId, drugIdDefinedTimeIdPair.get(drugId));
+                drugListViewModel.restoreDrugTime(drugTime_.get(0));
             });
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();
@@ -103,4 +109,8 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
 
     }
 
+    @Override
+    public void onAdapterItemClick(int position) {
+
+    }
 }

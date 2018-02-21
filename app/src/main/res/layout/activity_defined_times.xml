@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/activity_vertical_margin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    tools:context="pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity">
+
+    <TextView
+        android:id="@+id/tvDefinedTimesTitle"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="0.1"
+        android:text="Pory przyjmowania leków"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_weight="0.8"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/rvDefinedTimes"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddDefinedTimes"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_weight="0.1"
+        android:src="@mipmap/ic_add_white_18dp"
+        app:backgroundTint="@color/colorPrimaryDark"/>
+</LinearLayout>

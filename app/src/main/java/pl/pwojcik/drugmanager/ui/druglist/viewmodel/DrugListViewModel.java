@@ -10,6 +10,7 @@ import java.util.List;
 import io.reactivex.Maybe;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
+import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.repository.DrugListRepository;
 import pl.pwojcik.drugmanager.repository.DrugListRepositoryImpl;
 
@@ -52,7 +53,10 @@ public class DrugListViewModel extends AndroidViewModel {
         drugListRepository.removeDrugTime(definedTimeId,drugId);
     }
 
-    public void restoreDrugTime(long drugId, long drugTimeId) {
-        drugListRepository.restoreDrugTimeItem(drugId,drugTimeId);
+    public void restoreDrugTime(DrugTime drugTime) {
+        drugListRepository.restoreDrugTimeItem(drugTime);
+    }
+    public Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId) {
+       return drugListRepository.getDrugTime(drugId,definedTimeId);
     }
 }

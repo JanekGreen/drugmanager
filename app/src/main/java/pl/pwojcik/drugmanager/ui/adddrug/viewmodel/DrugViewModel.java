@@ -107,4 +107,8 @@ public class DrugViewModel extends AndroidViewModel {
         return drugRepository.updateSaveAlarms(context);
     }
 
+    public Maybe<DefinedTime> insertDefinedTime(DefinedTime definedTime){
+       return drugRepository.insertDefineTime(definedTime);
+    }
+
 }

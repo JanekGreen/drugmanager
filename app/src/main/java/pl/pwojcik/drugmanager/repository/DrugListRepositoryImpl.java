@@ -67,13 +67,19 @@ public class DrugListRepositoryImpl implements DrugListRepository {
     }
 
     @Override
-    public void restoreDrugTimeItem(long drugId, long drugTimeId) {
-        DrugTime dt = new DrugTime(drugId,drugTimeId);
-        io.reactivex.Observable.just(dt)
+    public void restoreDrugTimeItem(DrugTime drugTime) {
+        io.reactivex.Observable.just(drugTime)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(dt_ ->drugTimeDao.insertDrugTime(dt_))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
-
     }
+
+    @Override
+    public Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId) {
+        return drugTimeDao.getDrugTimeForDrug(drugId,definedTimeId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

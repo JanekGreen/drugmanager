@@ -25,6 +25,8 @@ public interface DrugTimeDao {
     void insertDrugTime(List<DrugTime> drugTimes);
     @Query("DELETE from drug_time where drug_id =:drugId and time_id= :drugTimeId")
     void removeDrugTime(long drugId, long drugTimeId);
+    @Query("SELECT * from drug_time where drug_id=:drugId and time_id=:timeId")
+    Maybe<DrugTime> getDrugTimeForDrug(long drugId, long timeId);
 
 
 }

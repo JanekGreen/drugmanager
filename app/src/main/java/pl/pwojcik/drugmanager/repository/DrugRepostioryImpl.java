@@ -112,6 +112,14 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @Override
+    public Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime) {
+        return  Maybe.just(definedTime)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(definedTime1 -> definedTimeDao.insertDefinedTime(definedTime))
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 }
 
 

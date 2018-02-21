@@ -56,7 +56,6 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
         definedTimeAdapter = new DefinedTimeAdapter();
         definedTimeAdapter.setSwitchChangeCallback(this);
 
-
         drugViewModel = ViewModelProviders.of(getActivity()).get(DrugViewModel.class);
         drugViewModel.getDefinedTimesData().observe(this, definedTimes -> {
             definedTimeAdapter.setDefinedTimes(definedTimes);

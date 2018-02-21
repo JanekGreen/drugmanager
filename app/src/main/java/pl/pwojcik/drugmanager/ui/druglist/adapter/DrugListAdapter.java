@@ -1,6 +1,5 @@
 package pl.pwojcik.drugmanager.ui.druglist.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +13,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
-import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -24,7 +23,17 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugListViewHolder> {
    private List<DrugDb> drugsForTime;
-    
+   private OnDrugListAdapterItemClick onDrugListAdapterItemClick;
+
+
+    public interface OnDrugListAdapterItemClick {
+       void onAdapterItemClick(int position);
+    }
+
+    public void setOnDrugListAdapterItemClick(OnDrugListAdapterItemClick onDrugListAdapterItemClick) {
+        this.onDrugListAdapterItemClick = onDrugListAdapterItemClick;
+    }
+
     @Override
     public DrugListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -80,6 +89,11 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
         public DrugListViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @OnClick(R.id.adapter_item)
+        void onAdapterItemClick(){
+            onDrugListAdapterItemClick.onAdapterItemClick(getAdapterPosition());
         }
     }
 }

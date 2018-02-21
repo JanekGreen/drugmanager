@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="pl.pwojcik.drugmanager.ui.druglist.DrugListActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/set_defined_times"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/action_set_defined_times"
         app:showAsAction="never" />
 </menu>
