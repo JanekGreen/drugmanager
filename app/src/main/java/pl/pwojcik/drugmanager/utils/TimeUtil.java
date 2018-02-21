@@ -24,6 +24,10 @@ public class TimeUtil {
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE,minute);
+
+        if(calendar.before(Calendar.getInstance())){
+            calendar.add(Calendar.DATE,1);
+        }
         return calendar.getTimeInMillis();
     }
     public static long getSpecificTime(int hour){

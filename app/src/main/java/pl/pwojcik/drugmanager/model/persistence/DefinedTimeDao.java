@@ -20,6 +20,9 @@ public interface DefinedTimeDao {
     @Query("SELECT * from defined_times")
     Maybe<List<DefinedTime>> getAll();
 
+    @Query("select * from defined_times where id in (select distinct time_id from drug_time)")
+    Maybe<List<DefinedTime>> getDefinedTimesForActiveDrugs();
+
     @Query("SELECT id from defined_times where defined_times.name = :name")
     Maybe<Long> getDefinedTimeIdForName(String name);
 

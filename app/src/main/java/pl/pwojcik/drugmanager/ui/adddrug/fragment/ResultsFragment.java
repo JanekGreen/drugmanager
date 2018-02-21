@@ -92,11 +92,15 @@ public class ResultsFragment extends Fragment implements DefinedTimeAdapter.Swit
         if (!blockAdding) {
             drugViewModel.saveDrugTimeData()
                     .doAfterTerminate(() -> {
+
                         Intent intent = new Intent(getContext(), DrugListActivity.class);
                         startActivity(intent);
+
                     })
-                    .subscribe(collection -> System.out.print("Saved"),
-                            throwable ->Toast.makeText(getContext(),throwable.getMessage(),Toast.LENGTH_SHORT).show());
+                    .subscribe(collection ->  drugViewModel.updateOrSetAlarms(getContext())
+                            .subscribe(definedTimes -> System.out.println("Alarms have been set "+definedTimes.size())
+                            ,Throwable::printStackTrace)
+                            , throwable -> Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show());
 
         } else {
 

@@ -1,15 +1,9 @@
 package pl.pwojcik.drugmanager.ui.druglist.adapter;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.ActionMode;
 import android.view.View;
 
 import pwojcik.pl.archcomponentstestproject.R;
@@ -35,11 +29,12 @@ public class DrugListAdapterTouchHelper extends ItemTouchHelper.SimpleCallback {
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
-        if( dX<0 && isCurrentlyActive) {
+        if(dX <0 && isCurrentlyActive) {
 
             View itemView = viewHolder.itemView;
-            int itemHeight = itemView.getBottom() - itemView.getTop();
             Drawable deleteIcon = itemView.getResources().getDrawable(R.drawable.ic_delete_black_24dp);
+
+            int itemHeight = itemView.getBottom() - itemView.getTop();
             int intrinsicHeight = deleteIcon.getIntrinsicHeight();
             int intrinsicWidth = deleteIcon.getIntrinsicWidth();
             int deleteIconTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;

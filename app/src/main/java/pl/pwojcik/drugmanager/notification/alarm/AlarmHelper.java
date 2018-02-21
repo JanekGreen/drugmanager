@@ -63,9 +63,18 @@ public class AlarmHelper {
         alarmManager.cancel(getPendingIntent(requestCode,0));
     }
 
+    public void cancelAllAlarms(List<DefinedTime> definedTimes){
+        definedTimes.forEach(definedTime -> alarmManager.cancel(getPendingIntent(definedTime.getRequestCode(),0)));
+    }
+
     public void setOrUpdateAlarms(List<DefinedTime> definedTimes){
-
-
+        definedTimes.forEach(definedTime -> {
+            int hour,minute;
+            String hourMinuteParts[] = definedTime.getTime().split(":");
+            hour =Integer.valueOf(hourMinuteParts[0]);
+            minute =Integer.valueOf(hourMinuteParts[1]);
+            setAlarmForTimeRepeating(hour,minute,1,definedTime.getRequestCode(),0);
+        });
     }
 
 }

@@ -7,6 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 
 import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pl.pwojcik.drugmanager.utils.Constants;
@@ -16,7 +19,7 @@ import pwojcik.pl.archcomponentstestproject.R;
  * Created by pawel on 14.02.18.
  */
 
-public class AlarmBroadcastReceiver  extends BroadcastReceiver{
+public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     public void sendNotification(Context context) {
         System.out.println("Send notification...");
@@ -35,7 +38,7 @@ public class AlarmBroadcastReceiver  extends BroadcastReceiver{
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if(notificationManager == null){
+        if (notificationManager == null) {
             return;
         }
 
@@ -48,6 +51,15 @@ public class AlarmBroadcastReceiver  extends BroadcastReceiver{
                 .setLargeIcon(Icon.createWithResource(context, R.drawable.ic_info_black_24dp))
                 .addAction(action)
                 .build();
+
+
+        try {
+            Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(context, ringtone);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
 

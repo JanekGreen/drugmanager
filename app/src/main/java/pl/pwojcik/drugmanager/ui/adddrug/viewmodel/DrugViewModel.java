@@ -3,6 +3,7 @@ package pl.pwojcik.drugmanager.ui.adddrug.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Maybe;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
@@ -99,6 +101,10 @@ public class DrugViewModel extends AndroidViewModel {
 
     public MutableLiveData<HashMap<Long,DrugTime>> getSelectedTimesIds(){
         return selectedTimesIds;
+    }
+
+    public Maybe<List<DefinedTime>> updateOrSetAlarms(Context context){
+        return drugRepository.updateSaveAlarms(context);
     }
 
 }

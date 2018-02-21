@@ -1,6 +1,7 @@
 package pl.pwojcik.drugmanager.repository;
 
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,4 +25,5 @@ public interface DrugRepository {
     List<Drug> getDrugListByName(String name);
     Maybe<List<DefinedTime>> getDefinedTimes();
     io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
+    Maybe<List<DefinedTime>> updateSaveAlarms(Context context);
 }

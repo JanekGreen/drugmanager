@@ -36,9 +36,7 @@ public class DrugListViewModel extends AndroidViewModel {
 
           drugListRepository
                 .getAllDefinedTimes()
-
           .subscribe(list -> drugListLiveData.postValue(list));
-
           return drugListLiveData;
     }
 

@@ -1,5 +1,7 @@
 package pl.pwojcik.drugmanager.repository;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +14,7 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
+import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTimeDao;
@@ -20,6 +23,7 @@ import pl.pwojcik.drugmanager.model.persistence.DefinedTimeDao;
 import pl.pwojcik.drugmanager.model.persistence.DrugDbDao;
 import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
+import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.retrofit.DrugRestInterface;
 
 /**
@@ -85,10 +89,27 @@ public class DrugRepostioryImpl implements DrugRepository {
                 })
                 .doOnNext(drugTimes -> {
                     drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes));
-                    //todo update definedTimes set alarms
                 });
+    }
 
+    public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
 
+        return definedTimeDao
+                .getDefinedTimesForActiveDrugs()
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(listDefinedTimes -> {
+                    AlarmHelper alarmHelper = new AlarmHelper(context);
+                    // najpierw usuwam wszystkie
+                    definedTimeDao.getAll()
+                            .subscribeOn(Schedulers.newThread())
+                            .doOnSuccess(alarmHelper::cancelAllAlarms)
+                            .subscribe(definedTimes -> {
+                                // teraz dopiero zapisuje
+                                alarmHelper.setOrUpdateAlarms(listDefinedTimes);
+                            },
+                                    throwable -> System.out.println(throwable.getMessage()));
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
 }
