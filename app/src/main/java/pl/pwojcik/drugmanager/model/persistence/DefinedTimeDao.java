@@ -33,6 +33,5 @@ public interface DefinedTimeDao {
     void insertDefinedTimes(DefinedTime... definedTimes);
 
     @Delete
-    void deleteDefinedTime(DefinedTime definedTime);
-
+    void removeDefinedTime(DefinedTime definedTime);
 }

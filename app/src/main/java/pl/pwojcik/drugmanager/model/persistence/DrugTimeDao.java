@@ -18,7 +18,6 @@ public interface DrugTimeDao {
 
     @Query("SELECT * from drug_time")
     Maybe<List<DrugTime>> getAll();
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDrugTime(DrugTime drugTime);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -27,6 +26,8 @@ public interface DrugTimeDao {
     void removeDrugTime(long drugId, long drugTimeId);
     @Query("SELECT * from drug_time where drug_id=:drugId and time_id=:timeId")
     Maybe<DrugTime> getDrugTimeForDrug(long drugId, long timeId);
+    @Query("SELECT count(*) as c from drug_time where time_id= :definedTimeId")
+    Maybe<Long> getCountOfDrugTimesForDefinedTime(long definedTimeId);
 
 
 }

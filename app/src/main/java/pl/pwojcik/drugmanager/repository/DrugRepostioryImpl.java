@@ -104,9 +104,9 @@ public class DrugRepostioryImpl implements DrugRepository {
                             .subscribeOn(Schedulers.newThread())
                             .doOnSuccess(alarmHelper::cancelAllAlarms)
                             .subscribe(definedTimes -> {
-                                // teraz dopiero zapisuje
-                                alarmHelper.setOrUpdateAlarms(listDefinedTimes);
-                            },
+                                        // teraz dopiero zapisuje
+                                        alarmHelper.setOrUpdateAlarms(listDefinedTimes);
+                                    },
                                     throwable -> System.out.println(throwable.getMessage()));
                 })
                 .observeOn(AndroidSchedulers.mainThread());
@@ -114,9 +114,20 @@ public class DrugRepostioryImpl implements DrugRepository {
 
     @Override
     public Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime) {
-        return  Maybe.just(definedTime)
+        return Maybe.just(definedTime)
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(definedTime1 -> definedTimeDao.insertDefinedTime(definedTime))
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime) {
+        return Maybe.just(definedTime)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(definedTime1 -> {
+                    definedTimeDao.removeDefinedTime(definedTime);
+
+                })
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

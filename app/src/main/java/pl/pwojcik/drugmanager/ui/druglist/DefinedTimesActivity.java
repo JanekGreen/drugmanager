@@ -3,16 +3,21 @@ package pl.pwojcik.drugmanager.ui.druglist;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,12 +28,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DrugDb;
+import pl.pwojcik.drugmanager.model.persistence.DrugTime;
+import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
+import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimeAdapter;
+import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimesAdapterTouchHelper;
 import pwojcik.pl.archcomponentstestproject.R;
 
-public class DefinedTimesActivity extends AppCompatActivity implements NewDefinedTimeAdapter.OnNewDefinedTimesAdapterItemClick {
+public class DefinedTimesActivity extends AppCompatActivity implements NewDefinedTimeAdapter.OnNewDefinedTimesAdapterItemClick,
+        NewDefinedTimesAdapterTouchHelper.RecyclerItemTouchHelperListener {
 
 
     private DrugViewModel drugViewModel;
@@ -40,6 +52,9 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @BindView(R.id.fabAddDefinedTimes)
     FloatingActionButton addDefinedTimes;
+
+    @BindView(R.id.definedTimesActivityRoot)
+    LinearLayout rootLayout;
 
 
     @Override
@@ -58,7 +73,9 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         rvDefinedTimes.setAdapter(definedTimeAdapter);
         rvDefinedTimes.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvDefinedTimes.setLayoutManager(new LinearLayoutManager(this));
-
+        rvDefinedTimes.setItemAnimator(new DefaultItemAnimator());
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new NewDefinedTimesAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(rvDefinedTimes);
     }
 
     @OnClick(R.id.fabAddDefinedTimes)
@@ -86,10 +103,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
                     drugViewModel.insertDefinedTime(definedTime)
                             .subscribe(
                                     definedTime1 -> {
-                                        definedTimeAdapter.notifyDataSetChanged();
-                                        definedTimesGlobal.add(definedTime);
-                                        definedTimeAdapter.setDefinedTimes(definedTimesGlobal);
-                                        definedTimeAdapter.notifyDataSetChanged();
+                                        drugViewModel.getDefinedTimesData();
                                     },
                                     throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
 
@@ -105,5 +119,44 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     @Override
     public void onDefinedTimeAdapterItemClick(int position) {
         buildNewDefinedTimeDialog(definedTimesGlobal.get(position));
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof NewDefinedTimeAdapter.DefinedTimeViewHolder) {
+            NewDefinedTimeAdapter definedTimeAdapter = (NewDefinedTimeAdapter) rvDefinedTimes.getAdapter();
+            DefinedTime removedItem = definedTimeAdapter.removeItem(position);
+            drugViewModel.removeDefinedTime(removedItem)
+                    .subscribe(definedTime -> {
+                                Snackbar snackbar = Snackbar
+                                        .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                snackbar.setAction("COFNIJ!", view -> {
+                                    restoreItem(removedItem, position);
+                                });
+                                snackbar.setActionTextColor(Color.YELLOW);
+                                snackbar.show();
+                            },
+                            e -> {
+                                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                restoreItem(removedItem,position);
+                            });
+
+        }
+    }
+
+    private void restoreItem(DefinedTime removedItem, int position) {
+        definedTimeAdapter.restoreItem(removedItem, position);
+        drugViewModel.insertDefinedTime(removedItem)
+                .subscribe(definedTime1 -> System.out.println("Przywrócono"),
+                        e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        drugViewModel.updateOrSetAlarms(this)
+                .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size()),
+                        e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

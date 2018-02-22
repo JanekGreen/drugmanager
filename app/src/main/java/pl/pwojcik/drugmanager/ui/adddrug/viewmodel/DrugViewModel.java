@@ -109,6 +109,10 @@ public class DrugViewModel extends AndroidViewModel {
 
     public Maybe<DefinedTime> insertDefinedTime(DefinedTime definedTime){
        return drugRepository.insertDefineTime(definedTime);
+
+        }
+    public Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime) {
+         return drugRepository.removeDefinedTime(definedTime);
     }
 
 }

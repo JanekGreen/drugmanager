@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -67,7 +68,18 @@ public class NewDefinedTimeAdapter extends RecyclerView.Adapter<NewDefinedTimeAd
         return definedTimes == null ? 0 : definedTimes.size();
     }
 
-     class DefinedTimeViewHolder extends RecyclerView.ViewHolder{
+    public DefinedTime removeItem(int position){
+        DefinedTime removedItem = definedTimes.remove(position);
+        notifyItemRemoved(position);
+        return  removedItem;
+    }
+
+    public void restoreItem(DefinedTime item, int position){
+        definedTimes.add(position, item);
+        notifyItemInserted(position);
+    }
+
+     public class DefinedTimeViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.tvDefinedTime)
         TextView tvDefinedTime;

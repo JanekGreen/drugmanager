@@ -27,4 +27,5 @@ public interface DrugRepository {
     io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
     Maybe<List<DefinedTime>> updateSaveAlarms(Context context);
     Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime);
+    Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime);
 }
