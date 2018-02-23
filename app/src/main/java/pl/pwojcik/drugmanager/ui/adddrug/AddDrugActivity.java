@@ -41,7 +41,6 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
 
     @Override
     public void getDrugData(String ean) {
-        System.out.println("Get drug by ean "+ean);
         drugViewModel.getDrugByEan(ean);
     }
 

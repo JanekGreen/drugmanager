@@ -23,16 +23,37 @@
         android:text="Nazwa"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="0.8"
+    android:orientation="horizontal">
     <EditText
         android:layout_marginLeft="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:id="@+id/etDefined_time_time"
-        android:layout_width="match_parent"
+        android:id="@+id/etDefined_time_hour"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.8"
-        android:inputType="time"
+        android:inputType="numberSigned"
+        android:minEms="2"
         android:text=""
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=":"
+        android:textStyle="bold"/>
+    <EditText
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:id="@+id/etDefined_time_minute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:minEms="2"
+        android:text=""
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+</LinearLayout>
 
     <TextView
         android:layout_marginLeft="@dimen/activity_vertical_margin"
@@ -40,6 +61,6 @@
         android:id="@+id/tvDefined_time_time_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Godzina"
+        android:text="Godzina (HH:mm)"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 </LinearLayout>

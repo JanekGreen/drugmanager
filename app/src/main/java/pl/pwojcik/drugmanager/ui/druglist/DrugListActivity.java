@@ -120,4 +120,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         startActivity(intent);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("On resume");
+        drugListViewModel.getDefinedTimes();
+    }
+
 }

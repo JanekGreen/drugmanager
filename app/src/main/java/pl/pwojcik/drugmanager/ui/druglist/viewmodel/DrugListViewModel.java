@@ -11,8 +11,9 @@ import io.reactivex.Maybe;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
-import pl.pwojcik.drugmanager.repository.DrugListRepository;
-import pl.pwojcik.drugmanager.repository.DrugListRepositoryImpl;
+import pl.pwojcik.drugmanager.repository.DrugRepository;
+import pl.pwojcik.drugmanager.repository.DrugRepostioryImpl;
+import pl.pwojcik.drugmanager.retrofit.DrugRestService;
 
 /**
  * Created by pawel on 19.02.18.
@@ -20,23 +21,24 @@ import pl.pwojcik.drugmanager.repository.DrugListRepositoryImpl;
 
 public class DrugListViewModel extends AndroidViewModel {
 
-    private DrugListRepository drugListRepository;
+    private DrugRepository drugListRepository;
     private MutableLiveData<List<String>> drugListLiveData;
 
     public DrugListViewModel(@NonNull Application application) {
         super(application);
 
-        drugListRepository = new DrugListRepositoryImpl(DrugmanagerApplication.getDbInstance(application)
-                .getDefinedTimesDao(), DrugmanagerApplication.getDbInstance(application).getDrugDbDao(),
-                DrugmanagerApplication.getDbInstance(application).getDrugTimeDao());
+
+        drugListRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService(),
+        DrugmanagerApplication.getDbInstance(application).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(application).getDrugDbDao(),
+                DrugmanagerApplication.getDbInstance(application).getDefinedTimesDao());
+
         drugListLiveData = new MutableLiveData<>();
     }
-
 
     public MutableLiveData<List<String>> getDefinedTimes() {
 
           drugListRepository
-                .getAllDefinedTimes()
+                .getAllDefinedTimesWithNames()
           .subscribe(list -> drugListLiveData.postValue(list));
           return drugListLiveData;
     }

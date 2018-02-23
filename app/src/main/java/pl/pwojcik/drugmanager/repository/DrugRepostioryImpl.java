@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
+import java.util.stream.Collectors;
 
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
@@ -32,12 +33,10 @@ import pl.pwojcik.drugmanager.retrofit.DrugRestInterface;
 
 public class DrugRepostioryImpl implements DrugRepository {
 
-
-    private final DefinedTimeDao definedTimeDao;
     private DrugRestInterface drugRestInterface;
     private DrugTimeDao drugTimeDao;
     private DrugDbDao drugDbDao;
-
+    private final DefinedTimeDao definedTimeDao;
 
     public DrugRepostioryImpl(DrugRestInterface drugRestInterface,
                               DrugTimeDao drugTimeDao,
@@ -69,6 +68,31 @@ public class DrugRepostioryImpl implements DrugRepository {
         return null;
     }
 
+
+/**---------------------------------------------------------------------------------------
+ DefinedTimesEntity methods
+ **/
+
+public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
+
+    return definedTimeDao
+            .getDefinedTimesForActiveDrugs()
+            .subscribeOn(Schedulers.io())
+            .doOnSuccess(listDefinedTimes -> {
+                AlarmHelper alarmHelper = new AlarmHelper(context);
+                // najpierw usuwam wszystkie
+                definedTimeDao.getAll()
+                        .subscribeOn(Schedulers.newThread())
+                        .doOnSuccess(alarmHelper::cancelAllAlarms)
+                        .subscribe(definedTimes -> {
+                                    // teraz dopiero zapisuje
+                                    alarmHelper.setOrUpdateAlarms(listDefinedTimes);
+                                },
+                                throwable -> System.out.println(throwable.getMessage()));
+            })
+            .observeOn(AndroidSchedulers.mainThread());
+}
+
     @Override
     public Maybe<List<DefinedTime>> getDefinedTimes() {
         return definedTimeDao.getAll()
@@ -77,40 +101,31 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
+    public Maybe<List<String>> getAllDefinedTimesWithNames() {
 
-
-        return io.reactivex.Observable.just(drugDb)
+        return definedTimeDao.getAll()
                 .subscribeOn(Schedulers.io())
-                .flatMap(drug -> io.reactivex.Observable.just(drugDbDao.insertDrug(drugDb)))
-                .zipWith(io.reactivex.Observable.just(selectedIds.values()), (drugId, drugTimes) -> {
-                    drugTimes.forEach(drugTime -> drugTime.setDrugId(drugId));
-                    return drugTimes;
-                })
-                .doOnNext(drugTimes -> {
-                    drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes));
-                });
-    }
-
-    public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
-
-        return definedTimeDao
-                .getDefinedTimesForActiveDrugs()
-                .subscribeOn(Schedulers.io())
-                .doOnSuccess(listDefinedTimes -> {
-                    AlarmHelper alarmHelper = new AlarmHelper(context);
-                    // najpierw usuwam wszystkie
-                    definedTimeDao.getAll()
-                            .subscribeOn(Schedulers.newThread())
-                            .doOnSuccess(alarmHelper::cancelAllAlarms)
-                            .subscribe(definedTimes -> {
-                                        // teraz dopiero zapisuje
-                                        alarmHelper.setOrUpdateAlarms(listDefinedTimes);
-                                    },
-                                    throwable -> System.out.println(throwable.getMessage()));
-                })
+                .flatMap(definedTimes ->
+                        Maybe.just(definedTimes.stream()
+                                .map(definedTime ->definedTime.getName()+" - "+definedTime.getTime())
+                                .collect(Collectors.toList()))
+                )
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
+    @Override
+    public Maybe<List<DefinedTime>> getDefinedTimesForDrug(long id) {
+        return definedTimeDao.getDefinedTimesForDrug(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Maybe<Long> getDefinedTimeIdForName(String name){
+        return definedTimeDao.getDefinedTimeIdForName(name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     @Override
     public Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime) {
@@ -130,6 +145,70 @@ public class DrugRepostioryImpl implements DrugRepository {
                 })
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
+    /**---------------------------------------------------------------------------------------
+     DrugDb entity methods
+     **/
+
+    @Override
+    public Maybe<List<DrugDb>> getDrugsForTime(String timeName) {
+        return drugDbDao.getDrugsForTime(timeName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Maybe<DrugDb> getDrugDbForId(long id) {
+        return drugDbDao.getDrugDbForId(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+
+    /**---------------------------------------------------------------------------------------
+     DrugTime entity methods
+     **/
+    @Override
+    public void removeDrugTime(long definedTimeId, long drugId) {
+        io.reactivex.Observable.just(drugTimeDao)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(drugTimeDao1 -> drugTimeDao1.removeDrugTime(drugId,definedTimeId))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
+
+    @Override
+    public void restoreDrugTimeItem(DrugTime drugTime) {
+        io.reactivex.Observable.just(drugTime)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(dt_ ->drugTimeDao.insertDrugTime(dt_))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
+
+    @Override
+    public Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId) {
+        return drugTimeDao.getDrugTimeForDrug(drugId,definedTimeId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+
+    @Override
+    public io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
+
+        return io.reactivex.Observable.just(drugDb)
+                .subscribeOn(Schedulers.io())
+                .flatMap(drug -> io.reactivex.Observable.just(drugDbDao.insertDrug(drugDb)))
+                .zipWith(io.reactivex.Observable.just(selectedIds.values()), (drugId, drugTimes) -> {
+                    drugTimes.forEach(drugTime -> drugTime.setDrugId(drugId));
+                    return drugTimes;
+                })
+                .doOnNext(drugTimes -> {
+                    drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes));
+                });
+    }
+
 
 }
 

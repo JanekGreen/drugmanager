@@ -50,6 +50,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setSmallIcon(Icon.createWithResource(context, R.drawable.ic_info_black_24dp))
                 .setLargeIcon(Icon.createWithResource(context, R.drawable.ic_info_black_24dp))
                 .addAction(action)
+
                 .build();
 
 
@@ -70,4 +71,6 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         sendNotification(context);
     }
+
+
 }

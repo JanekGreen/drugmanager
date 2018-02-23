@@ -1,6 +1,7 @@
 package pl.pwojcik.drugmanager.ui.druglist.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
+import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
@@ -111,6 +113,10 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
 
     @Override
     public void onAdapterItemClick(int position) {
+        Intent intent = new Intent(getContext(),DrugInfoActivity.class);
+        intent.putExtra("DRUG_ID",
+                drugsForTimeGlobal.get(position).getId());
+        startActivity(intent);
 
     }
 }

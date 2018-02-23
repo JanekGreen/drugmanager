@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity"
+    tools:showIn="@layout/activity_drug_info">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nazwa leku"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+        <TextView
+            android:id="@+id/tvDrugNameDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rodzaj preparatu - wielkość opakowania"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+
+        <View
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvLeaflet"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ulotka"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:drawableTop="@drawable/ic_picture_as_pdf_black_24dp"/>
+            <TextView
+                android:id="@+id/tvCharacteristics"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Charakterystyka"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:drawableTop="@drawable/ic_picture_as_pdf_black_24dp"/>
+            <TextView
+                android:id="@+id/tvInternetSearch"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Google"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:drawableTop="@drawable/ic_link_black_40dp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="  Producent"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:drawableStart="@drawable/ic_business_black_24dp" />
+        <TextView
+            android:id="@+id/tvProducer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="nazwa producenta"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="@dimen/activity_padding_horizontal"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_padding_horizontal"/>
+
+        <View
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:text="  Substancje aktywne"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:drawableStart="@drawable/ic_info_black_24dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvActiveSubstances"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:drawableStart="@drawable/ic_notifications_black_24dp"
+            android:text="  Przypomnienia"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvDrugTimes"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

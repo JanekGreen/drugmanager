@@ -26,6 +26,9 @@ public interface DefinedTimeDao {
     @Query("SELECT id from defined_times where defined_times.name = :name")
     Maybe<Long> getDefinedTimeIdForName(String name);
 
+    @Query("SELECT * from defined_times  where id in(Select time_id from drug_time where drug_id =:id)")
+    Maybe<List<DefinedTime>> getDefinedTimesForDrug(long id);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDefinedTime(DefinedTime definedTime);
 

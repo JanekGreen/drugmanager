@@ -28,6 +28,9 @@ public interface DrugDbDao {
     @Query("SELECT * from drugs where id in (:ids)")
     Maybe<List<DrugDb>> getDrugsForIds(List<Long> ids);
 
+    @Query("SELECT * from drugs where id =:id")
+    Maybe<DrugDb> getDrugDbForId(long id);
+
     @Query("SELECT count (*) from drugs where drugs.name = :name")
     int drugCountInLocalDatabase(String name);
 

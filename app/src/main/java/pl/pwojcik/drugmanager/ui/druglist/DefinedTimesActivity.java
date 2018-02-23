@@ -1,6 +1,7 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -19,10 +20,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,10 +41,12 @@ import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimesAdapterTouchHelper;
+import pl.pwojcik.drugmanager.utils.Misc;
+import pl.pwojcik.drugmanager.utils.UUIDUtil;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class DefinedTimesActivity extends AppCompatActivity implements NewDefinedTimeAdapter.OnNewDefinedTimesAdapterItemClick,
-        NewDefinedTimesAdapterTouchHelper.RecyclerItemTouchHelperListener {
+        NewDefinedTimesAdapterTouchHelper.RecyclerItemTouchHelperListener{
 
 
     private DrugViewModel drugViewModel;
@@ -81,6 +87,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     @OnClick(R.id.fabAddDefinedTimes)
     void onBtnAddDefinedTimesClicked() {
         DefinedTime definedTime = new DefinedTime();
+        definedTime.setRequestCode(UUIDUtil.getUUID(this));
         buildNewDefinedTimeDialog(definedTime);
     }
 
@@ -91,21 +98,20 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
         EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefined_time_name);
         etDefinedTimeName.setText(definedTime.getName());
-        EditText etDefinedTimeTime = dialogView.findViewById(R.id.etDefined_time_time);
-        etDefinedTimeTime.setText(definedTime.getTime());
+        EditText etDefinedTimeHour = dialogView.findViewById(R.id.etDefined_time_hour);
+        EditText etDefinedTimeMinute = dialogView.findViewById(R.id.etDefined_time_minute);
+        String time = definedTime.getTime();
+        if(time!=null && !time.isEmpty()) {
+
+            String[] parts = time.split(":");
+            etDefinedTimeHour.setText(parts[0]);
+            etDefinedTimeMinute.setText(parts[1]);
+        }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Dodaj nową porę przyjmowania leku")
                 .setView(dialogView)
                 .setPositiveButton("OK", (dialog1, which) -> {
-                    definedTime.setTime(etDefinedTimeTime.getText().toString());
-                    definedTime.setName(etDefinedTimeName.getText().toString());
-                    drugViewModel.insertDefinedTime(definedTime)
-                            .subscribe(
-                                    definedTime1 -> {
-                                        drugViewModel.getDefinedTimesData();
-                                    },
-                                    throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
 
                 })
                 .setNegativeButton("Anuluj", (dialog12, which) -> {
@@ -114,6 +120,29 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
                 .create();
 
         dialog.show();
+
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Misc.parseTimeInput(etDefinedTimeHour.getText().toString(),
+                        etDefinedTimeMinute.getText().toString())){
+
+                    definedTime.setTime(etDefinedTimeHour.getText().toString()+":"+etDefinedTimeMinute.getText().toString());
+                    definedTime.setName(etDefinedTimeName.getText().toString());
+                    drugViewModel.insertDefinedTime(definedTime)
+                            .subscribe(
+                                    definedTime1 -> {
+                                        drugViewModel.getDefinedTimesData();
+                                    },
+                                    throwable -> Toast.makeText(DefinedTimesActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+
+                   dialog.dismiss();
+                }else{
+                    Toast.makeText(DefinedTimesActivity.this,"Niepoprawny format godziny",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -137,8 +166,8 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
                                 snackbar.show();
                             },
                             e -> {
-                                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                restoreItem(removedItem,position);
+                                Toast.makeText(this, handleError(e), Toast.LENGTH_SHORT).show();
+                                restoreItem(removedItem, position);
                             });
 
         }
@@ -149,8 +178,8 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         drugViewModel.insertDefinedTime(removedItem)
                 .subscribe(definedTime1 -> System.out.println("Przywrócono"),
                         e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
-
     }
+
 
     @Override
     protected void onStop() {
@@ -159,4 +188,13 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
                 .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size()),
                         e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
+    private String handleError(Throwable t) {
+        if (t instanceof android.database.sqlite.SQLiteConstraintException) {
+            return "W bazie występują leki przypisane do tej pory, usuń je najpierw";
+        }
+        return t.getMessage();
+    }
+
+
 }

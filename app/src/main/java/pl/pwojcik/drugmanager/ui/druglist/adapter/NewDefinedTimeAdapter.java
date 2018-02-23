@@ -1,23 +1,17 @@
 package pl.pwojcik.drugmanager.ui.druglist.adapter;
 
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
-import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -92,7 +86,8 @@ public class NewDefinedTimeAdapter extends RecyclerView.Adapter<NewDefinedTimeAd
         }
          @OnClick(R.id.newDefinedTimeAdapterItem)
          public void onNewDefinedTimeItemClicked(){
-            onNewDefinedTimesAdapterItemClick.onDefinedTimeAdapterItemClick(getAdapterPosition());
+            if(onNewDefinedTimesAdapterItemClick!=null)
+                onNewDefinedTimesAdapterItemClick.onDefinedTimeAdapterItemClick(getAdapterPosition());
          }
 
     }
