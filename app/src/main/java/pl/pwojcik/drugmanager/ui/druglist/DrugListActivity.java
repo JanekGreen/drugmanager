@@ -1,8 +1,13 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
+import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +34,7 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
@@ -36,6 +42,7 @@ import pl.pwojcik.drugmanager.ui.druglist.adapter.MainListSpinnerAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
 import pl.pwojcik.drugmanager.utils.Constants;
+import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class DrugListActivity extends AppCompatActivity implements SearchTypeListDialogFragment.Listener {
@@ -63,7 +70,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
             spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
+
         });
+
 
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
@@ -127,6 +136,40 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     }
 
     @Override
+    protected void onStart() {
+        Bundle extras = getIntent().getExtras();
+        System.out.println("on Start entered");
+        if (extras != null) {
+            int requestCode = extras.getInt("REQUEST_CODE", -1);
+            System.out.print("Request code"+ requestCode);
+            if (requestCode != -1) {
+
+
+                NotificationManager notificationManager = (NotificationManager)
+                        getSystemService(Context.NOTIFICATION_SERVICE);
+
+                if (notificationManager != null) {
+                    notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+
+                    Intent stopIntent = new Intent(this, RingtonePlayingService.class);
+                    stopService(stopIntent);
+                }
+
+                drugListViewModel.getDefinedTimeForRequestCode(requestCode)
+                        .subscribe(list -> {
+                            if (list != null && !list.isEmpty()) {
+                                System.out.println("Spinner value " + list.get(0));
+                                Misc.selectSpinnerItemByValue(spinner, list.get(0));
+                            }
+                        });
+            }
+        }
+
+        super.onStart();
+    }
+
+
+    @Override
     protected void onResume() {
         super.onResume();
         System.out.println("On resume");
@@ -135,16 +178,16 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     @Override
     public void onBackPressed() {
-        if(!backPressed){
+        if (!backPressed) {
             Handler handler = new Handler();
             handler.postDelayed(() -> {
                 backPressed = false;
 
-            },3000);
+            }, 3000);
 
             backPressed = true;
-            Toast.makeText(this,"Naciśnij jeszcze raz aby wyjść", Toast.LENGTH_SHORT).show();
-        }else {
+            Toast.makeText(this, "Naciśnij jeszcze raz aby wyjść", Toast.LENGTH_SHORT).show();
+        } else {
             this.finishAndRemoveTask();
         }
     }

@@ -10,7 +10,9 @@ import android.graphics.drawable.Icon;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 
+import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pwojcik.pl.archcomponentstestproject.R;
@@ -21,14 +23,16 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
-    public void sendNotification(Context context) {
+    public void sendNotification(Context context, int requestCode) {
         System.out.println("Send notification...");
+
         Intent intent = new Intent(context, DrugListActivity.class);
+        intent.putExtra("REQUEST_CODE",requestCode);
         PendingIntent pendingIntent = PendingIntent
                 .getActivity(context,
                         1,
                         intent,
-                        PendingIntent.FLAG_ONE_SHOT);
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Action action = new Notification
                 .Action.Builder(R.mipmap.ic_launcher,
@@ -52,15 +56,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .addAction(action)
 
                 .build();
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
 
-
-        try {
-            Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(context, ringtone);
-            r.play();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Intent startIntent = new Intent(context, RingtonePlayingService.class);
+        context.startService(startIntent);
 
         notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
 
@@ -69,7 +68,12 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        sendNotification(context);
+        Bundle extras = intent.getExtras();
+        int requestCode;
+        if(extras!=null) {
+            requestCode = extras.getInt("REQUEST_CODE");
+            sendNotification(context,requestCode);
+        }
     }
 
 

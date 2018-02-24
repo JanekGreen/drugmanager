@@ -116,6 +116,19 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
+    public Maybe<List<String>> getAllDefinedTimesWithNamesAndRequestCodeId(int requestCode) {
+          return definedTimeDao.getAll()
+                .subscribeOn(Schedulers.io())
+                .flatMap(definedTimes ->
+                        Maybe.just(definedTimes.stream()
+                                .filter(definedTime -> definedTime.getRequestCode() == requestCode)
+                                .map(definedTime -> definedTime.getName() + " - " + definedTime.getTime())
+                                .collect(Collectors.toList()))
+                )
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
     public Maybe<List<DefinedTime>> getDefinedTimesForDrug(long id) {
         return definedTimeDao.getDefinedTimesForDrug(id)
                 .subscribeOn(Schedulers.io())

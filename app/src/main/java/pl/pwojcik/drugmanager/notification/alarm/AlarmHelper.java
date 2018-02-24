@@ -28,22 +28,14 @@ public class AlarmHelper {
 
     }
 
-    public Intent getAlarmIntent(){
-        return new Intent(context, AlarmBroadcastReceiver.class);
-    }
-
-    public PendingIntent getPendingIntent(){
-        return PendingIntent.getBroadcast(context, Constants.INTENT_REQUEST_CODE, getAlarmIntent(), PendingIntent.FLAG_ONE_SHOT);
+    public Intent getAlarmIntent(int requestCode){
+        Intent alarmIntent = new Intent(context,AlarmBroadcastReceiver.class);
+        alarmIntent.putExtra("REQUEST_CODE",requestCode);
+        return alarmIntent;
     }
 
     public PendingIntent getPendingIntent(int requestCode, int flag){
-        return PendingIntent.getBroadcast(context, requestCode, getAlarmIntent(), flag);
-    }
-
-    public void setAlarmForTimeRepeating(int hour, int minute, int second){
-
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, TimeUtil.getSpecificTime(hour,minute,second),
-                AlarmManager.INTERVAL_DAY, getPendingIntent());
+        return PendingIntent.getBroadcast(context, requestCode, getAlarmIntent(requestCode), flag);
     }
 
     public void setAlarmForTimeRepeating(int hour, int minute, int dayInterval, int requestCode, int intentFlag){
@@ -56,9 +48,6 @@ public class AlarmHelper {
         return  intent1.filterEquals(intent2);
     }
 
-    public void cancelAlarm(){
-        alarmManager.cancel(getPendingIntent());
-    }
     public void cancelAlarm(int requestCode){
         alarmManager.cancel(getPendingIntent(requestCode,0));
     }

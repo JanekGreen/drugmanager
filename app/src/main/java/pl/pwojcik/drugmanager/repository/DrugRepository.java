@@ -23,6 +23,7 @@ public interface DrugRepository {
     Maybe<List<DefinedTime>> getDefinedTimes();
     Maybe<Long> getDefinedTimeIdForName(String name);
     Maybe<List<String>> getAllDefinedTimesWithNames();
+    Maybe<List<String>> getAllDefinedTimesWithNamesAndRequestCodeId(int requestCode);
     Maybe<List<DefinedTime>> getDefinedTimesForDrug(long id);
     Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime);
     Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime);

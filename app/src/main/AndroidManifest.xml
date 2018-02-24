@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service android:enabled="true" android:name="pl.pwojcik.drugmanager.notification.service.RingtonePlayingService" />
         <receiver android:name="pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver" />
 
         <activity

@@ -61,4 +61,11 @@ public class DrugListViewModel extends AndroidViewModel {
     public Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId) {
        return drugListRepository.getDrugTime(drugId,definedTimeId);
     }
+
+    public Maybe<List<String>> getDefinedTimeForRequestCode(int requestCode) {
+        return  drugListRepository
+                .getAllDefinedTimesWithNamesAndRequestCodeId(requestCode);
+
+    }
+
 }

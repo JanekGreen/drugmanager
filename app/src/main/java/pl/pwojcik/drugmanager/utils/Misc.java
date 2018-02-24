@@ -1,5 +1,8 @@
 package pl.pwojcik.drugmanager.utils;
 
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,5 +48,15 @@ public class Misc {
             }
         }
         return drug;
+    }
+
+    public static void selectSpinnerItemByValue(Spinner spnr, String value) {
+        SpinnerAdapter adapter = spnr.getAdapter();
+        for (int position = 0; position < adapter.getCount(); position++) {
+            if(adapter.getItem(position) == value) {
+                spnr.setSelection(position);
+                return;
+            }
+        }
     }
 }
