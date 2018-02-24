@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,8 +15,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,12 +49,13 @@ import pl.pwojcik.drugmanager.utils.UUIDUtil;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class DefinedTimesActivity extends AppCompatActivity implements NewDefinedTimeAdapter.OnNewDefinedTimesAdapterItemClick,
-        NewDefinedTimesAdapterTouchHelper.RecyclerItemTouchHelperListener{
+        NewDefinedTimesAdapterTouchHelper.RecyclerItemTouchHelperListener {
 
 
     private DrugViewModel drugViewModel;
     private NewDefinedTimeAdapter definedTimeAdapter;
     private List<DefinedTime> definedTimesGlobal;
+
 
     @BindView(R.id.rvDefinedTimes)
     RecyclerView rvDefinedTimes;
@@ -68,6 +72,11 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_defined_times);
         ButterKnife.bind(this);
+
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         definedTimeAdapter = new NewDefinedTimeAdapter();
         drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
         drugViewModel.getDefinedTimesData().observe(this, definedTimes -> {
@@ -75,6 +84,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
             definedTimeAdapter.setDefinedTimes(definedTimes);
             definedTimeAdapter.notifyDataSetChanged();
         });
+
         definedTimeAdapter.setOnNewDefinedTimesAdapterItemClick(this);
         rvDefinedTimes.setAdapter(definedTimeAdapter);
         rvDefinedTimes.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -82,6 +92,20 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         rvDefinedTimes.setItemAnimator(new DefaultItemAnimator());
         ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new NewDefinedTimesAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
         new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(rvDefinedTimes);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, DrugListActivity.class);
+        startActivity(intent);
     }
 
     @OnClick(R.id.fabAddDefinedTimes)
@@ -101,7 +125,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         EditText etDefinedTimeHour = dialogView.findViewById(R.id.etDefined_time_hour);
         EditText etDefinedTimeMinute = dialogView.findViewById(R.id.etDefined_time_minute);
         String time = definedTime.getTime();
-        if(time!=null && !time.isEmpty()) {
+        if (time != null && !time.isEmpty()) {
 
             String[] parts = time.split(":");
             etDefinedTimeHour.setText(parts[0]);
@@ -124,10 +148,10 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Misc.parseTimeInput(etDefinedTimeHour.getText().toString(),
-                        etDefinedTimeMinute.getText().toString())){
+                if (Misc.parseTimeInput(etDefinedTimeHour.getText().toString(),
+                        etDefinedTimeMinute.getText().toString())) {
 
-                    definedTime.setTime(etDefinedTimeHour.getText().toString()+":"+etDefinedTimeMinute.getText().toString());
+                    definedTime.setTime(etDefinedTimeHour.getText().toString() + ":" + etDefinedTimeMinute.getText().toString());
                     definedTime.setName(etDefinedTimeName.getText().toString());
                     drugViewModel.insertDefinedTime(definedTime)
                             .subscribe(
@@ -136,9 +160,9 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
                                     },
                                     throwable -> Toast.makeText(DefinedTimesActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
 
-                   dialog.dismiss();
-                }else{
-                    Toast.makeText(DefinedTimesActivity.this,"Niepoprawny format godziny",
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(DefinedTimesActivity.this, "Niepoprawny format godziny",
                             Toast.LENGTH_LONG).show();
                 }
             }

@@ -23,7 +23,13 @@
             android:id="@+id/tvDrugNameDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rodzaj preparatu - wielkość opakowania"
+            android:text="Rodzaj preparatu"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+        <TextView
+            android:id="@+id/tvDrugNameDetails2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wielkość opakowania"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:layout_marginBottom="@dimen/activity_vertical_margin"/>
 
@@ -49,6 +55,8 @@
                 android:drawableTop="@drawable/ic_picture_as_pdf_black_24dp"/>
             <TextView
                 android:id="@+id/tvCharacteristics"
+                android:clickable="true"
+                android:focusable="true"
                 android:layout_margin="@dimen/activity_vertical_margin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

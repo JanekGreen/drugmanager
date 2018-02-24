@@ -3,6 +3,7 @@ package pl.pwojcik.drugmanager.ui.druglist;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -46,6 +47,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     @BindView(R.id.fabAdd)
     FloatingActionButton fab;
     private DrugListViewModel drugListViewModel;
+    boolean backPressed = false;
 
 
     @Override
@@ -55,18 +57,20 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
-        drugListViewModel.getDefinedTimes().observe(this,listDefinedTimes ->{
-            spinner.setAdapter( new MainListSpinnerAdapter(toolbar.getContext(),listDefinedTimes));
+        drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
+            spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
         });
 
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-              String selectedTime = spinner.getSelectedItem().toString()
-                      .substring(0,spinner.getSelectedItem().toString().indexOf(" "));
-              Bundle args = new Bundle();
+                String selectedTime = spinner.getSelectedItem().toString()
+                        .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+                Bundle args = new Bundle();
                 args.putString("SELECTED_TIME", selectedTime);
                 Fragment fragment = DrugListFragment.newInstance();
                 fragment.setArguments(args);
@@ -92,13 +96,15 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.set_defined_times) {
-            Intent intent = new Intent(this, DefinedTimesActivity.class);
-            startActivity(intent);
-            return true;
+        switch (item.getItemId()) {
+            case R.id.set_defined_times:
+                Intent intent = new Intent(this, DefinedTimesActivity.class);
+                startActivity(intent);
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -127,4 +133,19 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         drugListViewModel.getDefinedTimes();
     }
 
+    @Override
+    public void onBackPressed() {
+        if(!backPressed){
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                backPressed = false;
+
+            },3000);
+
+            backPressed = true;
+            Toast.makeText(this,"Naciśnij jeszcze raz aby wyjść", Toast.LENGTH_SHORT).show();
+        }else {
+            this.finishAndRemoveTask();
+        }
+    }
 }

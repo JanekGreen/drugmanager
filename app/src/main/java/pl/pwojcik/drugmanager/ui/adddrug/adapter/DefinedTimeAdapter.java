@@ -1,5 +1,6 @@
 package pl.pwojcik.drugmanager.ui.adddrug.adapter;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +70,6 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
         holder.tvTime.setText(definedTime.getTime());
         if(drugTimes.contains(definedTime.getId())){
           holder.swSelected.setChecked(true);
-
         }
     }
 

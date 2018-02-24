@@ -7,7 +7,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_margin="@dimen/list_item_spacing"
+            android:layout_margin="@dimen/list_item_spacing_half"
             android:id="@+id/tvActiveSubstance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

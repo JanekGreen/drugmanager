@@ -1,28 +1,21 @@
 package pl.pwojcik.drugmanager.ui.druginfo;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.github.ivbaranov.mli.MaterialLetterIcon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
-import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimeAdapter;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
@@ -40,6 +33,9 @@ public class DrugInfoActivity extends AppCompatActivity {
 
     @BindView(R.id.tvDrugNameDetails)
     TextView tvDrugNameDetails;
+
+    @BindView(R.id.tvDrugNameDetails2)
+    TextView tvDrugNameDetails2;
 
     @BindView(R.id.tvLeaflet)
     TextView tvLeaflet;
@@ -109,8 +105,13 @@ public class DrugInfoActivity extends AppCompatActivity {
         initialLetterIcon.setLetter(drugDb.getName());
         tvProducer.setText(drugDb.getProducer());
         tvDrugNameDetails.setText(drugDb.getUsageType());
+        tvDrugNameDetails2.setText(drugDb.getPackQuantity());
         tvName.setText(drugDb.getName());
         activeSubstanceAdapter.setActiveSubstances(Misc.getContentsDataFromDrugDb(drugDb));
         activeSubstanceAdapter.notifyDataSetChanged();
+    }
+
+    @OnClick(R.id.tvCharacteristics)
+    public void onTviewClicked(View view){
     }
 }

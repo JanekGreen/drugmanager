@@ -26,6 +26,7 @@ import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.retrofit.DrugRestInterface;
+import pl.pwojcik.drugmanager.utils.Misc;
 
 /**
  * Created by pawel on 10.02.18.
@@ -59,8 +60,8 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .flatMap(notInDatabase ->
                         notInDatabase ? drugRestInterface.getDrugByEan(ean) : Flowable
                                 .error(new Throwable("Lek jest w bazie")))
+                .map(drug -> Misc.getSpecificContainterInfo(drug,ean))
                 .observeOn(AndroidSchedulers.mainThread());
-
     }
 
     @Override
@@ -69,29 +70,30 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
 
-/**---------------------------------------------------------------------------------------
- DefinedTimesEntity methods
- **/
+    /**
+     * ---------------------------------------------------------------------------------------
+     * DefinedTimesEntity methods
+     **/
 
-public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
+    public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
 
-    return definedTimeDao
-            .getDefinedTimesForActiveDrugs()
-            .subscribeOn(Schedulers.io())
-            .doOnSuccess(listDefinedTimes -> {
-                AlarmHelper alarmHelper = new AlarmHelper(context);
-                // najpierw usuwam wszystkie
-                definedTimeDao.getAll()
-                        .subscribeOn(Schedulers.newThread())
-                        .doOnSuccess(alarmHelper::cancelAllAlarms)
-                        .subscribe(definedTimes -> {
-                                    // teraz dopiero zapisuje
-                                    alarmHelper.setOrUpdateAlarms(listDefinedTimes);
-                                },
-                                throwable -> System.out.println(throwable.getMessage()));
-            })
-            .observeOn(AndroidSchedulers.mainThread());
-}
+        return definedTimeDao
+                .getDefinedTimesForActiveDrugs()
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(listDefinedTimes -> {
+                    AlarmHelper alarmHelper = new AlarmHelper(context);
+                    // najpierw usuwam wszystkie
+                    definedTimeDao.getAll()
+                            .subscribeOn(Schedulers.newThread())
+                            .doOnSuccess(alarmHelper::cancelAllAlarms)
+                            .subscribe(definedTimes -> {
+                                        // teraz dopiero zapisuje
+                                        alarmHelper.setOrUpdateAlarms(listDefinedTimes);
+                                    },
+                                    throwable -> System.out.println(throwable.getMessage()));
+                })
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 
     @Override
     public Maybe<List<DefinedTime>> getDefinedTimes() {
@@ -107,7 +109,7 @@ public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
                 .subscribeOn(Schedulers.io())
                 .flatMap(definedTimes ->
                         Maybe.just(definedTimes.stream()
-                                .map(definedTime ->definedTime.getName()+" - "+definedTime.getTime())
+                                .map(definedTime -> definedTime.getName() + " - " + definedTime.getTime())
                                 .collect(Collectors.toList()))
                 )
                 .observeOn(AndroidSchedulers.mainThread());
@@ -120,7 +122,7 @@ public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Maybe<Long> getDefinedTimeIdForName(String name){
+    public Maybe<Long> getDefinedTimeIdForName(String name) {
         return definedTimeDao.getDefinedTimeIdForName(name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -146,8 +148,9 @@ public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    /**---------------------------------------------------------------------------------------
-     DrugDb entity methods
+    /**
+     * ---------------------------------------------------------------------------------------
+     * DrugDb entity methods
      **/
 
     @Override
@@ -165,14 +168,15 @@ public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
     }
 
 
-    /**---------------------------------------------------------------------------------------
-     DrugTime entity methods
+    /**
+     * ---------------------------------------------------------------------------------------
+     * DrugTime entity methods
      **/
     @Override
     public void removeDrugTime(long definedTimeId, long drugId) {
         io.reactivex.Observable.just(drugTimeDao)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(drugTimeDao1 -> drugTimeDao1.removeDrugTime(drugId,definedTimeId))
+                .doOnNext(drugTimeDao1 -> drugTimeDao1.removeDrugTime(drugId, definedTimeId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
     }
@@ -181,14 +185,14 @@ public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
     public void restoreDrugTimeItem(DrugTime drugTime) {
         io.reactivex.Observable.just(drugTime)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(dt_ ->drugTimeDao.insertDrugTime(dt_))
+                .doOnNext(dt_ -> drugTimeDao.insertDrugTime(dt_))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
     }
 
     @Override
     public Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId) {
-        return drugTimeDao.getDrugTimeForDrug(drugId,definedTimeId)
+        return drugTimeDao.getDrugTimeForDrug(drugId, definedTimeId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -211,5 +215,3 @@ public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
 
 
 }
-
-
