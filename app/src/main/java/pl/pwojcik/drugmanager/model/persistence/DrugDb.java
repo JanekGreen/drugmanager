@@ -3,12 +3,11 @@ package pl.pwojcik.drugmanager.model.persistence;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 @Entity(tableName = "drugs")
-public class DrugDb {
+public class DrugDb implements Parcelable{
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -33,6 +32,35 @@ public class DrugDb {
     private String usageType;
     @ColumnInfo(name = "note")
     private String note;
+
+    public DrugDb() {
+    }
+
+    protected DrugDb(Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+        dosage = in.readString();
+        producer = in.readString();
+        packQuantity = in.readString();
+        activeSubstance = in.readString();
+        feaflet = in.readString();
+        characteristics = in.readString();
+        usageType = in.readString();
+        note = in.readString();
+    }
+
+
+    public static final Creator<DrugDb> CREATOR = new Creator<DrugDb>() {
+        @Override
+        public DrugDb createFromParcel(Parcel in) {
+            return new DrugDb(in);
+        }
+
+        @Override
+        public DrugDb[] newArray(int size) {
+            return new DrugDb[size];
+        }
+    };
 
     public long getId() {
         return id;
@@ -117,5 +145,24 @@ public class DrugDb {
     @Override
     public String toString() {
         return name+" "+producer+" "+usageType+" "+dosage+" "+packQuantity+" "+activeSubstance;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
+        dest.writeString(dosage);
+        dest.writeString(producer);
+        dest.writeString(packQuantity);
+        dest.writeString(activeSubstance);
+        dest.writeString(feaflet);
+        dest.writeString(characteristics);
+        dest.writeString(usageType);
+        dest.writeString(note);
     }
 }

@@ -28,6 +28,8 @@ public interface DrugTimeDao {
     Maybe<DrugTime> getDrugTimeForDrug(long drugId, long timeId);
     @Query("SELECT count(*) as c from drug_time where time_id= :definedTimeId")
     Maybe<Long> getCountOfDrugTimesForDefinedTime(long definedTimeId);
-
-
+    @Query("SELECT * from drug_time where drug_id = :drugId")
+    Maybe<List<DrugTime>> getDrugTimesForDrug(Long drugId);
+    @Query("DELETE from drug_time where drug_id = :id")
+    void removeDrugTimesForDrugDb(long id);
 }

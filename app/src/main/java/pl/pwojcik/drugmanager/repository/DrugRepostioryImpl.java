@@ -14,6 +14,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
@@ -52,7 +53,23 @@ public class DrugRepostioryImpl implements DrugRepository {
     @Override
     public io.reactivex.Flowable<Drug> getDrugByEan(String ean) {
 
-        return drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
+
+        io.reactivex.Observable<Drug> localSource = drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
+                .subscribeOn(Schedulers.io())
+                .toObservable()
+                .map(TypeConverter::makeDrugFromDatabaseEntity);
+
+        io.reactivex.Observable<Drug> rest = drugRestInterface.getDrugByEan(ean)
+                .subscribeOn(Schedulers.io())
+                .toObservable();
+
+        return io.reactivex.Observable.concat(localSource,rest)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .first(new Drug())
+                .toFlowable();
+
+        /*return drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
                 .map(TypeConverter::makeDrugFromDatabaseEntity)
                 .subscribeOn(Schedulers.io())
                 .isEmpty()
@@ -60,8 +77,8 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .flatMap(notInDatabase ->
                         notInDatabase ? drugRestInterface.getDrugByEan(ean) : Flowable
                                 .error(new Throwable("Lek jest w bazie")))
-                .map(drug -> Misc.getSpecificContainterInfo(drug,ean))
-                .observeOn(AndroidSchedulers.mainThread());
+                .map(drug -> Misc.getSpecificContainterInfo(drug, ean))
+                .observeOn(AndroidSchedulers.mainThread());*/
     }
 
     @Override
@@ -117,7 +134,7 @@ public class DrugRepostioryImpl implements DrugRepository {
 
     @Override
     public Maybe<List<String>> getAllDefinedTimesWithNamesAndRequestCodeId(int requestCode) {
-          return definedTimeDao.getAll()
+        return definedTimeDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .flatMap(definedTimes ->
                         Maybe.just(definedTimes.stream()
@@ -210,6 +227,21 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @Override
+    public Maybe<HashMap<Long, DrugTime>> getSelectedTimeIdsForDrug(long id) {
+        return drugTimeDao.getDrugTimesForDrug(id)
+                .subscribeOn(Schedulers.io())
+                .map(drugTimes -> {
+                    HashMap<Long, DrugTime> result = new HashMap<>();
+                    for (DrugTime dt : drugTimes) {
+                        result.put(dt.getTime_id(), dt);
+                    }
+
+                    return result;
+                })
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     @Override
     public io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
@@ -222,9 +254,9 @@ public class DrugRepostioryImpl implements DrugRepository {
                     return drugTimes;
                 })
                 .doOnNext(drugTimes -> {
+                    drugTimeDao.removeDrugTimesForDrugDb(drugDb.getId());
                     drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes));
                 });
     }
-
-
 }
+

@@ -37,6 +37,7 @@ public class Misc {
         for (String packVariant : packVariants) {
             if (packVariant.contains(ean)) {
                 result = packVariant;
+                drug.setCommonName(result);
                 break;
             }
         }
@@ -54,6 +55,7 @@ public class Misc {
         SpinnerAdapter adapter = spnr.getAdapter();
         for (int position = 0; position < adapter.getCount(); position++) {
             if(adapter.getItem(position) == value) {
+                System.err.print("Selected value "+value +"at position "+position);
                 spnr.setSelection(position);
                 return;
             }

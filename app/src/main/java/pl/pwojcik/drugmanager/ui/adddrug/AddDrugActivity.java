@@ -12,11 +12,11 @@ import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByBarcodeFragment;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByNameFragment;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pwojcik.pl.archcomponentstestproject.R;
 
 import static pl.pwojcik.drugmanager.utils.Constants.ADD_BARCODE_TAG_NAME;
 import static pl.pwojcik.drugmanager.utils.Constants.ADD_NAME_TAG_NAME;
-import static pl.pwojcik.drugmanager.utils.Constants.RESULTS_FRAGMENT;
 
 public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
 
@@ -29,6 +29,14 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_drug);
         ButterKnife.bind(this);
+        drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
+        drugViewModel.getDrugDbData().observe(this,drug -> {
+            if(drug!=null) {
+                Intent intent = new Intent(this, DrugInfoActivity.class);
+                intent.putExtra("DRUG", drug);
+                startActivity(intent);
+            }
+        });
         Bundle bundle = getIntent().getExtras();
         String searchTypeSelected = bundle != null ? bundle.getString("SEARCH_TYPE_FRAGMENT") : null;
         if (savedInstanceState == null) {
@@ -39,11 +47,7 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
 
     @Override
     public void getDrugData(String ean) {
-       // todo jakieś sprawdzenie czy poprawny ean
-        Intent intent = new Intent(this,NewDrugInfoActivity.class);
-        intent.putExtra("EAN", ean);
-        startActivity(intent);
-
+        drugViewModel.getDrugByEan(ean);
     }
 
     private void setFragment(String tag) {

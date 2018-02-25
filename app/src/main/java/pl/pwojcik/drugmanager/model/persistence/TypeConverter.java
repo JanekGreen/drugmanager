@@ -18,6 +18,8 @@ public class TypeConverter {
         drugDb.setProducer(drug.getProducer());
         drugDb.setUsageType(drug.getUsageType());
         drugDb.setName(drug.getName());
+        //todo change names for these fields
+        drugDb.setNote(drug.getCommonName());
         return drugDb;
     }
 

@@ -37,7 +37,7 @@ public interface DrugDbDao {
     @Query("SELECT id from drugs where drugs.name = :name")
     Long getDrugIdForName(String name);
 
-    @Query("SELECT * from drugs where pack_quantity like :ean")
+    @Query("SELECT * from drugs where note like :ean")
     Maybe<DrugDb> geDrugByEanFromLocalDatabase(String ean);
 
     @Query("SELECT MAX(id) as id from drugs")

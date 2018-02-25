@@ -37,5 +37,6 @@ public interface DrugRepository {
     void removeDrugTime(long definedTimeId, long drugId);
     void restoreDrugTimeItem(DrugTime drugTime);
     Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId);
+    Maybe<HashMap<Long, DrugTime>> getSelectedTimeIdsForDrug(long id);
     io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
 }

@@ -1,35 +1,24 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
 import android.app.NotificationManager;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +26,6 @@ import butterknife.OnClick;
 import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
-import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.MainListSpinnerAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
@@ -55,7 +43,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     FloatingActionButton fab;
     private DrugListViewModel drugListViewModel;
     boolean backPressed = false;
-
+    private int selectedItemPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +55,24 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        if(savedInstanceState!=null){
+            selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM",0);
+
+        }
+
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
             spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
-
+            if(savedInstanceState!=null){
+                spinner.setSelection(selectedItemPosition);
+            }
         });
 
 
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedItemPosition = spinner.getSelectedItemPosition();
                 String selectedTime = spinner.getSelectedItem().toString()
                         .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
                 Bundle args = new Bundle();
@@ -191,4 +187,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             this.finishAffinity();
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("SELECTED_ITEM", selectedItemPosition);
+        super.onSaveInstanceState(outState);
+    }
+
 }

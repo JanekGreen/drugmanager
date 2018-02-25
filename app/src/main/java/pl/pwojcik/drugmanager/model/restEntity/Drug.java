@@ -1,9 +1,12 @@
 package pl.pwojcik.drugmanager.model.restEntity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Drug {
+public class Drug implements Parcelable{
 
 @SerializedName("name")
 @Expose
@@ -32,6 +35,33 @@ private String characteristics;
 @SerializedName("usageType")
 @Expose
 private String usageType;
+
+    protected Drug(Parcel in) {
+        name = in.readString();
+        commonName = in.readString();
+        dosage = in.readString();
+        producer = in.readString();
+        packQuantity = in.readString();
+        activeSubstance = in.readString();
+        feaflet = in.readString();
+        characteristics = in.readString();
+        usageType = in.readString();
+    }
+
+    public Drug() {
+    }
+
+    public static final Creator<Drug> CREATOR = new Creator<Drug>() {
+        @Override
+        public Drug createFromParcel(Parcel in) {
+            return new Drug(in);
+        }
+
+        @Override
+        public Drug[] newArray(int size) {
+            return new Drug[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -103,5 +133,24 @@ private String usageType;
 
     public void setUsageType(String usageType) {
         this.usageType = usageType;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(name);
+        dest.writeString(commonName);
+        dest.writeString(dosage);
+        dest.writeString(producer);
+        dest.writeString(packQuantity);
+        dest.writeString(activeSubstance);
+        dest.writeString(feaflet);
+        dest.writeString(characteristics);
+        dest.writeString(usageType);
     }
 }
