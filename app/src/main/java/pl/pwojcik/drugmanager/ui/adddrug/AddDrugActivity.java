@@ -33,7 +33,11 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
         drugViewModel.getDrugDbData().observe(this,drug -> {
             if(drug!=null) {
                 Intent intent = new Intent(this, DrugInfoActivity.class);
-                intent.putExtra("DRUG", drug);
+                if(drug.getId()!=0){
+                    intent.putExtra("DRUG_ID", drug.getId());
+                }else {
+                    intent.putExtra("DRUG", drug);
+                }
                 startActivity(intent);
             }
         });

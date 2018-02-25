@@ -54,7 +54,7 @@ public class DrugViewModel extends AndroidViewModel {
         drugRepository.getDrugByEan(ean)
                 .subscribe(drug ->
                                 //drugLiveData.setValue(drug),
-                        drugDbMutableLiveData.setValue(TypeConverter.makeDrugDatabaseEntity(drug)),
+                        drugDbMutableLiveData.setValue(drug),
                         e -> {
                             System.err.println(e.getMessage());
                             Toast.makeText(getApplication().getApplicationContext(),

@@ -17,7 +17,7 @@ import pl.pwojcik.drugmanager.model.restEntity.Drug;
  */
 
 public interface DrugRepository {
-    io.reactivex.Flowable<Drug> getDrugByEan(String ean);
+    io.reactivex.Flowable<DrugDb> getDrugByEan(String ean);
     List<Drug> getDrugListByName(String name);
 
     Maybe<List<DefinedTime>> getDefinedTimes();

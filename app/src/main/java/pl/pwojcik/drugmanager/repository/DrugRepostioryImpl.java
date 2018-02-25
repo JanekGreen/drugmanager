@@ -51,34 +51,24 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public io.reactivex.Flowable<Drug> getDrugByEan(String ean) {
+    public io.reactivex.Flowable<DrugDb> getDrugByEan(String ean) {
 
 
-        io.reactivex.Observable<Drug> localSource = drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
+        io.reactivex.Observable<DrugDb> localSource = drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
                 .subscribeOn(Schedulers.io())
-                .toObservable()
-                .map(TypeConverter::makeDrugFromDatabaseEntity);
+                .toObservable();
 
-        io.reactivex.Observable<Drug> rest = drugRestInterface.getDrugByEan(ean)
+        io.reactivex.Observable<DrugDb> rest = drugRestInterface.getDrugByEan(ean)
                 .subscribeOn(Schedulers.io())
+                .map(TypeConverter::makeDrugDatabaseEntity)
                 .toObservable();
 
         return io.reactivex.Observable.concat(localSource,rest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .first(new Drug())
+                .first(new DrugDb())
                 .toFlowable();
-
-        /*return drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
-                .map(TypeConverter::makeDrugFromDatabaseEntity)
-                .subscribeOn(Schedulers.io())
-                .isEmpty()
-                .toFlowable()
-                .flatMap(notInDatabase ->
-                        notInDatabase ? drugRestInterface.getDrugByEan(ean) : Flowable
-                                .error(new Throwable("Lek jest w bazie")))
-                .map(drug -> Misc.getSpecificContainterInfo(drug, ean))
-                .observeOn(AndroidSchedulers.mainThread());*/
+        
     }
 
     @Override
