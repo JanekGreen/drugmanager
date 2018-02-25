@@ -104,8 +104,8 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, DrugListActivity.class);
-        startActivity(intent);
+        super.onBackPressed();
+
     }
 
     @OnClick(R.id.fabAddDefinedTimes)

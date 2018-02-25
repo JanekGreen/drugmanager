@@ -188,7 +188,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             backPressed = true;
             Toast.makeText(this, "Naciśnij jeszcze raz aby wyjść", Toast.LENGTH_SHORT).show();
         } else {
-            this.finishAndRemoveTask();
+            this.finishAffinity();
         }
     }
 }
