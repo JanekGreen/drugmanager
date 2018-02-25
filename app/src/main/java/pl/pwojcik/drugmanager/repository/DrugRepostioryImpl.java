@@ -60,6 +60,7 @@ public class DrugRepostioryImpl implements DrugRepository {
 
         io.reactivex.Observable<DrugDb> rest = drugRestInterface.getDrugByEan(ean)
                 .subscribeOn(Schedulers.io())
+                .map(drug -> Misc.getSpecificContainterInfo(drug, ean))
                 .map(TypeConverter::makeDrugDatabaseEntity)
                 .toObservable();
 
@@ -68,7 +69,17 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .first(new DrugDb())
                 .toFlowable();
-        
+
+        /*return drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
+                .map(TypeConverter::makeDrugFromDatabaseEntity)
+                .subscribeOn(Schedulers.io())
+                .isEmpty()
+                .toFlowable()
+                .flatMap(notInDatabase ->
+                        notInDatabase ? drugRestInterface.getDrugByEan(ean) : Flowable
+                                .error(new Throwable("Lek jest w bazie")))
+
+                .observeOn(AndroidSchedulers.mainThread());*/
     }
 
     @Override

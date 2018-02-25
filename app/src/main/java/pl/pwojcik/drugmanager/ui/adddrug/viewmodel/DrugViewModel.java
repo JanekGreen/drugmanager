@@ -30,11 +30,9 @@ import pl.pwojcik.drugmanager.repository.DrugRepostioryImpl;
 public class DrugViewModel extends AndroidViewModel {
 
     private DrugRepository drugRepository;
-    private MutableLiveData<Drug> drugLiveData = new MutableLiveData<>();
     private MutableLiveData<List<DefinedTime>> definedTimeLiveData = new MutableLiveData<>();
     private MutableLiveData<HashMap<Long, DrugTime>> selectedTimesIds;
     private MutableLiveData<DrugDb> drugDbMutableLiveData;
-    private MutableLiveData<List<DefinedTime>> definedTimeMutableLiveData;
 
     public DrugViewModel(@NonNull Application application) {
         super(application);
@@ -45,15 +43,12 @@ public class DrugViewModel extends AndroidViewModel {
         selectedTimesIds = new MutableLiveData<>();
         selectedTimesIds.setValue(new HashMap<>());
         drugDbMutableLiveData = new MutableLiveData<>();
-        definedTimeMutableLiveData = new MutableLiveData<>();
-        drugLiveData.setValue(null);
     }
 
     public void getDrugByEan(String ean) {
 
         drugRepository.getDrugByEan(ean)
                 .subscribe(drug ->
-                                //drugLiveData.setValue(drug),
                         drugDbMutableLiveData.setValue(drug),
                         e -> {
                             System.err.println(e.getMessage());
@@ -63,9 +58,6 @@ public class DrugViewModel extends AndroidViewModel {
                 );
     }
 
-    public MutableLiveData<Drug> getDrugData() {
-        return drugLiveData;
-    }
 
     public MutableLiveData<List<DefinedTime>> getDefinedTimesData() {
         drugRepository
@@ -102,7 +94,6 @@ public class DrugViewModel extends AndroidViewModel {
     public io.reactivex.Observable<Collection<DrugTime>> saveDrugTimeData() {
         return drugRepository
                 .saveNewDrugTimeData(selectedTimesIds.getValue(),
-                        //TypeConverter.makeDrugDatabaseEntity(drugLiveData.getValue())
                         drugDbMutableLiveData.getValue());
 
     }
@@ -114,7 +105,6 @@ public class DrugViewModel extends AndroidViewModel {
     public MutableLiveData<HashMap<Long, DrugTime>> getSelectedTimesIds(long drugDbId) {
         drugRepository.getSelectedTimeIdsForDrug(drugDbId)
                 .subscribe(hm -> selectedTimesIds.setValue(hm));
-
         return selectedTimesIds;
     }
 
@@ -146,19 +136,5 @@ public class DrugViewModel extends AndroidViewModel {
         return drugDbMutableLiveData;
     }
 
-    public MutableLiveData<List<DefinedTime>> getDefinedTimeData(long id) {
-        drugRepository.getDefinedTimesForDrug(id)
-                .subscribe(definedTimes -> definedTimeMutableLiveData.setValue(definedTimes),
-                        throwable -> {
-                            Toast.makeText(getApplication().getApplicationContext(), throwable.getMessage(), Toast.LENGTH_LONG)
-                                    .show();
-                        });
-        return definedTimeMutableLiveData;
-    }
-
-    public MutableLiveData<List<DefinedTime>> getDefinedTimeData() {
-
-        return definedTimeMutableLiveData;
-    }
 }
 
