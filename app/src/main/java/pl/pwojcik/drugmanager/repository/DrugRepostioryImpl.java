@@ -6,17 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Observable;
 import java.util.stream.Collectors;
 
-import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTimeDao;
@@ -64,7 +59,7 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .map(TypeConverter::makeDrugDatabaseEntity)
                 .toObservable();
 
-        return io.reactivex.Observable.concat(localSource,rest)
+        return io.reactivex.Observable.concat(localSource, rest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .first(new DrugDb())
@@ -198,6 +193,11 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Maybe<List<DrugDb>> getAll() {
+        return drugDbDao.getAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 
     /**
      * ---------------------------------------------------------------------------------------
@@ -213,6 +213,44 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
+    public Single<List<DrugTime>> removeDrugTimes(List<DrugTime> drugTimes) {
+        return Single.just(drugTimes)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(drugTimes1 -> drugTimeDao.removeDrugTimes(drugTimes1))
+                .observeOn(AndroidSchedulers.mainThread());
+
+    }
+
+    @Override
+    public void restoreDrugTimes(List<DrugTime> drugTimes) {
+        Single.just(drugTimes)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(drugTimes1 -> drugTimeDao.restoreDrugTimes(drugTimes1))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
+
+    @Override
+    public void removeDrugDb(DrugDb drugDb) {
+        Single.just(drugDb)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(drug -> drugDbDao.deleteDrug(drug))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+
+    }
+
+    @Override
+    public Single<DrugDb> restoreDrugDb(DrugDb drugDb) {
+        return Single.just(drugDb)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(drug -> drugDbDao.insertDrug(drug))
+                .observeOn(AndroidSchedulers.mainThread());
+
+
+    }
+
+    @Override
     public void restoreDrugTimeItem(DrugTime drugTime) {
         io.reactivex.Observable.just(drugTime)
                 .subscribeOn(Schedulers.io())
@@ -224,6 +262,13 @@ public class DrugRepostioryImpl implements DrugRepository {
     @Override
     public Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId) {
         return drugTimeDao.getDrugTimeForDrug(drugId, definedTimeId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Maybe<List<DrugTime>> getDrugTimesForDrug(long drugId) {
+        return drugTimeDao.getDrugTimesForDrug(drugId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

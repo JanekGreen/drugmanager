@@ -1,11 +1,15 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
+import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -27,7 +31,7 @@ import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.MainListSpinnerAdapter;
-import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
+import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugReminderFragment;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pl.pwojcik.drugmanager.utils.Misc;
@@ -41,6 +45,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     Spinner spinner;
     @BindView(R.id.fabAdd)
     FloatingActionButton fab;
+    @BindView(R.id.bottom_navigation)
+    BottomNavigationView bottomNavigationView;
+
     private DrugListViewModel drugListViewModel;
     boolean backPressed = false;
     private int selectedItemPosition;
@@ -55,15 +62,15 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        if(savedInstanceState!=null){
-            selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM",0);
+        if (savedInstanceState != null) {
+            selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM", 0);
 
         }
 
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
             spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
-            if(savedInstanceState!=null){
+            if (savedInstanceState != null) {
                 spinner.setSelection(selectedItemPosition);
             }
         });
@@ -75,19 +82,35 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 selectedItemPosition = spinner.getSelectedItemPosition();
                 String selectedTime = spinner.getSelectedItem().toString()
                         .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
-                Bundle args = new Bundle();
-                args.putString("SELECTED_TIME", selectedTime);
-                Fragment fragment = DrugListFragment.newInstance();
-                fragment.setArguments(args);
-
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, fragment)
-                        .commit();
+                switchFragments(selectedTime);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
+        });
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.drugListItem:
+                    spinner.setVisibility(View.GONE);
+                    getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    getSupportActionBar().setTitle("Lista leków");
+                    switchFragments("DRUG_LIST__");
+                    item.setChecked(true);
+                    break;
+                case R.id.notificationItem:
+                    spinner.setVisibility(View.VISIBLE);
+                    getSupportActionBar().setDisplayShowTitleEnabled(false);
+                    item.setChecked(true);
+                    selectedItemPosition = spinner.getSelectedItemPosition();
+                    String selectedTime = spinner.getSelectedItem().toString()
+                            .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+                    switchFragments(selectedTime);
+                    break;
+            }
+
+            return false;
         });
 
     }
@@ -137,7 +160,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         System.out.println("on Start entered");
         if (extras != null) {
             int requestCode = extras.getInt("REQUEST_CODE", -1);
-            System.out.print("Request code"+ requestCode);
+            System.out.print("Request code" + requestCode);
             if (requestCode != -1) {
 
 
@@ -192,6 +215,25 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt("SELECTED_ITEM", selectedItemPosition);
         super.onSaveInstanceState(outState);
+    }
+
+    private void switchFragments(String argument) {
+        Bundle args = new Bundle();
+        args.putString("SELECTED_TIME", argument);
+        Fragment fragment = DrugReminderFragment.newInstance();
+        fragment.setArguments(args);
+
+        FragmentManager manager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
+        if (!argument.equals("DRUG_LIST__"))
+            transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+        else
+            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+
+        transaction
+                .replace(R.id.container, fragment)
+                .commit();
+
     }
 
 }

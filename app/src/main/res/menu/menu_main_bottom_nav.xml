@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/notificationItem"
+        android:icon="@drawable/ic_notifications_black2_24dp"
+        android:title="Przypomnienia"/>
+
+    <item
+        android:id="@+id/drugListItem"
+        android:icon="@drawable/ic_list_black_24dp"
+        android:title="Lista leków"/>
+
+</menu>

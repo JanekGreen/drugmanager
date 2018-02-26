@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
@@ -35,8 +36,16 @@ public interface DrugRepository {
 
 
     void removeDrugTime(long definedTimeId, long drugId);
+    Single<List<DrugTime>> removeDrugTimes(List<DrugTime> drugTimes);
+    void restoreDrugTimes(List<DrugTime> drugTimes);
+    void removeDrugDb(DrugDb drugDb);
+    Single<DrugDb> restoreDrugDb(DrugDb drugDb);
+
     void restoreDrugTimeItem(DrugTime drugTime);
     Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId);
+    Maybe<List<DrugTime>> getDrugTimesForDrug(long drugId);
     Maybe<HashMap<Long, DrugTime>> getSelectedTimeIdsForDrug(long id);
     io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
+
+    Maybe<List<DrugDb>> getAll();
 }

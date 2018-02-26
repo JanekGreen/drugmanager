@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
@@ -67,5 +68,27 @@ public class DrugListViewModel extends AndroidViewModel {
                 .getAllDefinedTimesWithNamesAndRequestCodeId(requestCode);
 
     }
+
+    public Maybe<List<DrugDb>> getAllDrugs(){
+        return drugListRepository.getAll();
+    }
+
+    public Maybe<List<DrugTime>> getDrugTimesForDrug(long drugId){
+       return drugListRepository.getDrugTimesForDrug(drugId);
+    }
+
+    public void removeDrug(DrugDb drugDb){
+        drugListRepository.removeDrugDb(drugDb);
+    }
+    public Single<DrugDb> restoreDrug(DrugDb drugDb){
+       return drugListRepository.restoreDrugDb(drugDb);
+    }
+    public Single<List<DrugTime>> removeDrugTimes(List<DrugTime> drugTimes){
+        return drugListRepository.removeDrugTimes(drugTimes);
+    }
+    public void restoreDrugTimes(List<DrugTime> drugTimes){
+         drugListRepository.restoreDrugTimes(drugTimes);
+    }
+
 
 }

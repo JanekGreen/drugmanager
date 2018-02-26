@@ -29,7 +29,7 @@ import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
-public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback{
+public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -65,7 +65,6 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @BindView(R.id.rvDefinedTimes)
     RecyclerView rvDefinedTimes;
     private DefinedTimeAdapter definedTimeAdapter;
-    private boolean blockAdding = true;
     private DrugViewModel drugViewModel;
     private ActiveSubstanceAdapter activeSubstanceAdapter;
 
@@ -99,11 +98,6 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         });
         drugViewModel.getSelectedTimesIds().observe(this, selectedIds -> {
             if (selectedIds != null) {
-                if (selectedIds.isEmpty()) {
-                    blockAdding = true;
-                } else {
-                    blockAdding = false;
-                }
                 definedTimeAdapter.setDrugTimes(selectedIds.keySet());
             }
         });
@@ -115,13 +109,13 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     protected void onStart() {
         super.onStart();
         Bundle extras = getIntent().getExtras();
-        if(extras!=null) {
-            long drugId = extras.getLong("DRUG_ID",-1L);
-            if(drugId == -1L) {
+        if (extras != null) {
+            long drugId = extras.getLong("DRUG_ID", -1L);
+            if (drugId == -1L) {
                 DrugDb drugDb = extras.getParcelable("DRUG");
                 drugViewModel.getDrugDbData().setValue(drugDb);
                 getIntent().removeExtra("DRUG");
-            }else{
+            } else {
                 drugViewModel.getSelectedTimesIds(drugId);
                 drugViewModel.getDrugDbData(drugId).observe(this, this::initializeView);
                 getIntent().removeExtra("DRUG_ID");
@@ -144,13 +138,13 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this,DrugListActivity.class);
+        Intent intent = new Intent(this, DrugListActivity.class);
         startActivity(intent);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -161,24 +155,20 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         System.out.println("checkChanged definedTimeId" + definedTimeId + " isSelected " + isSelected);
         drugViewModel.addSelectedTimeForDrug(definedTimeId, isSelected);
     }
+
     @OnClick(R.id.btnAddDrug)
     public void onBtnAddDrugClicked() {
-        if (!blockAdding) {
-            drugViewModel.saveDrugTimeData()
-                    .doAfterTerminate(() -> {
-                        Intent intent = new Intent(this, DrugListActivity.class);
-                        startActivity(intent);
+        drugViewModel.saveDrugTimeData()
+                .doAfterTerminate(() -> {
+                    Intent intent = new Intent(this, DrugListActivity.class);
+                    startActivity(intent);
 
-                    })
-                    .subscribe(collection ->  drugViewModel.updateOrSetAlarms(this)
-                                    .subscribe(definedTimes -> System.out.println("Alarms have been set "+definedTimes.size())
-                                            ,Throwable::printStackTrace)
-                            , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                })
+                .subscribe(collection -> drugViewModel.updateOrSetAlarms(this)
+                                .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())
+                                        , Throwable::printStackTrace)
+                        , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
 
-        } else {
 
-            Toast.makeText(this, "Wybierz pory w jakich brać leki", Toast.LENGTH_SHORT)
-                    .show();
-        }
     }
 }
