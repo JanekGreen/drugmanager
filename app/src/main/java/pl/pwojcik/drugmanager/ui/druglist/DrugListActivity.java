@@ -47,6 +47,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     FloatingActionButton fab;
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
+    String currentFragmentSelected = null;
 
     private DrugListViewModel drugListViewModel;
     boolean backPressed = false;
@@ -82,6 +83,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 selectedItemPosition = spinner.getSelectedItemPosition();
                 String selectedTime = spinner.getSelectedItem().toString()
                         .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+                currentFragmentSelected = selectedTime;
                 switchFragments(selectedTime);
             }
 
@@ -93,20 +95,26 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.drugListItem:
-                    spinner.setVisibility(View.GONE);
-                    getSupportActionBar().setDisplayShowTitleEnabled(true);
-                    getSupportActionBar().setTitle("Lista leków");
-                    switchFragments("DRUG_LIST__");
-                    item.setChecked(true);
+                    if(!currentFragmentSelected.equals("DRUG_LIST__")) {
+                        spinner.setVisibility(View.GONE);
+                        getSupportActionBar().setDisplayShowTitleEnabled(true);
+                        getSupportActionBar().setTitle("Lista leków");
+                        currentFragmentSelected ="DRUG_LIST__";
+                        switchFragments("DRUG_LIST__");
+                        return true;
+                    }
                     break;
                 case R.id.notificationItem:
-                    spinner.setVisibility(View.VISIBLE);
-                    getSupportActionBar().setDisplayShowTitleEnabled(false);
-                    item.setChecked(true);
                     selectedItemPosition = spinner.getSelectedItemPosition();
                     String selectedTime = spinner.getSelectedItem().toString()
                             .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
-                    switchFragments(selectedTime);
+                    if(!currentFragmentSelected.equals(selectedTime)) {
+                        spinner.setVisibility(View.VISIBLE);
+                        getSupportActionBar().setDisplayShowTitleEnabled(false);
+                        currentFragmentSelected =selectedTime;
+                        switchFragments(selectedTime);
+                        return true;
+                    }
                     break;
             }
 
