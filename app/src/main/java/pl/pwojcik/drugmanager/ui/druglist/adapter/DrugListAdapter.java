@@ -27,7 +27,7 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
 
 
     public interface OnDrugListAdapterItemClick {
-       void onAdapterItemClick(int position);
+       void onAdapterItemClick(int position, View sharedElement);
     }
 
     public void setOnDrugListAdapterItemClick(OnDrugListAdapterItemClick onDrugListAdapterItemClick) {
@@ -55,6 +55,7 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
 
        holder.materialLetterIcon.setLetter(name);
        holder.materialLetterIcon.setLettersNumber(3);
+       holder.materialLetterIcon.setTransitionName(drugsForTime.get(position).getName());
        holder.tvDrugName.setText(name);
        holder.tvDescription.setText(description);
 
@@ -93,7 +94,7 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
 
         @OnClick(R.id.adapter_item)
         void onAdapterItemClick(){
-            onDrugListAdapterItemClick.onAdapterItemClick(getAdapterPosition());
+            onDrugListAdapterItemClick.onAdapterItemClick(getAdapterPosition(), materialLetterIcon);
         }
     }
 }

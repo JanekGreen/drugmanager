@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.ui.druginfo;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -73,6 +74,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_drug_info);
+        supportPostponeEnterTransition();
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
@@ -108,6 +110,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     protected void onStart() {
         super.onStart();
+        System.out.println("onStart");
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             long drugId = extras.getLong("DRUG_ID", -1L);
@@ -120,20 +123,45 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                 drugViewModel.getDrugDbData(drugId).observe(this, this::initializeView);
                 getIntent().removeExtra("DRUG_ID");
             }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        System.out.println("onNewIntent");
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            long drugId = extras.getLong("DRUG_ID", -1L);
+            if (drugId == -1L) {
+                DrugDb drugDb = extras.getParcelable("DRUG");
+                drugId = drugDb.getId();
+                drugViewModel.getDrugDbData().setValue(drugDb);
+                getIntent().removeExtra("DRUG");
+            } else {
+                drugViewModel.getSelectedTimesIds(drugId);
+                getIntent().removeExtra("DRUG_ID");
+            }
+            drugViewModel.getDrugDbData(drugId).observe(this, this::initializeView);
 
         }
     }
 
     private void initializeView(DrugDb drugDb) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //System.out.println("TRANSITION_NAME " +drugDb.getName());
+            initialLetterIcon.setTransitionName(drugDb.getName());
+        }
         initialLetterIcon.setLetter(drugDb.getName());
         tvProducer.setText(drugDb.getProducer());
         tvDrugNameDetails.setText(drugDb.getUsageType());
         tvDrugNameDetails2.setText(drugDb.getPackQuantity());
         tvName.setText(drugDb.getName());
         activeSubstanceAdapter.setActiveSubstances(Misc.getContentsDataFromDrugDb(drugDb));
+        supportStartPostponedEnterTransition();
         activeSubstanceAdapter.notifyDataSetChanged();
     }
-
 
     @Override
     public void onBackPressed() {

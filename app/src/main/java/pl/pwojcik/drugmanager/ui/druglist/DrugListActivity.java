@@ -1,12 +1,11 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
-import android.app.FragmentTransaction;
+import android.app.ActivityOptions;
 import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
@@ -30,8 +29,9 @@ import butterknife.OnClick;
 import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
+import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.MainListSpinnerAdapter;
-import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugReminderFragment;
+import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pl.pwojcik.drugmanager.utils.Misc;
@@ -228,7 +228,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     private void switchFragments(String argument) {
         Bundle args = new Bundle();
         args.putString("SELECTED_TIME", argument);
-        Fragment fragment = DrugReminderFragment.newInstance();
+        Fragment fragment = DrugListFragment.newInstance();
         fragment.setArguments(args);
 
         FragmentManager manager = getSupportFragmentManager();

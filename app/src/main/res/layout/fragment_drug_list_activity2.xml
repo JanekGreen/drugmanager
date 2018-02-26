@@ -4,7 +4,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pl.pwojcik.drugmanager.ui.druglist.fragment.DrugReminderFragment">
+    tools:context="pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvDrugList"
