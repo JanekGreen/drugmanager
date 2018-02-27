@@ -84,7 +84,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 String selectedTime = spinner.getSelectedItem().toString()
                         .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
                 currentFragmentSelected = selectedTime;
-                switchFragments(selectedTime);
+                switchFragments(selectedTime,true);
             }
 
             @Override
@@ -95,12 +95,12 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.drugListItem:
-                    if(!currentFragmentSelected.equals("DRUG_LIST__")) {
+                    if (!currentFragmentSelected.equals("DRUG_LIST__")) {
                         spinner.setVisibility(View.GONE);
                         getSupportActionBar().setDisplayShowTitleEnabled(true);
                         getSupportActionBar().setTitle("Lista leków");
-                        currentFragmentSelected ="DRUG_LIST__";
-                        switchFragments("DRUG_LIST__");
+                        currentFragmentSelected = "DRUG_LIST__";
+                        switchFragments("DRUG_LIST__",false);
                         return true;
                     }
                     break;
@@ -108,11 +108,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                     selectedItemPosition = spinner.getSelectedItemPosition();
                     String selectedTime = spinner.getSelectedItem().toString()
                             .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
-                    if(!currentFragmentSelected.equals(selectedTime)) {
+                    if (!currentFragmentSelected.equals(selectedTime)) {
                         spinner.setVisibility(View.VISIBLE);
                         getSupportActionBar().setDisplayShowTitleEnabled(false);
-                        currentFragmentSelected =selectedTime;
-                        switchFragments(selectedTime);
+                        currentFragmentSelected = selectedTime;
+                        switchFragments(selectedTime,false);
                         return true;
                     }
                     break;
@@ -225,7 +225,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         super.onSaveInstanceState(outState);
     }
 
-    private void switchFragments(String argument) {
+    private void switchFragments(String argument, boolean noAnimation) {
         Bundle args = new Bundle();
         args.putString("SELECTED_TIME", argument);
         Fragment fragment = DrugListFragment.newInstance();
@@ -233,10 +233,13 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
         FragmentManager manager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
-        if (!argument.equals("DRUG_LIST__"))
-            transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
-        else
-            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+        if (!argument.equals("DRUG_LIST__")) {
+            if (!noAnimation)
+                transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+        } else {
+            if (!noAnimation)
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+        }
 
         transaction
                 .replace(R.id.container, fragment)

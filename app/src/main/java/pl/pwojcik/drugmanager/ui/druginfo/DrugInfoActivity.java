@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,13 +75,11 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_drug_info);
-        supportPostponeEnterTransition();
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
         definedTimeAdapter = new DefinedTimeAdapter();
         definedTimeAdapter.setSwitchChangeCallback(this);
 
@@ -112,18 +111,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         super.onStart();
         System.out.println("onStart");
         Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            long drugId = extras.getLong("DRUG_ID", -1L);
-            if (drugId == -1L) {
-                DrugDb drugDb = extras.getParcelable("DRUG");
-                drugViewModel.getDrugDbData().setValue(drugDb);
-                getIntent().removeExtra("DRUG");
-            } else {
-                drugViewModel.getSelectedTimesIds(drugId);
-                drugViewModel.getDrugDbData(drugId).observe(this, this::initializeView);
-                getIntent().removeExtra("DRUG_ID");
-            }
-        }
+        handleExtras(extras);
     }
 
     @Override
@@ -131,28 +119,11 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         super.onNewIntent(intent);
         System.out.println("onNewIntent");
         Bundle extras = intent.getExtras();
-        if (extras != null) {
-            long drugId = extras.getLong("DRUG_ID", -1L);
-            if (drugId == -1L) {
-                DrugDb drugDb = extras.getParcelable("DRUG");
-                drugId = drugDb.getId();
-                drugViewModel.getDrugDbData().setValue(drugDb);
-                getIntent().removeExtra("DRUG");
-            } else {
-                drugViewModel.getSelectedTimesIds(drugId);
-                getIntent().removeExtra("DRUG_ID");
-            }
-            drugViewModel.getDrugDbData(drugId).observe(this, this::initializeView);
-
-        }
+        handleExtras(extras);
     }
 
     private void initializeView(DrugDb drugDb) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            //System.out.println("TRANSITION_NAME " +drugDb.getName());
-            initialLetterIcon.setTransitionName(drugDb.getName());
-        }
         initialLetterIcon.setLetter(drugDb.getName());
         tvProducer.setText(drugDb.getProducer());
         tvDrugNameDetails.setText(drugDb.getUsageType());
@@ -166,8 +137,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this, DrugListActivity.class);
-        startActivity(intent);
+        finishAfterTransition();
     }
 
     @Override
@@ -187,16 +157,32 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @OnClick(R.id.btnAddDrug)
     public void onBtnAddDrugClicked() {
         drugViewModel.saveDrugTimeData()
-                .doAfterTerminate(() -> {
-                    Intent intent = new Intent(this, DrugListActivity.class);
-                    startActivity(intent);
-
-                })
                 .subscribe(collection -> drugViewModel.updateOrSetAlarms(this)
-                                .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())
+                                .subscribe(definedTimes -> finishAfterTransition()
                                         , Throwable::printStackTrace)
                         , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+    }
 
+    private void handleExtras(Bundle extras){
+        if (extras != null) {
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                System.out.println("TRANSITION_NAME " +extras.getString("TRANSITION_NAME"));
+                if(initialLetterIcon.getTransitionName() == null)
+                    supportPostponeEnterTransition();
+                    initialLetterIcon.setTransitionName(extras.getString("TRANSITION_NAME"));
+            }
+            long drugId = extras.getLong("DRUG_ID", -1L);
+            DrugDb drugDb = extras.getParcelable("DRUG");
+            if (drugDb != null) {
+                drugViewModel.getDrugDbData().setValue(drugDb);
+                getIntent().removeExtra("DRUG");
+            } else if (drugId != -1L) {
+                System.out.println("onNewStart " + drugId);
+                drugViewModel.getSelectedTimesIds(drugId);
+                drugViewModel.getDrugDbData(drugId).observe(this, this::initializeView);
+                getIntent().removeExtra("DRUG_ID");
+            }
+        }
     }
 }

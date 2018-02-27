@@ -48,8 +48,10 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private DrugListViewModel drugListViewModel;
     private String selectedTimeName;
     private ArrayList<DrugDb> drugsForTimeGlobal;
+    private DrugListAdapter drugListAdapter;
 
     public DrugListFragment() {
+         drugListAdapter = new DrugListAdapter();
     }
 
     public static DrugListFragment newInstance() {

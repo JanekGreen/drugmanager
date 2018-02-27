@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.github.ivbaranov.mli.MaterialLetterIcon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,6 +44,11 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
 
     public DrugListAdapter(List<DrugDb> drugsForTime) {
         this.drugsForTime = drugsForTime;
+        notifyDataSetChanged();
+    }
+    public DrugListAdapter() {
+        this.drugsForTime = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override

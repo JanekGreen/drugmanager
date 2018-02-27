@@ -39,6 +39,7 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
                     intent.putExtra("DRUG", drug);
                 }
                 startActivity(intent);
+                finish();
             }
         });
         Bundle bundle = getIntent().getExtras();
