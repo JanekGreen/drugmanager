@@ -65,7 +65,14 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
         if (savedInstanceState != null) {
             selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM", 0);
-
+            currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
+            bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
+            if (!currentFragmentSelected.equals("DRUG_LIST__")) {
+                spinner.setSelection(selectedItemPosition);
+            } else {
+                switchFragments(currentFragmentSelected, true);
+            }
+            changeViewForMode();
         }
 
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
@@ -76,15 +83,16 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         });
 
-
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedItemPosition = spinner.getSelectedItemPosition();
-                String selectedTime = spinner.getSelectedItem().toString()
-                        .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
-                currentFragmentSelected = selectedTime;
-                switchFragments(selectedTime,true);
+                if (!"DRUG_LIST__".equals(currentFragmentSelected)) {
+                    selectedItemPosition = spinner.getSelectedItemPosition();
+                    String selectedTime = spinner.getSelectedItem().toString()
+                            .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+                    currentFragmentSelected = selectedTime;
+                    switchFragments(selectedTime, true);
+                }
             }
 
             @Override
@@ -96,11 +104,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             switch (item.getItemId()) {
                 case R.id.drugListItem:
                     if (!currentFragmentSelected.equals("DRUG_LIST__")) {
-                        spinner.setVisibility(View.GONE);
-                        getSupportActionBar().setDisplayShowTitleEnabled(true);
-                        getSupportActionBar().setTitle("Lista leków");
                         currentFragmentSelected = "DRUG_LIST__";
-                        switchFragments("DRUG_LIST__",false);
+                        changeViewForMode();
+                        switchFragments("DRUG_LIST__", false);
                         return true;
                     }
                     break;
@@ -109,10 +115,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                     String selectedTime = spinner.getSelectedItem().toString()
                             .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
                     if (!currentFragmentSelected.equals(selectedTime)) {
-                        spinner.setVisibility(View.VISIBLE);
-                        getSupportActionBar().setDisplayShowTitleEnabled(false);
                         currentFragmentSelected = selectedTime;
-                        switchFragments(selectedTime,false);
+                        changeViewForMode();
+                        switchFragments(selectedTime, false);
                         return true;
                     }
                     break;
@@ -123,6 +128,16 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     }
 
+    private void changeViewForMode() {
+        if (currentFragmentSelected.equals("DRUG_LIST__")) {
+            spinner.setVisibility(View.GONE);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle("Lista leków");
+        } else {
+            spinner.setVisibility(View.VISIBLE);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -196,12 +211,12 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     }
 
 
-    @Override
+/*    @Override
     protected void onResume() {
         super.onResume();
         System.out.println("On resume");
         drugListViewModel.getDefinedTimes();
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -222,16 +237,21 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt("SELECTED_ITEM", selectedItemPosition);
+        outState.putString("SELECTED_FRAGMENT", currentFragmentSelected);
+        outState.putInt("BOTTOM_NAV", bottomNavigationView.getSelectedItemId());
         super.onSaveInstanceState(outState);
     }
 
     private void switchFragments(String argument, boolean noAnimation) {
-        Bundle args = new Bundle();
-        args.putString("SELECTED_TIME", argument);
-        Fragment fragment = DrugListFragment.newInstance();
-        fragment.setArguments(args);
 
         FragmentManager manager = getSupportFragmentManager();
+        Fragment fragment = manager.findFragmentByTag(argument);
+        Bundle args = new Bundle();
+        if (fragment == null) {
+            args.putString("SELECTED_TIME", argument);
+            fragment = DrugListFragment.newInstance();
+            fragment.setArguments(args);
+        }
         android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
         if (!argument.equals("DRUG_LIST__")) {
             if (!noAnimation)
@@ -242,8 +262,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         }
 
         transaction
-                .replace(R.id.container, fragment)
+                .replace(R.id.container, fragment, argument)
                 .commit();
+        changeViewForMode();
 
     }
 

@@ -70,44 +70,13 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle args = getArguments();
 
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
         rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
-
-        selectedTimeName = args.getString("SELECTED_TIME", "Rano");
-        if (!selectedTimeName.equals("DRUG_LIST__")) {
-            //list of notifications for drugs
-            drugListViewModel.getDrugsForTime(selectedTimeName)
-                    .subscribe(drugsForTime -> {
-                                drugsForTimeGlobal = new ArrayList<>(drugsForTime);
-                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
-                                rvDrugList.setAdapter(drugListAdapter);
-                                drugListAdapter.setOnDrugListAdapterItemClick(this);
-
-                            },
-                            e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
-                                    .show());
-        } else {
-            //List of all drugs
-            ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
-            new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
-            drugListViewModel.getAllDrugs()
-                    .subscribe(drugsForTime -> {
-                                drugsForTimeGlobal = new ArrayList<>(drugsForTime);
-                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
-                                rvDrugList.setAdapter(drugListAdapter);
-                                drugListAdapter.setOnDrugListAdapterItemClick(this);
-
-                            },
-                            e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
-                                    .show());
-        }
-
-
+        refreshView();
     }
 
     @Override
@@ -181,6 +150,12 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     }*/
 
     @Override
+    public void onResume() {
+        super.onResume();
+        refreshView();
+    }
+
+    @Override
     public void onAdapterItemClick(int position, View sharedElement) {
         Intent intent = new Intent(getContext(), DrugInfoActivity.class);
         intent.putExtra("DRUG_ID",
@@ -191,5 +166,37 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
 
         startActivity(intent,options.toBundle());
 
+    }
+
+    private void refreshView(){
+        Bundle args = getArguments();
+        selectedTimeName = args.getString("SELECTED_TIME", "Rano");
+        if (!selectedTimeName.equals("DRUG_LIST__")) {
+            //list of notifications for drugs
+            drugListViewModel.getDrugsForTime(selectedTimeName)
+                    .subscribe(drugsForTime -> {
+                                drugsForTimeGlobal = new ArrayList<>(drugsForTime);
+                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
+                                rvDrugList.setAdapter(drugListAdapter);
+                                drugListAdapter.setOnDrugListAdapterItemClick(this);
+
+                            },
+                            e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
+                                    .show());
+        } else {
+            //List of all drugs
+            ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
+            new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
+            drugListViewModel.getAllDrugs()
+                    .subscribe(drugsForTime -> {
+                                drugsForTimeGlobal = new ArrayList<>(drugsForTime);
+                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
+                                rvDrugList.setAdapter(drugListAdapter);
+                                drugListAdapter.setOnDrugListAdapterItemClick(this);
+
+                            },
+                            e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
+                                    .show());
+        }
     }
 }
