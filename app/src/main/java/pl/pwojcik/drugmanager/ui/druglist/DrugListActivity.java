@@ -178,45 +178,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     }
 
     @Override
-    protected void onStart() {
-        Bundle extras = getIntent().getExtras();
-        System.out.println("on Start entered");
-        if (extras != null) {
-            int requestCode = extras.getInt("REQUEST_CODE", -1);
-            System.out.print("Request code" + requestCode);
-            if (requestCode != -1) {
-
-
-                NotificationManager notificationManager = (NotificationManager)
-                        getSystemService(Context.NOTIFICATION_SERVICE);
-
-                if (notificationManager != null) {
-                    notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
-
-                    Intent stopIntent = new Intent(this, RingtonePlayingService.class);
-                    stopService(stopIntent);
-                }
-
-                drugListViewModel.getDefinedTimeForRequestCode(requestCode)
-                        .subscribe(list -> {
-                            if (list != null && !list.isEmpty()) {
-                                System.out.println("Spinner value " + list.get(0));
-                                Misc.selectSpinnerItemByValue(spinner, list.get(0));
-                            }
-                        });
-            }
-        }
-
-        super.onStart();
-    }
-
-
-/*    @Override
     protected void onResume() {
         super.onResume();
         System.out.println("On resume");
         drugListViewModel.getDefinedTimes();
-    }*/
+    }
 
     @Override
     public void onBackPressed() {

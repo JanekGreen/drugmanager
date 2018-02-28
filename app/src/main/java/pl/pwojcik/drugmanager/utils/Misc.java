@@ -19,6 +19,10 @@ public class Misc {
 
     public static boolean parseTimeInput(String hour, String minute) {
         //asserting positive value
+        if(hour == null || hour.isEmpty() || minute == null || minute.isEmpty()){
+            return false;
+        }
+
         int hour_ = Integer.valueOf(hour);
         int minute_ = Integer.valueOf(minute);
 
@@ -52,17 +56,7 @@ public class Misc {
         }
         return drug;
     }
-
-    public static void selectSpinnerItemByValue(Spinner spnr, String value) {
-        SpinnerAdapter adapter = spnr.getAdapter();
-        for (int position = 0; position < adapter.getCount(); position++) {
-            if(adapter.getItem(position) == value) {
-                System.err.print("Selected value "+value +"at position "+position);
-                spnr.setSelection(position);
-                return;
-            }
-        }
-    }
+    
     public static int pxToDp(Context context, int px) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));

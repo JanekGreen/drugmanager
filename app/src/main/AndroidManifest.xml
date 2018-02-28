@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:name="pl.pwojcik.drugmanager.DrugmanagerApplication"
@@ -14,9 +15,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:enabled="true" android:name="pl.pwojcik.drugmanager.notification.service.RingtonePlayingService" />
+        <service
+            android:name="pl.pwojcik.drugmanager.notification.service.RingtonePlayingService"
+            android:enabled="true" />
         <receiver android:name="pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver" />
-
+        <receiver android:name="pl.pwojcik.drugmanager.notification.AlarmStarterBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
         <activity
             android:name="pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity"
             android:label="@string/title_activity_get_drug_info" />
@@ -35,7 +42,10 @@
             android:name="pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity"
             android:label="@string/title_activity_new_drug_info"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="pl.pwojcik.drugmanager.ui.druglist.NotificationActivity"
+            android:label="Pora na leki"
+            />
     </application>
 
 </manifest>

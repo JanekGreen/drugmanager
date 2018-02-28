@@ -24,7 +24,6 @@ public class RingtonePlayingService extends Service
 
         this.ringtone = RingtoneManager.getRingtone(this, ringtoneUri);
         ringtone.play();
-
         return START_NOT_STICKY;
     }
 

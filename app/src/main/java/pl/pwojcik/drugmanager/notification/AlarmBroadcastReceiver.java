@@ -11,9 +11,11 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 
 import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
+import pl.pwojcik.drugmanager.ui.druglist.NotificationActivity;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pwojcik.pl.archcomponentstestproject.R;
 
@@ -34,7 +36,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification.Action action = new Notification
+        NotificationCompat.Action action = new NotificationCompat
                 .Action.Builder(R.mipmap.ic_launcher,
                 "Szczegóły", pendingIntent)
                 .build();
@@ -46,13 +48,13 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        Notification notification = new Notification.Builder(context)
+        Notification notification = new NotificationCompat.Builder(context,"channel-id")
                 .setContentTitle("Przypomnienie")
                 .setContentText("Pora na leki")
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(Icon.createWithResource(context, R.drawable.ic_info_black_24dp))
-                .setLargeIcon(Icon.createWithResource(context, R.drawable.ic_info_black_24dp))
+                .setSmallIcon(R.drawable.ic_info_black_24dp)
+                //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
                 .addAction(action)
 
                 .build();
@@ -72,7 +74,13 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         int requestCode;
         if(extras!=null) {
             requestCode = extras.getInt("REQUEST_CODE");
-            sendNotification(context,requestCode);
+            System.out.println("REQUEST CODE "+requestCode);
+            //sendNotification(context,requestCode);
+            Intent newActivityIntent = new Intent(context, NotificationActivity.class);
+            newActivityIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            newActivityIntent.putExtra("REQUEST_CODE",requestCode);
+            context.startActivity(newActivityIntent);
+
         }
     }
 
