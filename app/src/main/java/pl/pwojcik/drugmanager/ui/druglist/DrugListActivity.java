@@ -1,40 +1,32 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
-import android.app.ActivityOptions;
-import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
-
 import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
-import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.MainListSpinnerAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
 import pl.pwojcik.drugmanager.utils.Constants;
-import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class DrugListActivity extends AppCompatActivity implements SearchTypeListDialogFragment.Listener {
@@ -47,7 +39,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     FloatingActionButton fab;
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
-    String currentFragmentSelected = null;
+    String currentFragmentSelected = "";
 
     private DrugListViewModel drugListViewModel;
     boolean backPressed = false;

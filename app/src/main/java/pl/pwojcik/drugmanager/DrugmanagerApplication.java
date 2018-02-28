@@ -7,7 +7,9 @@ import android.content.Context;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.model.persistence.AppDatabase;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 
 /**
  * Created by pawel on 01.02.18.
@@ -20,18 +22,10 @@ public class DrugmanagerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if(db==null)
+        if (db == null)
             getDbInstance(getApplicationContext());
-        /*
-        DefinedTime definedTime = new DefinedTime();
-        definedTime.setName("Rano");
-        definedTime.setTime("8:00");
-        definedTime.setRequestCode(1);
 
-        getExecutorSingleThread().submit(()->{
-            db.getDefinedTimesDao().insertDefinedTime(definedTime);
-        });
-        */
+        writeToDatabaseRequiredValues();
 
     }
 
@@ -44,12 +38,30 @@ public class DrugmanagerApplication extends Application {
         return db;
     }
 
-    public static ExecutorService getExecutorSingleThread(){
-        if(executorSingleThread == null){
+    public static ExecutorService getExecutorSingleThread() {
+        if (executorSingleThread == null) {
             executorSingleThread = Executors.newSingleThreadExecutor();
         }
 
         return executorSingleThread;
+    }
+
+    private void writeToDatabaseRequiredValues() {
+
+        db.getDefinedTimesDao()
+                .getDefinedTimesCount()
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(size -> {
+                    if (size == 0) {
+                        DefinedTime definedTime = new DefinedTime();
+                        definedTime.setName("Rano");
+                        definedTime.setTime("8:00");
+                        definedTime.setRequestCode(0);
+                        db.getDefinedTimesDao()
+                                .insertDefinedTime(definedTime);
+                    }
+                })
+                .subscribe();
     }
 
 }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -120,10 +119,13 @@ public class DrugRepostioryImpl implements DrugRepository {
 
         return definedTimeDao.getAll()
                 .subscribeOn(Schedulers.io())
-                .flatMap(definedTimes ->
-                        Maybe.just(definedTimes.stream()
-                                .map(definedTime -> definedTime.getName() + " - " + definedTime.getTime())
-                                .collect(Collectors.toList()))
+                .flatMap(definedTimes -> {
+                            List<String> result = new ArrayList<>();
+                            for (DefinedTime definedTime : definedTimes) {
+                                result.add(definedTime.getName() + " - " + definedTime.getTime());
+                            }
+                            return Maybe.just(result);
+                        }
                 )
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -132,11 +134,14 @@ public class DrugRepostioryImpl implements DrugRepository {
     public Maybe<List<String>> getAllDefinedTimesWithNamesAndRequestCodeId(int requestCode) {
         return definedTimeDao.getAll()
                 .subscribeOn(Schedulers.io())
-                .flatMap(definedTimes ->
-                        Maybe.just(definedTimes.stream()
-                                .filter(definedTime -> definedTime.getRequestCode() == requestCode)
-                                .map(definedTime -> definedTime.getName() + " - " + definedTime.getTime())
-                                .collect(Collectors.toList()))
+                .flatMap(definedTimes -> {
+                            List<String> result = new ArrayList<>();
+                            for (DefinedTime definedTime : definedTimes) {
+                                if(definedTime.getRequestCode() == requestCode)
+                                    result.add(definedTime.getName() + " - " + definedTime.getTime());
+                            }
+                            return Maybe.just(result);
+                        }
                 )
                 .observeOn(AndroidSchedulers.mainThread());
     }
