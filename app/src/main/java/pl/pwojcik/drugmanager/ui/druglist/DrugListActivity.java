@@ -29,6 +29,9 @@ import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pwojcik.pl.archcomponentstestproject.R;
 
+import static pl.pwojcik.drugmanager.utils.Constants.DRUG_LIST;
+import static pl.pwojcik.drugmanager.utils.Constants.DRUG_NOTIFICATION;
+
 public class DrugListActivity extends AppCompatActivity implements SearchTypeListDialogFragment.Listener {
 
     @BindView(R.id.toolbar)
@@ -39,8 +42,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     FloatingActionButton fab;
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
-    String currentFragmentSelected = "";
 
+    String currentFragmentSelected = DRUG_NOTIFICATION;
+    String currentTimeSelected = "";
     private DrugListViewModel drugListViewModel;
     boolean backPressed = false;
     private int selectedItemPosition;
@@ -59,7 +63,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM", 0);
             currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
-            if (!currentFragmentSelected.equals("DRUG_LIST__")) {
+            if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+
                 spinner.setSelection(selectedItemPosition);
             } else {
                 switchFragments(currentFragmentSelected, true);
@@ -78,13 +83,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (!"DRUG_LIST__".equals(currentFragmentSelected)) {
-                    selectedItemPosition = spinner.getSelectedItemPosition();
-                    String selectedTime = spinner.getSelectedItem().toString()
-                            .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
-                    currentFragmentSelected = selectedTime;
-                    switchFragments(selectedTime, true);
-                }
+                switchFragments(R.id.notificationItem);
             }
 
             @Override
@@ -92,36 +91,12 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.drugListItem:
-                    if (!currentFragmentSelected.equals("DRUG_LIST__")) {
-                        currentFragmentSelected = "DRUG_LIST__";
-                        changeViewForMode();
-                        switchFragments("DRUG_LIST__", false);
-                        return true;
-                    }
-                    break;
-                case R.id.notificationItem:
-                    selectedItemPosition = spinner.getSelectedItemPosition();
-                    String selectedTime = spinner.getSelectedItem().toString()
-                            .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
-                    if (!currentFragmentSelected.equals(selectedTime)) {
-                        currentFragmentSelected = selectedTime;
-                        changeViewForMode();
-                        switchFragments(selectedTime, false);
-                        return true;
-                    }
-                    break;
-            }
-
-            return false;
-        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> switchFragments(item.getItemId()));
 
     }
 
     private void changeViewForMode() {
-        if (currentFragmentSelected.equals("DRUG_LIST__")) {
+        if (currentFragmentSelected.equals(DRUG_LIST)) {
             spinner.setVisibility(View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setTitle("Lista leków");
@@ -211,7 +186,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             fragment.setArguments(args);
         }
         android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
-        if (!argument.equals("DRUG_LIST__")) {
+        if (!argument.equals(DRUG_LIST)) {
             if (!noAnimation)
                 transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
         } else {
@@ -226,4 +201,34 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     }
 
+    private boolean switchFragments(int type) {
+        switch (type) {
+            case R.id.drugListItem:
+                if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+                    currentFragmentSelected = DRUG_LIST;
+                    currentTimeSelected = "";
+                    changeViewForMode();
+                    switchFragments(DRUG_LIST, false);
+                    return true;
+                }
+                break;
+            case R.id.notificationItem:
+                String selectedTime = "";
+                selectedItemPosition = spinner.getSelectedItemPosition();
+                if (selectedItemPosition != -1) {
+                    selectedTime = spinner.getSelectedItem().toString()
+                            .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+
+                    if (!selectedTime.equals(currentFragmentSelected)) {
+                        currentTimeSelected = selectedTime;
+                        currentFragmentSelected = DRUG_NOTIFICATION;
+                        changeViewForMode();
+                        switchFragments(selectedTime, false);
+                    }
+                }
+                return true;
+        }
+
+        return false;
+    }
 }

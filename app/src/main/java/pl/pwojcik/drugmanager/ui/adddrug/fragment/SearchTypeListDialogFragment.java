@@ -75,7 +75,7 @@ public class SearchTypeListDialogFragment extends BottomSheetDialogFragment {
     }
 
     private class ScanTypeAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private final String[] TYPE_NAMES={"Dodaj lek skanując kod kreskowy","Dodaj lek podając nazwę"};
+        private final String[] TYPE_NAMES={" Dodaj lek skanując kod kreskowy"," Dodaj lek podając nazwę"};
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
