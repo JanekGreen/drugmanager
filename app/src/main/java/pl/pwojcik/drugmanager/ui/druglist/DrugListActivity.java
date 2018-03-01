@@ -83,7 +83,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switchFragments(R.id.notificationItem);
+                handleViewChange(R.id.notificationItem);
             }
 
             @Override
@@ -91,7 +91,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> switchFragments(item.getItemId()));
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> handleViewChange(item.getItemId()));
 
     }
 
@@ -201,7 +201,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     }
 
-    private boolean switchFragments(int type) {
+    private boolean handleViewChange(int type) {
         switch (type) {
             case R.id.drugListItem:
                 if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
