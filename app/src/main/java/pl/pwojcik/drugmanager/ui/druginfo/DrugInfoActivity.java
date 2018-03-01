@@ -1,7 +1,9 @@
 package pl.pwojcik.drugmanager.ui.druginfo;
 
+import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,13 +12,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.ivbaranov.mli.MaterialLetterIcon;
+
+import java.io.File;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,6 +76,9 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     private DefinedTimeAdapter definedTimeAdapter;
     private DrugViewModel drugViewModel;
     private ActiveSubstanceAdapter activeSubstanceAdapter;
+    private String characteristicsUrl;
+    private String leafletUrl;
+    ArrayList<File> filesToDelete;
 
 
     @Override
@@ -85,7 +95,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
         rvDefinedTimes.setAdapter(definedTimeAdapter);
         rvDefinedTimes.setLayoutManager(new LinearLayoutManager(this));
-
+        filesToDelete = new ArrayList<>();
 
         rvActiveSubstance.setLayoutManager(new LinearLayoutManager(this));
         activeSubstanceAdapter = new ActiveSubstanceAdapter();
@@ -132,13 +142,17 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         activeSubstanceAdapter.setActiveSubstances(Misc.getContentsDataFromDrugDb(drugDb));
         supportStartPostponedEnterTransition();
         activeSubstanceAdapter.notifyDataSetChanged();
+        characteristicsUrl = drugDb.getCharacteristics();
+        leafletUrl = drugDb.getFeaflet();
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    public void onDestroy() {
+        super.onDestroy();
+        removeFiles();
         finishAfterTransition();
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -163,14 +177,32 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                         , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void handleExtras(Bundle extras){
+    @OnClick(R.id.tvCharacteristics)
+    public void ontvCharacteristicsClicked() {
+       handleFileDownload(characteristicsUrl);
+    }
+
+    @OnClick(R.id.tvInternetSearch)
+    public void ontvInternetSearchClicked() {
+        String url = "https://www.google.pl/search?q="+tvName.getText().toString();
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
+    @OnClick(R.id.tvLeaflet)
+    public void onTvleafletClicked() {
+        handleFileDownload(leafletUrl);
+    }
+
+    private void handleExtras(Bundle extras) {
         if (extras != null) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                System.out.println("TRANSITION_NAME " +extras.getString("TRANSITION_NAME"));
-                if(initialLetterIcon.getTransitionName() == null)
+                System.out.println("TRANSITION_NAME " + extras.getString("TRANSITION_NAME"));
+                if (initialLetterIcon.getTransitionName() == null)
                     supportPostponeEnterTransition();
-                    initialLetterIcon.setTransitionName(extras.getString("TRANSITION_NAME"));
+                initialLetterIcon.setTransitionName(extras.getString("TRANSITION_NAME"));
             }
             long drugId = extras.getLong("DRUG_ID", -1L);
             DrugDb drugDb = extras.getParcelable("DRUG");
@@ -184,5 +216,30 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                 getIntent().removeExtra("DRUG_ID");
             }
         }
+    }
+
+    private void handleFileProcessing(File file) {
+        Intent myIntent = new Intent(Intent.ACTION_VIEW);
+        myIntent.setDataAndType(Uri.fromFile(file),"application/pdf");
+        startActivity(myIntent);
+    }
+
+    private void handleFileDownload(String url){
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Proszę czekać trwa pobieranie pliku");
+        drugViewModel.downloadFileByUrl(url)
+                .doOnSubscribe(disposable -> progressDialog.show())
+                .subscribe(downloadedFile -> {
+                            progressDialog.dismiss();
+                            handleFileProcessing(downloadedFile);
+                            filesToDelete.add(downloadedFile);
+                        },
+                        throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show());
+    }
+    private void removeFiles() {
+        for(File file : filesToDelete){
+           file.delete();
+        }
+        System.out.println("Deleted "+filesToDelete.size()+"Files ");
     }
 }

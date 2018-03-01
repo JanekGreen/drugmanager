@@ -66,7 +66,7 @@
             android:layout_margin="@dimen/list_item_spacing"
             android:elevation="6dp"
             android:padding="8dp"
-            android:text="Dodaj"
+            android:text="Ustaw"
             android:textColor="#fff"
             app:backgroundTint="@color/colorPrimaryDark" />
 
@@ -108,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_vertical_margin"
-                android:drawableTop="@drawable/ic_link_black_40dp"
+                android:drawableTop="@drawable/ic_search_blue_24dp"
                 android:text="Google"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
         </LinearLayout>

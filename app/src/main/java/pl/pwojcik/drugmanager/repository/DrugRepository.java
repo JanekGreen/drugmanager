@@ -2,11 +2,13 @@ package pl.pwojcik.drugmanager.repository;
 
 import android.content.Context;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
@@ -48,4 +50,5 @@ public interface DrugRepository {
     io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
 
     Maybe<List<DrugDb>> getAll();
+    Observable<File> downloadFileByUrl(String url);
 }

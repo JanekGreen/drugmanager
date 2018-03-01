@@ -1,7 +1,10 @@
 package pl.pwojcik.drugmanager.repository;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +16,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTimeDao;
@@ -46,6 +50,10 @@ public class DrugRepostioryImpl implements DrugRepository {
         this.definedTimeDao = definedTimeDao;
     }
 
+    /**
+     *rest calls
+     */
+
     @Override
     public io.reactivex.Flowable<DrugDb> getDrugByEan(String ean) {
 
@@ -65,17 +73,6 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .first(new DrugDb())
                 .toFlowable();
-
-        /*return drugDbDao.geDrugByEanFromLocalDatabase("%" + ean + "%")
-                .map(TypeConverter::makeDrugFromDatabaseEntity)
-                .subscribeOn(Schedulers.io())
-                .isEmpty()
-                .toFlowable()
-                .flatMap(notInDatabase ->
-                        notInDatabase ? drugRestInterface.getDrugByEan(ean) : Flowable
-                                .error(new Throwable("Lek jest w bazie")))
-
-                .observeOn(AndroidSchedulers.mainThread());*/
     }
 
     @Override
@@ -83,6 +80,12 @@ public class DrugRepostioryImpl implements DrugRepository {
         return null;
     }
 
+    public Observable<File> downloadFileByUrl(String url){
+        return drugRestInterface.downloadFileByUrl(url)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(Misc::downloadFile);
+    }
 
     /**
      * ---------------------------------------------------------------------------------------
