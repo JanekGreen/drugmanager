@@ -118,7 +118,8 @@ public class AddByBarcodeFragment extends Fragment {
                         if (barcodes.size() > 0) {
                                 if(getActivity() instanceof IDrugFound){
                                     ((IDrugFound)getActivity())
-                                            .getDrugData(barcodes.valueAt(0).displayValue);
+                                            //.getDrugData("5909990321131");
+                                              .getDrugData(barcodes.valueAt(0).displayValue);
                                 }
                         }
                     }
@@ -136,6 +137,10 @@ public class AddByBarcodeFragment extends Fragment {
                         .submit((() -> cameraSource.stop()));
             }
         });
+
+/*        ((IDrugFound)getActivity())
+                 .getDrugData("5909990321131");
+                //.getDrugData(barcodes.valueAt(0).displayValue);*/
     }
 
 }

@@ -171,7 +171,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @OnClick(R.id.btnAddDrug)
     public void onBtnAddDrugClicked() {
         drugViewModel.saveDrugTimeData()
-                .subscribe(collection -> drugViewModel.updateOrSetAlarms(this)
+                .subscribe(list -> drugViewModel.updateOrSetAlarms(this)
                                 .subscribe(definedTimes -> finishAfterTransition()
                                         , Throwable::printStackTrace)
                         , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());

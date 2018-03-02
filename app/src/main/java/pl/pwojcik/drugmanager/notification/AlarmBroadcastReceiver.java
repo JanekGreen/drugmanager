@@ -11,6 +11,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 
 import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
@@ -73,6 +74,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         int requestCode;
         if(extras!=null) {
+            if (context.getSystemService(Context.POWER_SERVICE) != null) {
+                PowerManager.WakeLock wakeLock = ((PowerManager)context.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "MyActivity");
+                wakeLock.acquire(10*60*1000L /*10 minutes*/);
+            }
             requestCode = extras.getInt("REQUEST_CODE");
             System.out.println("REQUEST CODE "+requestCode);
             //sendNotification(context,requestCode);

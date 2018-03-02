@@ -8,6 +8,7 @@ import android.content.Intent;
 import java.util.Collection;
 import java.util.List;
 
+import io.reactivex.Observable;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver;
@@ -53,17 +54,32 @@ public class AlarmHelper {
     }
 
     public void cancelAllAlarms(List<DefinedTime> definedTimes){
-        definedTimes.forEach(definedTime -> alarmManager.cancel(getPendingIntent(definedTime.getRequestCode(),0)));
+        //definedTimes.forEach(definedTime -> alarmManager.cancel(getPendingIntent(definedTime.getRequestCode(),0)));
+        Observable.fromIterable(definedTimes)
+                .doOnNext(definedTime -> alarmManager.cancel(getPendingIntent(definedTime.getRequestCode(),0)))
+                .subscribe();
+
     }
 
     public void setOrUpdateAlarms(List<DefinedTime> definedTimes){
+        Observable.fromIterable(definedTimes)
+                .doOnNext(definedTime -> {
+                    int hour,minute;
+                    String hourMinuteParts[] = definedTime.getTime().split(":");
+                    hour =Integer.valueOf(hourMinuteParts[0]);
+                    minute =Integer.valueOf(hourMinuteParts[1]);
+                    setAlarmForTimeRepeating(hour,minute,1,definedTime.getRequestCode(),0);
+                })
+                .subscribe();
+
+        /*
         definedTimes.forEach(definedTime -> {
             int hour,minute;
             String hourMinuteParts[] = definedTime.getTime().split(":");
             hour =Integer.valueOf(hourMinuteParts[0]);
             minute =Integer.valueOf(hourMinuteParts[1]);
             setAlarmForTimeRepeating(hour,minute,1,definedTime.getRequestCode(),0);
-        });
+        });*/
     }
 
 }

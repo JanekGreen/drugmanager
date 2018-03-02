@@ -93,7 +93,7 @@ public class DrugViewModel extends AndroidViewModel {
         }
     }
 
-    public io.reactivex.Observable<Collection<DrugTime>> saveDrugTimeData() {
+    public io.reactivex.Observable<List<DrugTime>> saveDrugTimeData() {
         return drugRepository
                 .saveNewDrugTimeData(selectedTimesIds.getValue(),
                         drugDbMutableLiveData.getValue());

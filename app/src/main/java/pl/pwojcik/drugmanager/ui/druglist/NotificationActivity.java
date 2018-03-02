@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -37,8 +38,12 @@ public class NotificationActivity extends AppCompatActivity {
     @BindView(R.id.rvDrugList)
     RecyclerView rvDrugList;
     DrugListAdapter drugListAdapter;
+    @BindView(R.id.drugCount)
+    TextView tvDrugCount;
+    @BindView(R.id.timeName)
+    TextView tvTimeName;
 
-    private Ringtone ringtone;
+
     private DrugListViewModel drugListViewModel;
 
 
@@ -46,7 +51,6 @@ public class NotificationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
-
         ButterKnife.bind(this);
         final Window win = getWindow();
         win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
@@ -67,21 +71,26 @@ public class NotificationActivity extends AppCompatActivity {
                         .defaultIfEmpty("")
                         .map(fullString -> fullString.substring(0, fullString.indexOf(" ")))
                         .doOnSuccess(timeName -> {
+                            tvTimeName.setText(timeName);
                             drugListViewModel.getDrugsForTime(timeName)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(drugDbs -> {
                                         drugListAdapter = new DrugListAdapter(drugDbs);
                                         rvDrugList.setAdapter(drugListAdapter);
+                                        tvDrugCount.setText("Do wzięcia jest "+drugDbs.size()+" leków:");
                                     });
                         })
                         .subscribe(System.out::println,
                                 e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG)
                                         .show());
 
-                Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+/*                Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
                 this.ringtone = RingtoneManager.getRingtone(this, ringtoneUri);
-                ringtone.play();
+                ringtone.play();*/
+
+                Intent ringtonePlayingIntent = new Intent(this,RingtonePlayingService.class);
+                startService(ringtonePlayingIntent);
 
             }
         }
@@ -89,7 +98,8 @@ public class NotificationActivity extends AppCompatActivity {
 
     @OnClick(R.id.fabAccept)
     void onFabAcceptClicked() {
-        ringtone.stop();
+        Intent ringtonePlayingIntent = new Intent(this,RingtonePlayingService.class);
+        stopService(ringtonePlayingIntent);
         finish();
     }
 

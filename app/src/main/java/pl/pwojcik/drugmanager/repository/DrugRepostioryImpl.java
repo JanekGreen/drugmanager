@@ -1,12 +1,8 @@
 package pl.pwojcik.drugmanager.repository;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,7 +12,6 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTimeDao;
@@ -51,7 +46,7 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     /**
-     *rest calls
+     * rest calls
      */
 
     @Override
@@ -80,7 +75,7 @@ public class DrugRepostioryImpl implements DrugRepository {
         return null;
     }
 
-    public Observable<File> downloadFileByUrl(String url){
+    public Observable<File> downloadFileByUrl(String url) {
         return drugRestInterface.downloadFileByUrl(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -121,7 +116,7 @@ public class DrugRepostioryImpl implements DrugRepository {
 
     @Override
     public Maybe<List<String>> getAllDefinedTimesWithNames() {
-        return  definedTimeDao.getAll()
+        return definedTimeDao.getAll()
                 .toObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(list -> Observable.fromIterable(list)
@@ -133,7 +128,7 @@ public class DrugRepostioryImpl implements DrugRepository {
 
     @Override
     public Maybe<List<String>> getAllDefinedTimesWithNamesAndRequestCodeId(int requestCode) {
-      return  definedTimeDao.getAll()
+        return definedTimeDao.getAll()
                 .toObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(list -> Observable.fromIterable(list)
@@ -276,6 +271,7 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+
     @Override
     public Maybe<HashMap<Long, DrugTime>> getSelectedTimeIdsForDrug(long id) {
         return drugTimeDao.getDrugTimesForDrug(id)
@@ -293,9 +289,23 @@ public class DrugRepostioryImpl implements DrugRepository {
 
 
     @Override
-    public io.reactivex.Observable<Collection<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
+    public Observable<List<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
 
-        return io.reactivex.Observable.just(drugDb)
+        return Observable.just(drugDb)
+                .subscribeOn(Schedulers.io())
+                .map(drugDb1 -> drugDbDao.insertDrug(drugDb1))
+                .doOnNext(drugId -> drugTimeDao.removeDrugTimesForDrugDb(drugId))
+                .flatMap(drugId -> Observable.fromIterable(selectedIds.values())
+                        .subscribeOn(Schedulers.io())
+                        .doOnNext(drugTime -> {
+                            drugTime.setDrugId(drugId);
+                        })
+                        .toList()
+                        .doOnSuccess(list -> drugTimeDao.insertDrugTime(list))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .toObservable());
+
+        /*        return io.reactivex.Observable.just(drugDb)
                 .subscribeOn(Schedulers.io())
                 .flatMap(drug -> io.reactivex.Observable.just(drugDbDao.insertDrug(drugDb)))
                 .zipWith(io.reactivex.Observable.just(selectedIds.values()), (drugId, drugTimes) -> {
@@ -305,7 +315,12 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .doOnNext(drugTimes -> {
                     drugTimeDao.removeDrugTimesForDrugDb(drugDb.getId());
                     drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes));
-                });
+                });*/
+        /*return Observable.fromIterable(selectedIds.values())
+                .subscribeOn(Schedulers.io())
+                .doOnNext(drugTime -> drugTime.setDrugId(drugDb.getId()))
+                .toList()
+                .toObservable();*/
     }
 }
 
