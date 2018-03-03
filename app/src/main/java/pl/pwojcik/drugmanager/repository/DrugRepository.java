@@ -1,11 +1,13 @@
 package pl.pwojcik.drugmanager.repository;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -21,6 +23,7 @@ import pl.pwojcik.drugmanager.model.restEntity.Drug;
 public interface DrugRepository {
     io.reactivex.Flowable<DrugDb> getDrugByEan(String ean);
     List<Drug> getDrugListByName(String name);
+    Flowable<Cursor> getNameSuggestionsForDrug(String name);
 
     Maybe<List<DefinedTime>> getDefinedTimes();
     Maybe<Long> getDefinedTimeIdForName(String name);

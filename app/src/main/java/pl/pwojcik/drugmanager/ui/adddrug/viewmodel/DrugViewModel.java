@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
@@ -140,6 +142,11 @@ public class DrugViewModel extends AndroidViewModel {
 
     public  Observable<File> downloadFileByUrl(String url){
         return drugRepository.downloadFileByUrl(url);
+    }
+
+    public Flowable<Cursor> getNameSuggestionsForDrug(String name){
+        return drugRepository.getNameSuggestionsForDrug(name);
+
     }
 }
 

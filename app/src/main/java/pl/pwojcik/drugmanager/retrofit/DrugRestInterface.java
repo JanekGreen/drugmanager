@@ -1,5 +1,7 @@
 package pl.pwojcik.drugmanager.retrofit;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
@@ -22,4 +24,6 @@ public interface DrugRestInterface {
     @Streaming
     @GET
     Observable<Response<ResponseBody>> downloadFileByUrl(@Url String fileUrl);
+    @GET(Constants.GET_NAME_SUGGESTION)
+    Flowable<List<String>> getNameSuggestionForDrug(@Path("name") String name);
 }

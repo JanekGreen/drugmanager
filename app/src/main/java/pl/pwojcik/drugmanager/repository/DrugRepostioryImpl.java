@@ -1,12 +1,17 @@
 package pl.pwojcik.drugmanager.repository;
 
+import android.app.SearchManager;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.provider.BaseColumns;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
 
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -73,6 +78,14 @@ public class DrugRepostioryImpl implements DrugRepository {
     @Override
     public List<Drug> getDrugListByName(String name) {
         return null;
+    }
+
+    @Override
+    public Flowable<Cursor> getNameSuggestionsForDrug(String name) {
+        return drugRestInterface.getNameSuggestionForDrug(name)
+                .subscribeOn(Schedulers.newThread())
+                .map(this::createSuggestionsCursor)
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<File> downloadFileByUrl(String url) {
@@ -321,6 +334,14 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .doOnNext(drugTime -> drugTime.setDrugId(drugDb.getId()))
                 .toList()
                 .toObservable();*/
+    }
+
+    Cursor createSuggestionsCursor(List<String> list){
+        MatrixCursor cursor = new MatrixCursor(new String[]{BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1});
+        for (int i=0; i< list.size(); i++){
+            cursor.addRow(new String[]{String.valueOf(i),list.get(i)});
+        }
+        return cursor;
     }
 }
 

@@ -109,5 +109,6 @@
     </string>
     <string name="title_activity_drug_info"></string>
     <string name="title_activity_new_drug_info"></string>
+    <string name="title_activity_search_results">SearchResultsActivity</string>
 
 </resources>
