@@ -103,9 +103,9 @@ public class DrugRepostioryImpl implements DrugRepository {
 
     public Observable<File> downloadFileByUrl(String url) {
         return drugRestInterface.downloadFileByUrl(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(Misc::downloadFile);
+                .subscribeOn(Schedulers.newThread())
+                .map(Misc::downloadFile)
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     /**

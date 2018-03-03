@@ -237,6 +237,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                         },
                         throwable -> {Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
                         progressDialog.dismiss();
+                        throwable.printStackTrace();
                 });
     }
     private void removeFiles() {
