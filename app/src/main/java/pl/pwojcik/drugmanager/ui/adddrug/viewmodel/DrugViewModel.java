@@ -148,6 +148,9 @@ public class DrugViewModel extends AndroidViewModel {
         return drugRepository.getNameSuggestionsForDrug(name);
 
     }
+    public Flowable<List<DrugDb>> getDrugsForName(String name){
+        return drugRepository.getDrugsByName(name);
+    }
 }
 
 

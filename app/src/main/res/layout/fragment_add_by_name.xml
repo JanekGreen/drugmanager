@@ -4,9 +4,10 @@
     android:layout_height="match_parent"
     tools:context="pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByBarcodeFragment">
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvDrugList"
+        android:layout_margin="@dimen/activity_vertical_margin"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Add by name fragment" />
+        android:layout_height="wrap_content" />
 
 </FrameLayout>

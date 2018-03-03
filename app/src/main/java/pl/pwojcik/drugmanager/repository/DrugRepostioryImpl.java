@@ -88,6 +88,17 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @Override
+    public Flowable<List<DrugDb>> getDrugsByName(String name) {
+        return drugRestInterface.getDrugByName(name)
+                .flatMap(Flowable::fromIterable)
+                .subscribeOn(Schedulers.newThread())
+                .map(TypeConverter::makeDrugDatabaseEntity)
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .toFlowable();
+    }
+
     public Observable<File> downloadFileByUrl(String url) {
         return drugRestInterface.downloadFileByUrl(url)
                 .subscribeOn(Schedulers.io())
@@ -336,7 +347,7 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .toObservable();*/
     }
 
-    Cursor createSuggestionsCursor(List<String> list){
+    private Cursor createSuggestionsCursor(List<String> list){
         MatrixCursor cursor = new MatrixCursor(new String[]{BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1});
         for (int i=0; i< list.size(); i++){
             cursor.addRow(new String[]{String.valueOf(i),list.get(i)});

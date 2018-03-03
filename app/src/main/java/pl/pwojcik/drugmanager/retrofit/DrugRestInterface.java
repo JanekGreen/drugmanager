@@ -19,8 +19,10 @@ import retrofit2.http.Url;
 
 public interface DrugRestInterface {
 
-    @GET(Constants.GET_DRUG)
+    @GET(Constants.GET_DRUG_BY_EAN)
     Flowable<Drug> getDrugByEan(@Path("ean") String ean);
+    @GET(Constants.GET_DRUG_BY_NAME)
+    Flowable<List<Drug>> getDrugByName(@Path("name") String name);
     @Streaming
     @GET
     Observable<Response<ResponseBody>> downloadFileByUrl(@Url String fileUrl);

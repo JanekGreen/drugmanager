@@ -51,6 +51,10 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
         notifyDataSetChanged();
     }
 
+    public void setDrugsForTime(List<DrugDb> drugsForTime) {
+        this.drugsForTime = drugsForTime;
+    }
+
     @Override
     public void onBindViewHolder(DrugListViewHolder holder, int position) {
 
