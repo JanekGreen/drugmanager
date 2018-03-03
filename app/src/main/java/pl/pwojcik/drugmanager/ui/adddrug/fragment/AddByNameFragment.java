@@ -1,9 +1,11 @@
 package pl.pwojcik.drugmanager.ui.adddrug.fragment;
 
 
+import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.IDrugFound;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
 import pwojcik.pl.archcomponentstestproject.R;
 
@@ -72,6 +75,7 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
         rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         drugListAdapter = new DrugListAdapter();
+        drugListAdapter.setOnDrugListAdapterItemClick(this);
         rvDrugList.setAdapter(drugListAdapter);
     }
 
@@ -135,6 +139,13 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
 
     @Override
     public void onAdapterItemClick(int position, View sharedElement) {
+        Intent intent = new Intent(getContext(), DrugInfoActivity.class);
+        intent.putExtra("DRUG", drugListGlobal.get(position));
+        intent.putExtra("TRANSITION_NAME", drugListGlobal.get(position).getName());
+        ActivityOptions options = ActivityOptions
+                .makeSceneTransitionAnimation(getActivity(), sharedElement, drugListGlobal.get(position).getName());
+
+        startActivity(intent,options.toBundle());
 
     }
 }
