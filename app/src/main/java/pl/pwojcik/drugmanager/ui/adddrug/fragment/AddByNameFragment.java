@@ -99,9 +99,22 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        drugViewModel.getNameSuggestionsForDrug(newText)
+        /*drugViewModel.getNameSuggestionsForDrug(newText)
                 .subscribe(cursor -> suggestionsAdapter.swapCursor(cursor),
-                        throwable -> System.out.println(throwable.getMessage()));
+                        throwable -> System.out.println(throwable.getMessage()));*/
+        System.out.println("Phrase before"+newText);
+        if(newText!=null && !newText.isEmpty() && newText.length()>2) {
+            System.out.println("Phrase after"+newText);
+            drugViewModel.getDrugsForName(newText)
+                    .subscribe(list -> {
+                        drugListGlobal = new ArrayList<>(list);
+                        drugListAdapter.setDrugsForTime(list);
+                    },
+                            throwable -> System.err.println(throwable.getMessage()));
+        }else{
+           drugListAdapter.clearData();
+        }
+
         return true;
     }
 

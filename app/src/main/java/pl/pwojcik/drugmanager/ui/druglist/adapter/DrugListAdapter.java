@@ -53,18 +53,18 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
 
     public void setDrugsForTime(List<DrugDb> drugsForTime) {
         this.drugsForTime = drugsForTime;
+        notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(DrugListViewHolder holder, int position) {
 
-        System.out.println("drugs for time item" +drugsForTime.get(position).toString());
+        //System.out.println("drugs for time item" +drugsForTime.get(position).toString());
         String name = drugsForTime.get(position).getName();
         String description = drugsForTime.get(position).getUsageType()+" - "+
                 drugsForTime.get(position).getProducer();
 
        holder.materialLetterIcon.setLetter(name);
-       holder.materialLetterIcon.setLettersNumber(3);
        holder.materialLetterIcon.setTransitionName(drugsForTime.get(position).getName());
        holder.tvDrugName.setText(name);
        holder.tvDescription.setText(description);
@@ -80,6 +80,11 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
     public void restoreItem(DrugDb item, int position){
         drugsForTime.add(position, item);
         notifyItemInserted(position);
+    }
+
+    public void clearData(){
+        drugsForTime.clear();
+        notifyDataSetChanged();
     }
 
 

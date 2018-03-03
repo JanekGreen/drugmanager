@@ -95,6 +95,7 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .subscribeOn(Schedulers.newThread())
                 .map(TypeConverter::makeDrugDatabaseEntity)
                 .doOnNext(drugDb -> drugDb.setPackQuantity(""))
+                .take(10)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .toFlowable();
