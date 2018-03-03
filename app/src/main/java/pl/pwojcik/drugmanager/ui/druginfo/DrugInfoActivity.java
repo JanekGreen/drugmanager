@@ -225,6 +225,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     }
 
     private void handleFileDownload(String url){
+        System.out.println("url "+url);
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Proszę czekać trwa pobieranie pliku");
         drugViewModel.downloadFileByUrl(url)
@@ -234,7 +235,9 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                             handleFileProcessing(downloadedFile);
                             filesToDelete.add(downloadedFile);
                         },
-                        throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show());
+                        throwable -> {Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
+                });
     }
     private void removeFiles() {
         for(File file : filesToDelete){
