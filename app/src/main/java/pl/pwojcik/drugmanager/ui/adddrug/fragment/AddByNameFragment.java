@@ -87,6 +87,10 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         MenuItem item = menu.findItem(R.id.action_search);
         searchView = (SearchView) item.getActionView();
         suggestionsAdapter = getSuggestionsAdapter();
+        //searchView.setIconifiedByDefault(false);
+        searchView.setIconified(false);
+        searchView.setQueryHint("Szukaj podając nazwę leku");
+        searchView.requestFocus();
         searchView.setSuggestionsAdapter(suggestionsAdapter);
         searchView.setOnSuggestionListener(this);
         searchView.setOnQueryTextListener(this);
@@ -99,7 +103,6 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
 
     @Override
     public boolean onQueryTextChange(String newText) {
-
         drugListAdapter.clearData();
         if(newText!=null && !newText.isEmpty() && newText.length()>2) {
             System.out.println("Phrase after"+newText);
