@@ -6,17 +6,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,16 +23,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
-import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
-import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
-import pl.pwojcik.drugmanager.ui.druginfo.ActiveSubstanceAdapter;
-import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
+import pl.pwojcik.drugmanager.ui.druglist.DefinedTimesDialog;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
-public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback {
+public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback
+,DefinedTimesDialog.OnDialogButtonClickedListener{
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -157,6 +149,11 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            drugViewModel.saveDrugTimeData()
+                    .subscribe(list -> drugViewModel.updateOrSetAlarms(this)
+                                    .subscribe(definedTimes -> finishAfterTransition()
+                                            , Throwable::printStackTrace)
+                            , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -168,13 +165,11 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         drugViewModel.addSelectedTimeForDrug(definedTimeId, isSelected);
     }
 
-    @OnClick(R.id.btnAddDrug)
+    @OnClick(R.id.btnAddDrugTime)
     public void onBtnAddDrugClicked() {
-        drugViewModel.saveDrugTimeData()
-                .subscribe(list -> drugViewModel.updateOrSetAlarms(this)
-                                .subscribe(definedTimes -> finishAfterTransition()
-                                        , Throwable::printStackTrace)
-                        , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+        definedTimesDialog.setOnDialogButtonClicked(this);
+        definedTimesDialog.buildNewDefinedTimeDialog();
     }
 
     @OnClick(R.id.tvCharacteristics)
@@ -245,5 +240,15 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
            file.delete();
         }
         System.out.println("Deleted "+filesToDelete.size()+"Files ");
+    }
+
+    @Override
+    public void onDialogPositiveButtonClicked() {
+        drugViewModel.getDefinedTimesData();
+    }
+
+    @Override
+    public void onDialogNegativeButtonClicked() {
+
     }
 }

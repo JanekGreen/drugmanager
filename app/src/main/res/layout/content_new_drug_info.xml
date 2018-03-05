@@ -104,14 +104,14 @@
 
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btnAddDrug"
+            android:id="@+id/btnAddDrugTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="@dimen/list_item_spacing"
             android:elevation="6dp"
             android:padding="8dp"
-            android:text="Ustaw"
+            android:text="Dodaj nową porę..."
             android:textColor="#fff"
             app:backgroundTint="@color/colorPrimaryDark" />
 

@@ -74,8 +74,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
-        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-
+        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL)); rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         refreshView();
     }
 
@@ -117,37 +116,6 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         }
 
     }
-
-/*    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof DrugListAdapter.DrugListViewHolder) {
-            DrugListAdapter drugListAdapter = (DrugListAdapter) rvDrugList.getAdapter();
-            DrugDb removedItem = drugListAdapter.removeItem(position);
-            long drugId = removedItem.getId();
-            ArrayList<DrugTime> drugTime_ = new ArrayList<>();
-            drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
-                    .doOnSuccess(definedTimeId -> {
-                        drugListViewModel.getDrugTime(drugId, definedTimeId)
-                                .subscribe(drugTime_::add);
-                        drugListViewModel.removeDrugTime(definedTimeId, drugId);
-                    })
-                    .subscribe();
-            Snackbar snackbar = Snackbar
-                    .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-            snackbar.setAction("COFNIJ!", view -> {
-
-                drugListAdapter.restoreItem(removedItem, position);
-                drugListViewModel.restoreDrugTime(drugTime_.get(0));
-            });
-            View view = snackbar.getView();
-            CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams)view.getLayoutParams();
-            para.bottomMargin = Misc.dpToPx(getContext(),62+4);
-            view.setLayoutParams(para);
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
-        }
-
-    }*/
 
     @Override
     public void onResume() {

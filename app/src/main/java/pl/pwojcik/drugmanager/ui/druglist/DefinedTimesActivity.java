@@ -49,7 +49,7 @@ import pl.pwojcik.drugmanager.utils.UUIDUtil;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class DefinedTimesActivity extends AppCompatActivity implements NewDefinedTimeAdapter.OnNewDefinedTimesAdapterItemClick,
-        NewDefinedTimesAdapterTouchHelper.RecyclerItemTouchHelperListener {
+        NewDefinedTimesAdapterTouchHelper.RecyclerItemTouchHelperListener, DefinedTimesDialog.OnDialogButtonClickedListener {
 
 
     private DrugViewModel drugViewModel;
@@ -110,68 +110,17 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @OnClick(R.id.fabAddDefinedTimes)
     void onBtnAddDefinedTimesClicked() {
-        DefinedTime definedTime = new DefinedTime();
-        definedTime.setRequestCode(UUIDUtil.getUUID(this));
-        buildNewDefinedTimeDialog(definedTime);
+       DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+       definedTimesDialog.setOnDialogButtonClicked(this);
+       definedTimesDialog.buildNewDefinedTimeDialog();
     }
 
-    private void buildNewDefinedTimeDialog(DefinedTime definedTime) {
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.add_defined_times_dialog, null);
-
-        EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefined_time_name);
-        etDefinedTimeName.setText(definedTime.getName());
-        EditText etDefinedTimeHour = dialogView.findViewById(R.id.etDefined_time_hour);
-        EditText etDefinedTimeMinute = dialogView.findViewById(R.id.etDefined_time_minute);
-        String time = definedTime.getTime();
-        if (time != null && !time.isEmpty()) {
-
-            String[] parts = time.split(":");
-            etDefinedTimeHour.setText(parts[0]);
-            etDefinedTimeMinute.setText(parts[1]);
-        }
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Dodaj nową porę przyjmowania leku")
-                .setView(dialogView)
-                .setPositiveButton("OK", (dialog1, which) -> {
-
-                })
-                .setNegativeButton("Anuluj", (dialog12, which) -> {
-
-                })
-                .create();
-
-        dialog.show();
-
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Misc.parseTimeInput(etDefinedTimeHour.getText().toString(),
-                        etDefinedTimeMinute.getText().toString())) {
-
-                    definedTime.setTime(etDefinedTimeHour.getText().toString() + ":" + etDefinedTimeMinute.getText().toString());
-                    definedTime.setName(etDefinedTimeName.getText().toString());
-                    drugViewModel.insertDefinedTime(definedTime)
-                            .subscribe(
-                                    definedTime1 -> {
-                                        drugViewModel.getDefinedTimesData();
-                                    },
-                                    throwable -> Toast.makeText(DefinedTimesActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
-
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(DefinedTimesActivity.this, "Niepoprawny format godziny",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
 
     @Override
     public void onDefinedTimeAdapterItemClick(int position) {
-        buildNewDefinedTimeDialog(definedTimesGlobal.get(position));
+        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+        definedTimesDialog.setOnDialogButtonClicked(this);
+        definedTimesDialog.buildNewDefinedTimeDialog(definedTimesGlobal.get(position));
     }
 
     @Override
@@ -221,4 +170,14 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     }
 
 
+    @Override
+    public void onDialogPositiveButtonClicked() {
+        System.out.println("Listener invoked");
+        drugViewModel.getDefinedTimesData();
+    }
+
+    @Override
+    public void onDialogNegativeButtonClicked() {
+
+    }
 }
