@@ -18,16 +18,20 @@ public class TimeUtil {
 
         return calendar.getTimeInMillis();
     }
-    public static long getSpecificTime(int hour, int minute){
-
+    public static long getSpecificTime(int hour, int minute, boolean nextDay){
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE,minute);
-
-        if(calendar.before(Calendar.getInstance())){
-            calendar.add(Calendar.DATE,1);
+        calendar.set(Calendar.SECOND,0);
+        long diff = Calendar.getInstance().getTime().getTime() - calendar.getTime().getTime();
+        System.out.println("DIFF "+ diff);
+        if(diff >= 1 || nextDay) {
+            calendar.add(Calendar.DATE, 1);
+        }else{
+            System.out.println("Not adding day");
         }
+
+
         return calendar.getTimeInMillis();
     }
     public static long getSpecificTime(int hour){

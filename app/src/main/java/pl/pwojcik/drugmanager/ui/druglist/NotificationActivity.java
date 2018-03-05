@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.ui.druglist;
 
 import android.animation.TimeInterpolator;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
@@ -33,8 +35,6 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class NotificationActivity extends AppCompatActivity {
 
-    @BindView(R.id.fabAccept)
-    FloatingActionButton fabAccept;
     @BindView(R.id.rvDrugList)
     RecyclerView rvDrugList;
     DrugListAdapter drugListAdapter;
@@ -42,7 +42,6 @@ public class NotificationActivity extends AppCompatActivity {
     TextView tvDrugCount;
     @BindView(R.id.timeName)
     TextView tvTimeName;
-
 
     private DrugListViewModel drugListViewModel;
 
@@ -55,13 +54,22 @@ public class NotificationActivity extends AppCompatActivity {
         final Window win = getWindow();
         win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         rvDrugList.setLayoutManager(new LinearLayoutManager(this));
         rvDrugList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         Bundle extras = getIntent().getExtras();
         System.out.println("on Start entered");
         if (extras != null) {
+
+            Intent ringtonePlayingIntent = new Intent(this, RingtonePlayingService.class);
+            stopService(ringtonePlayingIntent);
+
+            NotificationManager notificationManager = (NotificationManager) this
+                    .getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+
+
             int requestCode = extras.getInt("REQUEST_CODE", -1);
             System.out.print("Request code" + requestCode);
             if (requestCode != -1) {
@@ -78,7 +86,7 @@ public class NotificationActivity extends AppCompatActivity {
                                     .subscribe(drugDbs -> {
                                         drugListAdapter = new DrugListAdapter(drugDbs);
                                         rvDrugList.setAdapter(drugListAdapter);
-                                        tvDrugCount.setText("Do wzięcia jest "+drugDbs.size()+" leków:");
+                                        tvDrugCount.setText("Do wzięcia jest " + drugDbs.size() + " leków:");
                                     });
                         })
                         .subscribe(System.out::println,
@@ -89,18 +97,8 @@ public class NotificationActivity extends AppCompatActivity {
                 this.ringtone = RingtoneManager.getRingtone(this, ringtoneUri);
                 ringtone.play();*/
 
-                Intent ringtonePlayingIntent = new Intent(this,RingtonePlayingService.class);
-                startService(ringtonePlayingIntent);
-
             }
         }
-    }
-
-    @OnClick(R.id.fabAccept)
-    void onFabAcceptClicked() {
-        Intent ringtonePlayingIntent = new Intent(this,RingtonePlayingService.class);
-        stopService(ringtonePlayingIntent);
-        finish();
     }
 
 }

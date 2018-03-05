@@ -12,6 +12,7 @@ import io.reactivex.Observable;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver;
+import pl.pwojcik.drugmanager.ui.druglist.NotificationActivity;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pl.pwojcik.drugmanager.utils.TimeUtil;
 
@@ -38,13 +39,23 @@ public class AlarmHelper {
     public PendingIntent getPendingIntent(int requestCode, int flag){
         return PendingIntent.getBroadcast(context, requestCode, getAlarmIntent(requestCode), flag);
     }
+    public PendingIntent getActionPendingIntent(int re){
+        Intent intent = new Intent(context, NotificationActivity.class);
+        intent.putExtra("REQUEST_CODE", re);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent
+                .getActivity(context,
+                        1,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
-    public void setAlarmForTimeRepeating(int hour, int minute, int dayInterval, int requestCode, int intentFlag){
-
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, TimeUtil.getSpecificTime(hour,minute),
-                AlarmManager.INTERVAL_DAY*dayInterval, getPendingIntent(requestCode,intentFlag));
+        return  pendingIntent;
     }
 
+    public void setAlarmForTimeRepeating(int hour, int minute, int dayInterval, int requestCode, int intentFlag, boolean nextDay){
+        alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(TimeUtil.getSpecificTime(hour,minute, nextDay), getActionPendingIntent(requestCode)),getPendingIntent(requestCode,intentFlag));
+        //alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, TimeUtil.getSpecificTime(hour,minute), getPendingIntent(requestCode,intentFlag));
+    }
     public boolean isIntentEqual(Intent intent1, Intent intent2){
         return  intent1.filterEquals(intent2);
     }
@@ -68,7 +79,7 @@ public class AlarmHelper {
                     String hourMinuteParts[] = definedTime.getTime().split(":");
                     hour =Integer.valueOf(hourMinuteParts[0]);
                     minute =Integer.valueOf(hourMinuteParts[1]);
-                    setAlarmForTimeRepeating(hour,minute,1,definedTime.getRequestCode(),0);
+                    setAlarmForTimeRepeating(hour,minute,1,definedTime.getRequestCode(),0, false);
                 })
                 .subscribe();
 

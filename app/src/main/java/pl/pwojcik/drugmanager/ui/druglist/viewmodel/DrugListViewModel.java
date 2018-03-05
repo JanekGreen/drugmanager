@@ -6,10 +6,12 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import java.util.List;
+import java.util.Observable;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.repository.DrugRepository;
@@ -68,7 +70,15 @@ public class DrugListViewModel extends AndroidViewModel {
                 .getAllDefinedTimesWithNamesAndRequestCodeId(requestCode);
 
     }
+    public Maybe<DefinedTime> getDefinedTimeForRequestCodeAsDefTime(int requestCode) {
+        return  drugListRepository
+                .getDefinedTimes()
+                .flatMap(list -> io.reactivex.Observable.fromIterable(list)
+                .filter(definedTime -> definedTime.getRequestCode() == requestCode)
+                .singleElement())
+                .doOnSuccess(definedTime -> System.out.println("Defined Time time "+definedTime.getTime()));
 
+    }
     public Maybe<List<DrugDb>> getAllDrugs(){
         return drugListRepository.getAll();
     }

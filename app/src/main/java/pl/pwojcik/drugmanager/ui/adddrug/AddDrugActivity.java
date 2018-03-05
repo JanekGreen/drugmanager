@@ -29,6 +29,10 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_drug);
         ButterKnife.bind(this);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
         drugViewModel.getDrugDbData().observe(this,drug -> {
             if(drug!=null) {

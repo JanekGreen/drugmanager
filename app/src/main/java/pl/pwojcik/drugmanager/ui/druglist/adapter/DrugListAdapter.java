@@ -83,6 +83,7 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
     }
 
     public void clearData(){
+        System.out.println("Cleared");
         drugsForTime.clear();
         notifyDataSetChanged();
     }

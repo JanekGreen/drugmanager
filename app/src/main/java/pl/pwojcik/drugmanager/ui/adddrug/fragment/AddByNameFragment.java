@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,14 +51,22 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
     private ArrayList<DrugDb> drugListGlobal;
     @BindView(R.id.rvDrugList)
     RecyclerView rvDrugList;
+    private Handler handler;
+    private String mqueryString;
 
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("QUERY", mqueryString);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
+        handler = new Handler();
     }
 
     @Override
@@ -77,6 +86,10 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         drugListAdapter = new DrugListAdapter();
         drugListAdapter.setOnDrugListAdapterItemClick(this);
         rvDrugList.setAdapter(drugListAdapter);
+
+        if(savedInstanceState!=null){
+            mqueryString = savedInstanceState.getString("QUERY",null);
+        }
     }
 
     @Override
@@ -87,35 +100,33 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         MenuItem item = menu.findItem(R.id.action_search);
         searchView = (SearchView) item.getActionView();
         suggestionsAdapter = getSuggestionsAdapter();
-        //searchView.setIconifiedByDefault(false);
         searchView.setIconified(false);
         searchView.setQueryHint("Szukaj podając nazwę leku");
         searchView.requestFocus();
         searchView.setSuggestionsAdapter(suggestionsAdapter);
         searchView.setOnSuggestionListener(this);
         searchView.setOnQueryTextListener(this);
+        if(mqueryString!=null){
+            handleSearch(mqueryString);
+            searchView.setQuery(mqueryString,true);
+        }
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        System.out.println("onQuery text change "+query);
+
         return false;
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
-        drugListAdapter.clearData();
-        if(newText!=null && !newText.isEmpty() && newText.length()>2) {
-            System.out.println("Phrase after"+newText);
-            drugViewModel.getDrugsForName(newText)
-                    .subscribe(list -> {
-                        drugListGlobal = new ArrayList<>(list);
-                        drugListAdapter.setDrugsForTime(list);
-                    },
-                            throwable -> System.err.println(throwable.getMessage()));
-        }else{
-           //drugListAdapter.clearData();
-        }
+    public boolean onQueryTextChange(String searchTerm) {
+        mqueryString = searchTerm;
+        handler.removeCallbacksAndMessages(null);
 
+        handler.postDelayed(() -> {
+            handleSearch(mqueryString);
+        }, 300);
         return true;
     }
 
@@ -161,5 +172,20 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
 
         startActivity(intent,options.toBundle());
 
+    }
+
+    private void handleSearch(String query) {
+        if (query.length() > 2) {
+            drugViewModel.getDrugsForName(query)
+                    .subscribe(list -> {
+                                //System.out.println("list size "+list.size()+" text size"+newText.length()+" "+newText);
+                                drugListGlobal = new ArrayList<>(list);
+                                drugListAdapter.setDrugsForTime(list);
+                            },
+                            throwable -> System.err.println(throwable.getMessage()));
+        }else{
+
+            drugListAdapter.clearData();
+        }
     }
 }
