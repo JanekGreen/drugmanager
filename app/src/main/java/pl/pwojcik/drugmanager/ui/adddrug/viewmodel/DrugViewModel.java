@@ -49,17 +49,10 @@ public class DrugViewModel extends AndroidViewModel {
         drugDbMutableLiveData = new MutableLiveData<>();
     }
 
-    public void getDrugByEan(String ean) {
+    public Flowable<DrugDb> getDrugByEan(String ean) {
 
-        drugRepository.getDrugByEan(ean)
-                .subscribe(drug ->
-                        drugDbMutableLiveData.setValue(drug),
-                        e -> {
-                            System.err.println(e.getMessage());
-                            Toast.makeText(getApplication().getApplicationContext(),
-                                    e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                );
+        return drugRepository.getDrugByEan(ean);
+
     }
 
 

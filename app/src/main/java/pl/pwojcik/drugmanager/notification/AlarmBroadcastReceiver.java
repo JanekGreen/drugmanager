@@ -58,12 +58,13 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         Notification notification = new NotificationCompat.Builder(context, "channel-id")
                 .setContentTitle("Przypomnienie")
                 .setContentText("Pora na leki")
-                .setDefaults(Notification.DEFAULT_VIBRATE)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setCategory(Notification.CATEGORY_ALARM)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_info_black_24dp)
+                .setWhen(System.currentTimeMillis())
                 //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
-                .addAction(action)
+                //.addAction(action)
 
                 .build();
         notification.flags = Notification.FLAG_ONGOING_EVENT;
@@ -99,8 +100,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                     });
 
             sendNotification(context, requestCode);
-            Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
-            context.startService(ringtonePlayingIntent);
+          /* Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
+            context.startService(ringtonePlayingIntent);*/
 
         }
             /*  Intent newActivityIntent = new Intent(context, NotificationActivity.class);

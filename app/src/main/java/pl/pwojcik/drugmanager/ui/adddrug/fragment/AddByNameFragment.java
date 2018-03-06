@@ -177,7 +177,6 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         if (query.length() > 2) {
             drugViewModel.getDrugsForName(query)
                     .subscribe(list -> {
-                                //System.out.println("list size "+list.size()+" text size"+newText.length()+" "+newText);
                                 drugListGlobal = new ArrayList<>(list);
                                 drugListAdapter.setDrugsForTime(list);
                             },

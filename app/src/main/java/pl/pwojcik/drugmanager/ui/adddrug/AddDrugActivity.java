@@ -7,21 +7,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
+
+import java.io.EOFException;
+import java.util.NoSuchElementException;
 
 import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByBarcodeFragment;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByNameFragment;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
+import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pwojcik.pl.archcomponentstestproject.R;
 
 import static pl.pwojcik.drugmanager.utils.Constants.ADD_BARCODE_TAG_NAME;
 import static pl.pwojcik.drugmanager.utils.Constants.ADD_NAME_TAG_NAME;
 
-public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
+public class AddDrugActivity extends AppCompatActivity  {
 
-
-    private DrugViewModel drugViewModel;
     private Fragment currentFragment = null;
 
     @Override
@@ -33,19 +36,6 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
-        drugViewModel.getDrugDbData().observe(this,drug -> {
-            if(drug!=null) {
-                Intent intent = new Intent(this, DrugInfoActivity.class);
-                if(drug.getId()!=0){
-                    intent.putExtra("DRUG_ID", drug.getId());
-                }else {
-                    intent.putExtra("DRUG", drug);
-                }
-                startActivity(intent);
-                finish();
-            }
-        });
         Bundle bundle = getIntent().getExtras();
         String searchTypeSelected = bundle != null ? bundle.getString("SEARCH_TYPE_FRAGMENT") : null;
         if (savedInstanceState == null) {
@@ -54,10 +44,6 @@ public class AddDrugActivity extends AppCompatActivity implements IDrugFound {
         }
     }
 
-    @Override
-    public void getDrugData(String ean) {
-        drugViewModel.getDrugByEan(ean);
-    }
 
     private void setFragment(String tag) {
         FragmentManager manager = getSupportFragmentManager();

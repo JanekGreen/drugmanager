@@ -1,4 +1,4 @@
-package pl.pwojcik.drugmanager.ui.druglist;
+package pl.pwojcik.drugmanager.ui.uicomponents;
 
 import android.app.Activity;
 import android.content.DialogInterface;

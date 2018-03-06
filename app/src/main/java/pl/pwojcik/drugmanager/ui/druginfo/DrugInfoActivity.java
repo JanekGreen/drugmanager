@@ -25,7 +25,7 @@ import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
-import pl.pwojcik.drugmanager.ui.druglist.DefinedTimesDialog;
+import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 

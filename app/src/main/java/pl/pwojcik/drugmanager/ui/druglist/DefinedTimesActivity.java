@@ -1,51 +1,31 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
-import pl.pwojcik.drugmanager.model.persistence.DrugDb;
-import pl.pwojcik.drugmanager.model.persistence.DrugTime;
-import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
-import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
-import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
-import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimesAdapterTouchHelper;
-import pl.pwojcik.drugmanager.utils.Misc;
-import pl.pwojcik.drugmanager.utils.UUIDUtil;
+import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class DefinedTimesActivity extends AppCompatActivity implements NewDefinedTimeAdapter.OnNewDefinedTimesAdapterItemClick,

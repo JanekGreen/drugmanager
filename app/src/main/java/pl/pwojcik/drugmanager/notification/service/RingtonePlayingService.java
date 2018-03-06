@@ -24,17 +24,9 @@ public class RingtonePlayingService extends Service
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(getBaseContext(),ringtoneUri);
-            mediaPlayer.setLooping(true);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-            mediaPlayer.stop();
-
-        }
+        mediaPlayer = MediaPlayer.create(getApplicationContext(),ringtoneUri);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
 
         return START_NOT_STICKY;
     }
@@ -42,6 +34,7 @@ public class RingtonePlayingService extends Service
     @Override
     public void onDestroy()
     {
+        System.out.println("On destroy called");
         mediaPlayer.stop();
     }
 }

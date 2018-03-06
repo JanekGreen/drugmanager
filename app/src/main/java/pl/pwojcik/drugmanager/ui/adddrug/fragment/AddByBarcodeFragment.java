@@ -2,6 +2,8 @@ package pl.pwojcik.drugmanager.ui.adddrug.fragment;
 
 
 import android.Manifest;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,21 +21,55 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.ui.adddrug.IDrugFound;
+import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
+import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pwojcik.pl.archcomponentstestproject.R;
 
 
-public class AddByBarcodeFragment extends Fragment {
+public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogUtilButtonListener {
 
     @BindView(R.id.svCameraPreview)
     SurfaceView svCameraPreview;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
+    private boolean stopDetection = false;
+    private DrugViewModel drugViewModel;
+
+
+
+
+    public void getDrugData(String ean) {
+        drugViewModel.getDrugByEan(ean)
+                .subscribe(drug ->{
+                            if (drug != null) {
+                                Intent intent = new Intent(getContext(), DrugInfoActivity.class);
+                                if (drug.getId() != 0) {
+                                    intent.putExtra("DRUG_ID", drug.getId());
+                                } else {
+                                    intent.putExtra("DRUG", drug);
+                                }
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        },
+                        e -> {
+                            String message = e.getMessage();
+                            if (e instanceof EOFException) {
+                                message = "Nie znaleziono leku w bazie";
+                            }
+                            DialogUtil dialog = new DialogUtil(this);
+                            dialog.showInfo(message);
+                        }
+                );
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,7 +85,6 @@ public class AddByBarcodeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
     }
 
     @Override
@@ -60,8 +95,8 @@ public class AddByBarcodeFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // barcode detection code
 
+        drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
         barcodeDetector = new BarcodeDetector
                 .Builder(getContext())
                 .setBarcodeFormats(Barcode.EAN_8 | Barcode.EAN_13)
@@ -96,10 +131,8 @@ public class AddByBarcodeFragment extends Fragment {
 
                 DrugmanagerApplication.getExecutorSingleThread()
                         .submit(() -> {
-
                             try {
                                 cameraSource.start(svCameraPreview.getHolder());
-
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -115,12 +148,11 @@ public class AddByBarcodeFragment extends Fragment {
                     public void receiveDetections(Detector.Detections<Barcode> detections) {
 
                         final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                        if (barcodes.size() > 0) {
-                                if(getActivity() instanceof IDrugFound){
-                                    ((IDrugFound)getActivity())
-                                            //.getDrugData("5909990321131");
-                                              .getDrugData(barcodes.valueAt(0).displayValue);
-                                }
+                        if (barcodes.size() > 0 && !stopDetection) {
+                            stopDetection = true;
+                            getDrugData(barcodes.valueAt(0).displayValue);
+
+
                         }
                     }
                 });
@@ -138,9 +170,15 @@ public class AddByBarcodeFragment extends Fragment {
             }
         });
 
-/*        ((IDrugFound)getActivity())
-                 .getDrugData("5909990321131");
-                //.getDrugData(barcodes.valueAt(0).displayValue);*/
     }
 
+    @Override
+    public void onPositiveButtonClicked() {
+        stopDetection = false;
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+
+    }
 }
