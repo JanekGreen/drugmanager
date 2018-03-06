@@ -76,11 +76,6 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public List<Drug> getDrugListByName(String name) {
-        return null;
-    }
-
-    @Override
     public Flowable<Cursor> getNameSuggestionsForDrug(String name) {
         return drugRestInterface.getNameSuggestionForDrug(name)
                 .subscribeOn(Schedulers.newThread())
