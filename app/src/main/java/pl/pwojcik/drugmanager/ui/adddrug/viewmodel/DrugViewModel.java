@@ -17,6 +17,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
@@ -143,6 +144,10 @@ public class DrugViewModel extends AndroidViewModel {
     }
     public Flowable<List<DrugDb>> getDrugsForName(String name){
         return drugRepository.getDrugsByName(name);
+    }
+
+    public Single<DrugDb> saveDrug(DrugDb drugDb){
+        return drugRepository.saveDrug(drugDb);
     }
 }
 

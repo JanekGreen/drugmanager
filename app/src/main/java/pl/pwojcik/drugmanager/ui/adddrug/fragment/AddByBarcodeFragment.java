@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.ui.adddrug.IDrugFound;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druginfo.AddDrugManualActivity;
 import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pwojcik.pl.archcomponentstestproject.R;
@@ -36,12 +37,13 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogUtilButtonListener {
 
+    private static final int NO_TRIES = 3;
     @BindView(R.id.svCameraPreview)
     SurfaceView svCameraPreview;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
-    private boolean stopDetection = false;
     private DrugViewModel drugViewModel;
+    private int tryCounter = 0;
 
 
 
@@ -61,12 +63,14 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
                             }
                         },
                         e -> {
-                            String message = e.getMessage();
                             if (e instanceof EOFException) {
-                                message = "Nie znaleziono leku w bazie";
+                               String title = "Nie znaleziono leku w bazie";
+                                tryCounter++;
+                                if(tryCounter == NO_TRIES) {
+                                    DialogUtil dialog = new DialogUtil(this);
+                                    dialog.showYestNoDialog(getContext(), title, "Chcesz dodać lek ręcznie?");
+                                }
                             }
-                            DialogUtil dialog = new DialogUtil(this);
-                            dialog.showInfo(message);
                         }
                 );
     }
@@ -148,8 +152,7 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
                     public void receiveDetections(Detector.Detections<Barcode> detections) {
 
                         final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                        if (barcodes.size() > 0 && !stopDetection) {
-                            stopDetection = true;
+                        if (barcodes.size() > 0 && !(tryCounter == NO_TRIES)) {
                             getDrugData(barcodes.valueAt(0).displayValue);
 
 
@@ -174,11 +177,14 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
 
     @Override
     public void onPositiveButtonClicked() {
-        stopDetection = false;
+        tryCounter = NO_TRIES;
+        Intent intent = new Intent(getContext(), AddDrugManualActivity.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 
     @Override
     public void onNegativeButtonClicked() {
-
+        tryCounter = 0;
     }
 }

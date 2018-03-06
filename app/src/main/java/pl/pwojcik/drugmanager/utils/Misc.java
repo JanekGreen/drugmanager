@@ -41,8 +41,10 @@ public class Misc {
 
     public static ArrayList<String> getContentsDataFromDrugDb(DrugDb drugDb) {
         ArrayList<String> result = new ArrayList<>();
-        String activeSubstances[] = drugDb.getActiveSubstance().split(",");
-        result.addAll(Arrays.asList(activeSubstances));
+        if(drugDb.getActiveSubstance()!= null && !drugDb.getActiveSubstance().isEmpty()) {
+            String activeSubstances[] = drugDb.getActiveSubstance().split(",");
+            result.addAll(Arrays.asList(activeSubstances));
+        }
         return result;
     }
 

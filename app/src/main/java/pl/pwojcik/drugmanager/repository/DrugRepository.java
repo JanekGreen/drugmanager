@@ -53,4 +53,6 @@ public interface DrugRepository {
 
     Maybe<List<DrugDb>> getAll();
     Observable<File> downloadFileByUrl(String url);
+
+    Single<DrugDb> saveDrug(DrugDb drugDb);
 }

@@ -104,6 +104,14 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @Override
+    public Single<DrugDb> saveDrug(DrugDb drugDb) {
+        return  Single.just(drugDb)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(drugDb1 -> drugDbDao.insertDrug(drugDb1))
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     /**
      * ---------------------------------------------------------------------------------------
      * DefinedTimesEntity methods

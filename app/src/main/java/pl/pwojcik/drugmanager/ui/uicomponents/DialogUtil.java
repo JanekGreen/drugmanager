@@ -19,12 +19,9 @@ public class DialogUtil {
 
     }
 
-
-    private Fragment fragment;
     private DialogUtilButtonListener buttonListener;
 
     public DialogUtil(Fragment fragment) {
-        this.fragment = fragment;
         if(fragment instanceof DialogUtilButtonListener)
             buttonListener = (DialogUtilButtonListener)fragment;
         else{
@@ -32,14 +29,39 @@ public class DialogUtil {
         }
 
     }
+    public DialogUtil(Activity activity) {
+        if(activity instanceof DialogUtilButtonListener)
+            buttonListener = (DialogUtilButtonListener)activity;
+        else{
+            throw new  IllegalArgumentException("Aktywność nie implementuje interfejsu DialogUtilButtonListener");
+        }
 
-    public void showInfo(String text) {
+    }
 
-        AlertDialog dialog = new AlertDialog.Builder(fragment.getContext())
+    public void showInfo(Context context, String text) {
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(text)
                 .setPositiveButton("OK", (dialog1, which) -> {
                     dialog1.dismiss();
                     buttonListener.onPositiveButtonClicked();
+                })
+                .create();
+
+        dialog.show();
+    }
+    public void showYestNoDialog(Context context,String title, String message) {
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("Tak", (dialog1, which) -> {
+                    dialog1.dismiss();
+                    buttonListener.onPositiveButtonClicked();
+                })
+                .setNegativeButton("Nie", (dialog12, which) -> {
+                    dialog12.dismiss();
+                    buttonListener.onNegativeButtonClicked();
                 })
                 .create();
 
