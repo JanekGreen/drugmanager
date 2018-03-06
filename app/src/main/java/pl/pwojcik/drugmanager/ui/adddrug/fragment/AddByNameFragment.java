@@ -102,7 +102,6 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         suggestionsAdapter = getSuggestionsAdapter();
         searchView.setIconified(false);
         searchView.setQueryHint("Szukaj podając nazwę leku");
-        searchView.requestFocus();
         searchView.setSuggestionsAdapter(suggestionsAdapter);
         searchView.setOnSuggestionListener(this);
         searchView.setOnQueryTextListener(this);

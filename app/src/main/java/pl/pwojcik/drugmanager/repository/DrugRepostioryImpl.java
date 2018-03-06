@@ -317,6 +317,12 @@ public class DrugRepostioryImpl implements DrugRepository {
     @Override
     public Observable<List<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
 
+        System.out.println("DrugDb "+drugDb.getId());
+        if (selectedIds.values().size() == 0 && drugDb.getId() == 0) {
+            System.out.println("Nie wybrano czasów nie zapisuje leku");
+            return Observable.empty();
+        }
+
         return Observable.just(drugDb)
                 .subscribeOn(Schedulers.io())
                 .map(drugDb1 -> drugDbDao.insertDrug(drugDb1))
@@ -330,23 +336,6 @@ public class DrugRepostioryImpl implements DrugRepository {
                         .doOnSuccess(list -> drugTimeDao.insertDrugTime(list))
                         .observeOn(AndroidSchedulers.mainThread())
                         .toObservable());
-
-        /*        return io.reactivex.Observable.just(drugDb)
-                .subscribeOn(Schedulers.io())
-                .flatMap(drug -> io.reactivex.Observable.just(drugDbDao.insertDrug(drugDb)))
-                .zipWith(io.reactivex.Observable.just(selectedIds.values()), (drugId, drugTimes) -> {
-                    drugTimes.forEach(drugTime -> drugTime.setDrugId(drugId));
-                    return drugTimes;
-                })
-                .doOnNext(drugTimes -> {
-                    drugTimeDao.removeDrugTimesForDrugDb(drugDb.getId());
-                    drugTimeDao.insertDrugTime(new ArrayList<>(drugTimes));
-                });*/
-        /*return Observable.fromIterable(selectedIds.values())
-                .subscribeOn(Schedulers.io())
-                .doOnNext(drugTime -> drugTime.setDrugId(drugDb.getId()))
-                .toList()
-                .toObservable();*/
     }
 
     private Cursor createSuggestionsCursor(List<String> list){
