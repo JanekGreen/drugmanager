@@ -62,6 +62,7 @@ public class AddDefinedTimeActivity extends AppCompatActivity {
         if(definedTime == null) {
             definedTime = new DefinedTime();
             definedTime.setRequestCode(UUIDUtil.getUUID(this));
+            definedTime.setTime(timePicker.getHour()+":"+timePicker.getMinute());
         }
 
         timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {

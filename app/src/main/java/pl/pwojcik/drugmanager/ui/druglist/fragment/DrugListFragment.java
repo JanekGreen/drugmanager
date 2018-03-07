@@ -85,34 +85,63 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
             DrugDb removedItem = drugListAdapter.removeItem(position);
             long drugId = removedItem.getId();
             List<DrugTime> relatedDrugTimes = new ArrayList<>();
-            drugListViewModel.getDrugTimesForDrug(drugId)
-                    .subscribe(list ->{
-                        relatedDrugTimes.addAll(list);
-                        drugListViewModel.removeDrugTimes(list)
-                                .subscribe(drugTimes -> {
-                                    drugListViewModel.removeDrug(removedItem);
-                                });
 
-                    }, e->{
+            if(selectedTimeName.equals("DRUG_LIST__")) {
 
-                    });
-            Snackbar snackbar = Snackbar
-                    .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-            snackbar.setAction("COFNIJ!", view -> {
+                drugListViewModel.getDrugTimesForDrug(drugId)
+                        .subscribe(list -> {
+                            relatedDrugTimes.addAll(list);
+                            drugListViewModel.removeDrugTimes(list)
+                                    .subscribe(drugTimes -> {
+                                        drugListViewModel.removeDrug(removedItem);
+                                    });
 
-                drugListAdapter.restoreItem(removedItem, position);
-                drugListViewModel.restoreDrug(removedItem)
-                .subscribe(drugDb -> {
-                    drugListViewModel.restoreDrugTimes(relatedDrugTimes);
+                        }, e -> {
+
+                        });
+                Snackbar snackbar = Snackbar
+                        .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                snackbar.setAction("COFNIJ!", view -> {
+
+                    drugListAdapter.restoreItem(removedItem, position);
+                    drugListViewModel.restoreDrug(removedItem)
+                            .subscribe(drugDb -> {
+                                drugListViewModel.restoreDrugTimes(relatedDrugTimes);
+                            });
                 });
 
-            });
-            View view = snackbar.getView();
-            CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams)view.getLayoutParams();
-            para.bottomMargin = Misc.dpToPx(getContext(),62+4);
-            view.setLayoutParams(para);
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
+                View view = snackbar.getView();
+                CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+                para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
+                view.setLayoutParams(para);
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
+            }else{
+                drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
+                        .doOnSuccess(definedTimeId -> {
+                            drugListViewModel.getDrugTime(drugId, definedTimeId)
+                                    .subscribe(drugTime -> {
+                                        relatedDrugTimes.add(drugTime);
+                                        drugListViewModel.removeDrugTime(drugTime);
+                                    });
+
+                        })
+                        .subscribe();
+                Snackbar snackbar = Snackbar
+                        .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                snackbar.setAction("COFNIJ!", view -> {
+
+                    drugListAdapter.restoreItem(removedItem, position);
+                    drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0));
+                });
+                View view = snackbar.getView();
+                CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams)view.getLayoutParams();
+                para.bottomMargin = Misc.dpToPx(getContext(),62+4);
+                view.setLayoutParams(para);
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
+
+            }
         }
 
     }
@@ -147,6 +176,8 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                                 DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
                                 rvDrugList.setAdapter(drugListAdapter);
                                 drugListAdapter.setOnDrugListAdapterItemClick(this);
+                                ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
+                                new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
 
                             },
                             e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)

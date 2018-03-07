@@ -58,6 +58,10 @@ public class DrugListViewModel extends AndroidViewModel {
         drugListRepository.removeDrugTime(definedTimeId,drugId);
     }
 
+    public void removeDrugTime(DrugTime drugTime) {
+        drugListRepository.removeDrugTime(drugTime);
+    }
+
     public void restoreDrugTime(DrugTime drugTime) {
         drugListRepository.restoreDrugTimeItem(drugTime);
     }

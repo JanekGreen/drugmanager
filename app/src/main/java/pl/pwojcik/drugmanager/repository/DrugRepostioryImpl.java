@@ -239,6 +239,14 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
     }
+    @Override
+    public void removeDrugTime(DrugTime drugTime) {
+        io.reactivex.Observable.just(drugTimeDao)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(drugTimeDao1 -> drugTimeDao1.removeDrugTime(drugTime))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+    }
 
     @Override
     public Single<List<DrugTime>> removeDrugTimes(List<DrugTime> drugTimes) {

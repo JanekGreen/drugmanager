@@ -55,4 +55,6 @@ public interface DrugRepository {
     Observable<File> downloadFileByUrl(String url);
 
     Single<DrugDb> saveDrug(DrugDb drugDb);
+
+    void removeDrugTime(DrugTime drugTime);
 }
