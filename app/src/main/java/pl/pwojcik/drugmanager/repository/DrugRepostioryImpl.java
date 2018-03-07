@@ -329,11 +329,11 @@ public class DrugRepostioryImpl implements DrugRepository {
     @Override
     public Observable<List<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {
 
-        System.out.println("DrugDb "+drugDb.getId());
+/*        System.out.println("DrugDb "+drugDb.getId());
         if (selectedIds.values().size() == 0 && drugDb.getId() == 0) {
             System.out.println("Nie wybrano czasów nie zapisuje leku");
             return Observable.empty();
-        }
+        }*/
 
         return Observable.just(drugDb)
                 .subscribeOn(Schedulers.io())

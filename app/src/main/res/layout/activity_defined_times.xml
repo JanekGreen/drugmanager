@@ -11,32 +11,21 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="1"
         android:layout_margin="@dimen/activity_vertical_margin"
         android:orientation="vertical">
-    <TextView
-        android:id="@+id/tvDefinedTimesTitle"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:text="Pory przyjmowania leków"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textSize="28sp"/>
 
     <android.support.v7.widget.RecyclerView
-        android:layout_weight="0.8"
         android:layout_margin="@dimen/activity_vertical_margin"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:id="@+id/rvDefinedTimes"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabAddDefinedTimes"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center|bottom"
         android:layout_margin="@dimen/fab_margin"
-        android:layout_weight="0.1"
         android:src="@mipmap/ic_add_white_18dp"
         app:backgroundTint="@color/colorPrimaryDark"/>
     </LinearLayout>

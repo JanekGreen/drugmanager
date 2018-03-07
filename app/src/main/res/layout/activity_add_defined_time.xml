@@ -26,14 +26,6 @@
         android:layout_marginBottom="@dimen/list_item_spacing"
         android:text="Nazwa dla pory przyjmowania leku"/>
 
-    <TextView
-        android:text="Wybierz czas"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_notifications_black_24dp"
-        android:layout_margin="@dimen/list_item_spacing_half" />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -41,7 +33,7 @@
         android:background="@android:color/darker_gray" />
     <TimePicker
         android:id="@+id/timePicker"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 </LinearLayout>

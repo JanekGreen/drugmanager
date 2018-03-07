@@ -6,7 +6,10 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -48,19 +51,20 @@ public class DefinedTimesDialog {
     public void buildNewDefinedTimeDialog(DefinedTime definedTime) {
 
         LayoutInflater inflater = activity.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.add_defined_times_dialog, null);
+        View dialogView = inflater.inflate(R.layout.activity_add_defined_time, null);
 
-        EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefined_time_name);
+        EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefinedTimeName);
         etDefinedTimeName.setText(definedTime.getName());
-        EditText etDefinedTimeHour = dialogView.findViewById(R.id.etDefined_time_hour);
-        EditText etDefinedTimeMinute = dialogView.findViewById(R.id.etDefined_time_minute);
-        String time = definedTime.getTime();
 
+        TimePicker timePicker = dialogView.findViewById(R.id.timePicker);
+        timePicker.setIs24HourView(true);
+
+        String time = definedTime.getTime();
         if (time != null && !time.isEmpty()) {
 
             String[] parts = time.split(":");
-            etDefinedTimeHour.setText(parts[0]);
-            etDefinedTimeMinute.setText(parts[1]);
+            timePicker.setHour(Integer.valueOf(parts[0]));
+            timePicker.setMinute(Integer.valueOf(parts[1]));
         }
 
         AlertDialog dialog = new AlertDialog.Builder(activity)
@@ -78,10 +82,8 @@ public class DefinedTimesDialog {
 
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
             DefinedTimeDao definedTimeDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDao();
-            if (Misc.parseTimeInput(etDefinedTimeHour.getText().toString(),
-                    etDefinedTimeMinute.getText().toString())) {
 
-                definedTime.setTime(etDefinedTimeHour.getText().toString() + ":" + etDefinedTimeMinute.getText().toString());
+                definedTime.setTime(String.format(Locale.getDefault(),"%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(),"%02d", timePicker.getMinute()));
                 definedTime.setName(etDefinedTimeName.getText().toString());
                 //definedTimeDao.insertDefinedTime(definedTime)
                 Observable.just(definedTime)
@@ -93,10 +95,7 @@ public class DefinedTimesDialog {
                                 },
                                 throwable -> Toast.makeText(activity, throwable.getMessage(), Toast.LENGTH_SHORT).show());
                 dialog.dismiss();
-            } else {
-                Toast.makeText(activity, "Niepoprawny format godziny",
-                        Toast.LENGTH_LONG).show();
-            }
-        });
+            });
+        }
+
     }
-}

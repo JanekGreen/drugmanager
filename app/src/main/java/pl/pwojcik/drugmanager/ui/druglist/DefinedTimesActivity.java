@@ -91,17 +91,17 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @OnClick(R.id.fabAddDefinedTimes)
     void onBtnAddDefinedTimesClicked() {
-         Intent intent = new Intent(this,AddDefinedTimeActivity.class);
-         startActivity(intent);
+        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+        definedTimesDialog.setOnDialogButtonClicked(this);
+        definedTimesDialog.buildNewDefinedTimeDialog();
     }
 
 
     @Override
     public void onDefinedTimeAdapterItemClick(int position) {
-        int requestCode = definedTimesGlobal.get(position).getRequestCode();
-        Intent intent = new Intent(this,AddDefinedTimeActivity.class);
-        intent.putExtra("REQUEST_CODE",requestCode);
-        startActivity(intent);
+        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+        definedTimesDialog.setOnDialogButtonClicked(this);
+        definedTimesDialog.buildNewDefinedTimeDialog(definedTimesGlobal.get(position));
 
     }
 
@@ -158,14 +158,10 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         drugViewModel.getDefinedTimesData();
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        drugViewModel.getDefinedTimesData();
-    }
 
     @Override
     public void onDialogNegativeButtonClicked() {
 
     }
 }
+

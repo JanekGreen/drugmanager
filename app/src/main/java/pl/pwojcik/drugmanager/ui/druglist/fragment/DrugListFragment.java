@@ -123,16 +123,23 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                                     .subscribe(drugTime -> {
                                         relatedDrugTimes.add(drugTime);
                                         drugListViewModel.removeDrugTime(drugTime);
+                                        drugListViewModel.updateOrSetAlarms(getContext())
+                                                .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size()),
+                                                        e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
                                     });
 
                         })
                         .subscribe();
+
                 Snackbar snackbar = Snackbar
                         .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
                 snackbar.setAction("COFNIJ!", view -> {
 
                     drugListAdapter.restoreItem(removedItem, position);
                     drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0));
+                    drugListViewModel.updateOrSetAlarms(getContext())
+                            .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size()),
+                                    e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
                 });
                 View view = snackbar.getView();
                 CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams)view.getLayoutParams();
@@ -168,6 +175,9 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private void refreshView(){
         Bundle args = getArguments();
         selectedTimeName = args.getString("SELECTED_TIME", "Rano");
+        ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
+
         if (!selectedTimeName.equals("DRUG_LIST__")) {
             //list of notifications for drugs
             drugListViewModel.getDrugsForTime(selectedTimeName)
@@ -176,23 +186,17 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                                 DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
                                 rvDrugList.setAdapter(drugListAdapter);
                                 drugListAdapter.setOnDrugListAdapterItemClick(this);
-                                ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
-                                new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
-
                             },
                             e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
                                     .show());
         } else {
             //List of all drugs
-            ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
-            new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
             drugListViewModel.getAllDrugs()
                     .subscribe(drugsForTime -> {
                                 drugsForTimeGlobal = new ArrayList<>(drugsForTime);
                                 DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
                                 rvDrugList.setAdapter(drugListAdapter);
                                 drugListAdapter.setOnDrugListAdapterItemClick(this);
-
                             },
                             e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
                                     .show());

@@ -3,6 +3,7 @@ package pl.pwojcik.drugmanager.ui.druglist.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -106,5 +107,8 @@ public class DrugListViewModel extends AndroidViewModel {
     public Maybe<DefinedTime> insertDefinedTime(DefinedTime definedTime){
 
         return drugListRepository.insertDefineTime(definedTime);
+    }
+    public Maybe<List<DefinedTime>> updateOrSetAlarms(Context context) {
+        return drugListRepository.updateSaveAlarms(context);
     }
 }
