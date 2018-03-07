@@ -99,6 +99,8 @@ public class DrugListViewModel extends AndroidViewModel {
     public void restoreDrugTimes(List<DrugTime> drugTimes){
          drugListRepository.restoreDrugTimes(drugTimes);
     }
+    public Maybe<DefinedTime> insertDefinedTime(DefinedTime definedTime){
 
-
+        return drugListRepository.insertDefineTime(definedTime);
+    }
 }

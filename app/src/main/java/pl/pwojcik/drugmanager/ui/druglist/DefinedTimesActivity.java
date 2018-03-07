@@ -1,6 +1,7 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -90,17 +91,18 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @OnClick(R.id.fabAddDefinedTimes)
     void onBtnAddDefinedTimesClicked() {
-       DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
-       definedTimesDialog.setOnDialogButtonClicked(this);
-       definedTimesDialog.buildNewDefinedTimeDialog();
+         Intent intent = new Intent(this,AddDefinedTimeActivity.class);
+         startActivity(intent);
     }
 
 
     @Override
     public void onDefinedTimeAdapterItemClick(int position) {
-        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
-        definedTimesDialog.setOnDialogButtonClicked(this);
-        definedTimesDialog.buildNewDefinedTimeDialog(definedTimesGlobal.get(position));
+        int requestCode = definedTimesGlobal.get(position).getRequestCode();
+        Intent intent = new Intent(this,AddDefinedTimeActivity.class);
+        intent.putExtra("REQUEST_CODE",requestCode);
+        startActivity(intent);
+
     }
 
     @Override
@@ -153,6 +155,12 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     @Override
     public void onDialogPositiveButtonClicked() {
         System.out.println("Listener invoked");
+        drugViewModel.getDefinedTimesData();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
         drugViewModel.getDefinedTimesData();
     }
 

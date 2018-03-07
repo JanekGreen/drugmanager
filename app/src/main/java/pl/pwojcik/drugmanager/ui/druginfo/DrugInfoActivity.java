@@ -25,12 +25,12 @@ import butterknife.OnClick;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druglist.AddDefinedTimeActivity;
 import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
-public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback
-,DefinedTimesDialog.OnDialogButtonClickedListener{
+public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -167,19 +167,18 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     @OnClick(R.id.btnAddDrugTime)
     public void onBtnAddDrugClicked() {
-        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
-        definedTimesDialog.setOnDialogButtonClicked(this);
-        definedTimesDialog.buildNewDefinedTimeDialog();
+        Intent intent = new Intent(this, AddDefinedTimeActivity.class);
+        startActivity(intent);
     }
 
     @OnClick(R.id.tvCharacteristics)
     public void ontvCharacteristicsClicked() {
-       handleFileDownload(characteristicsUrl);
+        handleFileDownload(characteristicsUrl);
     }
 
     @OnClick(R.id.tvInternetSearch)
     public void ontvInternetSearchClicked() {
-        String url = "https://www.google.pl/search?q="+tvName.getText().toString();
+        String url = "https://www.google.pl/search?q=" + tvName.getText().toString();
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
@@ -215,12 +214,12 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     private void handleFileProcessing(File file) {
         Intent myIntent = new Intent(Intent.ACTION_VIEW);
-        myIntent.setDataAndType(Uri.fromFile(file),"application/pdf");
+        myIntent.setDataAndType(Uri.fromFile(file), "application/pdf");
         startActivity(myIntent);
     }
 
-    private void handleFileDownload(String url){
-        System.out.println("url "+url);
+    private void handleFileDownload(String url) {
+        System.out.println("url " + url);
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Proszę czekać trwa pobieranie pliku");
         drugViewModel.downloadFileByUrl(url)
@@ -230,25 +229,23 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                             handleFileProcessing(downloadedFile);
                             filesToDelete.add(downloadedFile);
                         },
-                        throwable -> {Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
-                        progressDialog.dismiss();
-                        throwable.printStackTrace();
-                });
+                        throwable -> {
+                            Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                            throwable.printStackTrace();
+                        });
     }
+
     private void removeFiles() {
-        for(File file : filesToDelete){
-           file.delete();
+        for (File file : filesToDelete) {
+            file.delete();
         }
-        System.out.println("Deleted "+filesToDelete.size()+"Files ");
+        System.out.println("Deleted " + filesToDelete.size() + "Files ");
     }
 
     @Override
-    public void onDialogPositiveButtonClicked() {
+    protected void onResume() {
+        super.onResume();
         drugViewModel.getDefinedTimesData();
-    }
-
-    @Override
-    public void onDialogNegativeButtonClicked() {
-
     }
 }

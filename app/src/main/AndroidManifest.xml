@@ -31,7 +31,7 @@
 
         <activity
             android:name="pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity"
-            android:label="@string/title_activity_get_drug_info"></activity>
+            android:label="@string/title_activity_get_drug_info" />
         <activity
             android:name="pl.pwojcik.drugmanager.ui.druglist.DrugListActivity"
             android:label="@string/title_activity_drug_list2"
@@ -51,8 +51,10 @@
         <activity
             android:name="pl.pwojcik.drugmanager.ui.druglist.NotificationActivity"
             android:label="Pora na leki" />
-        <activity android:name="pl.pwojcik.drugmanager.ui.druginfo.AddDrugManualActivity"
-            android:label="Dodaj lek"/>
+        <activity
+            android:name="pl.pwojcik.drugmanager.ui.druginfo.AddDrugManualActivity"
+            android:label="Dodaj lek" />
+        <activity android:name="pl.pwojcik.drugmanager.ui.druglist.AddDefinedTimeActivity"></activity>
     </application>
 
 </manifest>
