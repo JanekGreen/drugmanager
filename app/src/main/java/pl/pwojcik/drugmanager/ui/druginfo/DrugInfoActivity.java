@@ -3,6 +3,9 @@ package pl.pwojcik.drugmanager.ui.druginfo;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -148,7 +151,13 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         supportStartPostponedEnterTransition();
         activeSubstanceAdapter.notifyDataSetChanged();
         characteristicsUrl = drugDb.getCharacteristics();
+        if(characteristicsUrl == null || characteristicsUrl.isEmpty()){
+            tvCharacteristics.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+        }
         leafletUrl = drugDb.getFeaflet();
+        if(leafletUrl == null || leafletUrl.isEmpty()){
+            tvLeaflet.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+        }
     }
 
     @Override
@@ -251,7 +260,10 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     }
 
     private void handleFileDownload(String url) {
-        System.out.println("url " + url);
+        if(url == null || url.isEmpty()){
+            Toast.makeText(this, "Lek nie posiada pliku", Toast.LENGTH_LONG).show();
+            return;
+        }
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Proszę czekać trwa pobieranie pliku");
         drugViewModel.downloadFileByUrl(url)
