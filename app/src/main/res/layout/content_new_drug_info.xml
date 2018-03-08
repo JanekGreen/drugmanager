@@ -18,6 +18,8 @@
             android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:text="Nazwa leku"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
@@ -25,6 +27,8 @@
             android:id="@+id/tvDrugNameDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:text="Rodzaj preparatu"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
@@ -32,6 +36,8 @@
             android:id="@+id/tvDrugNameDetails2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:text="Wielkość opakowania"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
@@ -86,14 +92,27 @@
             android:layout_marginStart="@dimen/activity_vertical_margin"
             android:background="@android:color/darker_gray" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginStart="@dimen/activity_vertical_margin"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:drawableStart="@drawable/ic_notifications_black_24dp"
-            android:text="  Przypomnienia"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:weightSum="1"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:drawableStart="@drawable/ic_notifications_black_24dp"
+                android:text="  Przypomnienia"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/ivMenu"
+                android:layout_weight="0.2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:src="@drawable/ic_more_vert_black_24dp"/>
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvDefinedTimes"
@@ -102,18 +121,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btnAddDrugTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="@dimen/list_item_spacing"
-            android:elevation="6dp"
-            android:padding="8dp"
-            android:text="Dodaj nową porę..."
-            android:textColor="#fff"
-            app:backgroundTint="@color/colorPrimaryDark" />
 
         <View
             android:layout_width="match_parent"

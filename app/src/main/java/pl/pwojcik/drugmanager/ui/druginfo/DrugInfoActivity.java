@@ -8,11 +8,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,11 +30,12 @@ import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druglist.AddDefinedTimeActivity;
+import pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity;
 import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
-public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback, DefinedTimesDialog.OnDialogButtonClickedListener {
+public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback, DefinedTimesDialog.OnDialogButtonClickedListener, PopupMenu.OnMenuItemClickListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -110,6 +113,13 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     }
 
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        drugViewModel.getDefinedTimesData();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -147,6 +157,22 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.add_defined_time:
+                DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+                definedTimesDialog.setOnDialogButtonClicked(this);
+                definedTimesDialog.buildNewDefinedTimeDialog();
+                return true;
+            case R.id.open_defined_time_activity:
+                Intent intent = new Intent(this,DefinedTimesActivity.class);
+                startActivity(intent);
+                return true;
+        }
+
+        return false;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -174,13 +200,6 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     public void onCheckedChangedCallback(long definedTimeId, boolean isSelected) {
         System.out.println("checkChanged definedTimeId" + definedTimeId + " isSelected " + isSelected);
         drugViewModel.addSelectedTimeForDrug(definedTimeId, isSelected);
-    }
-
-    @OnClick(R.id.btnAddDrugTime)
-    public void onBtnAddDrugClicked() {
-        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
-        definedTimesDialog.setOnDialogButtonClicked(this);
-        definedTimesDialog.buildNewDefinedTimeDialog();
     }
 
     @OnClick(R.id.tvCharacteristics)
@@ -248,6 +267,16 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                         });
     }
 
+
+    @OnClick(R.id.ivMenu)
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(this);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.popup_menu, popup.getMenu());
+        popup.show();
+    }
+
     private void removeFiles() {
         for (File file : filesToDelete) {
             file.delete();
@@ -257,6 +286,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     @Override
     public void onDialogPositiveButtonClicked() {
+
         drugViewModel.getDefinedTimesData();
     }
 
@@ -264,4 +294,5 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     public void onDialogNegativeButtonClicked() {
 
     }
+
 }
