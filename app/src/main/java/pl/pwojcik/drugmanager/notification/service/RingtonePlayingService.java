@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.notification.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -13,6 +14,7 @@ import java.io.IOException;
 public class RingtonePlayingService extends Service
 {
     private MediaPlayer mediaPlayer;
+    private AudioManager audioManager;
 
     @Override
     public IBinder onBind(Intent intent)

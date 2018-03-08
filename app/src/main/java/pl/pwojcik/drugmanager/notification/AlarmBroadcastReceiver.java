@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
+import android.view.WindowManager;
 
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
@@ -43,10 +44,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Action action = new NotificationCompat
+       /* NotificationCompat.Action action = new NotificationCompat
                 .Action.Builder(R.mipmap.ic_launcher,
                 "Szczegóły", pendingIntent)
-                .build();
+                .build();*/
 
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
@@ -65,7 +66,6 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setWhen(System.currentTimeMillis())
                 //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
                 //.addAction(action)
-
                 .build();
         notification.flags = Notification.FLAG_ONGOING_EVENT;
 
@@ -100,6 +100,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                     });
 
             sendNotification(context, requestCode);
+
           /* Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
             context.startService(ringtonePlayingIntent);*/
 
