@@ -10,6 +10,7 @@ import android.graphics.drawable.Icon;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
@@ -30,7 +31,6 @@ import pwojcik.pl.archcomponentstestproject.R;
  */
 
 public class AlarmBroadcastReceiver extends BroadcastReceiver {
-    boolean triggered = false;
 
     public void sendNotification(Context context, int requestCode) {
         System.out.println("Send notification...");
@@ -57,29 +57,38 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         }
 
         Notification notification = new NotificationCompat.Builder(context, "channel-id")
-                .setContentTitle("Przypomnienie")
-                .setContentText("Pora na leki")
-                .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentTitle("Pora na leki")
+                .setContentText("Pora na leki2")
+                .setDefaults(NotificationCompat.FLAG_SHOW_LIGHTS)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("Pora na leki 2"))
                 .setSmallIcon(R.drawable.ic_info_black_24dp)
                 .setWhen(System.currentTimeMillis())
                 //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
                 //.addAction(action)
                 .build();
-        notification.flags = Notification.FLAG_ONGOING_EVENT;
-
+        notification.flags =notification.defaults |Notification.FLAG_INSISTENT;
+        notification.sound = Uri.parse("android.resource://"+context.getPackageName()+"/notification_sound.vaw");
         notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
-
 
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        System.out.println("on receive " + triggered);
         Bundle extras = intent.getExtras();
         int requestCode;
         if (extras != null) {
+           /* Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
+            context.startService(ringtonePlayingIntent);*/
+
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+           PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+                    PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                    PowerManager.ON_AFTER_RELEASE, "WakeLock");
+            wakeLock.acquire(5000);
             requestCode = extras.getInt("REQUEST_CODE");
             DrugRepostioryImpl drugListRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService(),
                     DrugmanagerApplication.getDbInstance(context).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(context).getDrugDbDao(),
@@ -100,9 +109,6 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                     });
 
             sendNotification(context, requestCode);
-
-          /* Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
-            context.startService(ringtonePlayingIntent);*/
 
         }
             /*  Intent newActivityIntent = new Intent(context, NotificationActivity.class);

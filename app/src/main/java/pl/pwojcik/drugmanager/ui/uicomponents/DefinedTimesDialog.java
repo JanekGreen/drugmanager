@@ -56,7 +56,7 @@ public class DefinedTimesDialog {
         EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefinedTimeName);
         etDefinedTimeName.setText(definedTime.getName());
 
-        TimePicker timePicker = dialogView.findViewById(R.id.timePicker);
+        CustomTimePicker timePicker = dialogView.findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
 
         String time = definedTime.getTime();
@@ -68,7 +68,7 @@ public class DefinedTimesDialog {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setTitle("Dodaj nową porę przyjmowania leku")
+                .setTitle(null)
                 .setView(dialogView)
                 .setPositiveButton("OK", (dialog1, which) -> {
 
