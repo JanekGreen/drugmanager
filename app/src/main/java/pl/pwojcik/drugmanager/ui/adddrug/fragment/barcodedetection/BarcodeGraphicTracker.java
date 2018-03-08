@@ -55,6 +55,9 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
         }
     }
 
+    /**
+     * new constructor parameter added - listener PW
+     */
     BarcodeGraphicTracker(GraphicOverlay<BarcodeGraphic> mOverlay, BarcodeGraphic mGraphic,
                           BarcodeUpdateListener listener) {
         this.mOverlay = mOverlay;
