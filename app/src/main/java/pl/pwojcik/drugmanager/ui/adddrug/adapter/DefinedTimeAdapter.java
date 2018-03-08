@@ -70,6 +70,9 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
         holder.tvTime.setText(definedTime.getTime());
         if(drugTimes.contains(definedTime.getId())){
           holder.swSelected.setChecked(true);
+          holder.tvTime.setTextColor(Color.BLACK);
+        }else{
+            holder.tvTime.setTextColor(Color.GRAY);
         }
     }
 
@@ -101,6 +104,7 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
         @OnCheckedChanged(R.id.swSelected)
         public void onCheckedChanged(CompoundButton compoundButton, boolean isSelected){
             switchChangeCallback.onCheckedChangedCallback(definedTimes.get(getAdapterPosition()).getId(),isSelected);
+
 
         }
 
