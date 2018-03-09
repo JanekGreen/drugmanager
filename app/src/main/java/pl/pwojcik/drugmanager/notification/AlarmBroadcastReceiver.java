@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
@@ -35,14 +36,16 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     public void sendNotification(Context context, int requestCode) {
         System.out.println("Send notification...");
 
-        Intent intent = new Intent(context, NotificationActivity.class);
-        intent.putExtra("REQUEST_CODE", requestCode);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent
-                .getActivity(context,
-                        1,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent startIntent = new Intent(context, NotificationActivity.class);
+        startIntent.putExtra("REQUEST_CODE", requestCode);
+        startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        Intent deleteIntent = new Intent(context, RingtonePlayingService.class);
+        deleteIntent.putExtra("STOP_PLAYING",true);
+        PendingIntent deletePendingIntent = PendingIntent.getService(context,989,deleteIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+
 
        /* NotificationCompat.Action action = new NotificationCompat
                 .Action.Builder(R.mipmap.ic_launcher,
@@ -56,22 +59,23 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
+
         Notification notification = new NotificationCompat.Builder(context, "channel-id")
                 .setContentTitle("Pora na leki")
                 .setContentText("Pora na leki2")
-                .setDefaults(NotificationCompat.FLAG_SHOW_LIGHTS)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setContentIntent(pendingIntent)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Pora na leki 2"))
+                .setDeleteIntent(deletePendingIntent)
+                //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+                //.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" +R.raw.notification_sound))
                 .setSmallIcon(R.drawable.ic_info_black_24dp)
                 .setWhen(System.currentTimeMillis())
                 //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
                 //.addAction(action)
                 .build();
-        notification.flags =notification.defaults |Notification.FLAG_INSISTENT;
-        notification.sound = Uri.parse("android.resource://"+context.getPackageName()+"/notification_sound.vaw");
+        notification.flags =Notification.FLAG_INSISTENT;
         notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
 
     }
@@ -81,9 +85,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         int requestCode;
         if (extras != null) {
-           /* Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
-            context.startService(ringtonePlayingIntent);*/
-
+            Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
+            context.startService(ringtonePlayingIntent);
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
            PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                     PowerManager.ACQUIRE_CAUSES_WAKEUP |

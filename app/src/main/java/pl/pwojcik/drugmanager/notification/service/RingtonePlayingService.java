@@ -7,14 +7,16 @@ import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 
 import java.io.IOException;
 
+import pwojcik.pl.archcomponentstestproject.R;
+
 public class RingtonePlayingService extends Service
 {
     private MediaPlayer mediaPlayer;
-    private AudioManager audioManager;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -25,10 +27,18 @@ public class RingtonePlayingService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        mediaPlayer = MediaPlayer.create(getApplicationContext(),ringtoneUri);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+        Bundle extras = intent.getExtras();
+        if(extras!=null) {
+            boolean stopPlaying = extras.getBoolean("STOP_PLAYING", false);
+            if (stopPlaying){
+                stopSelf();
+            }
+        }else {
+            mediaPlayer = MediaPlayer.create(getBaseContext(),R.raw.notification_sound2);
+            mediaPlayer.start();
+            mediaPlayer.setLooping(true);
+
+        }
 
         return START_NOT_STICKY;
     }
@@ -36,7 +46,6 @@ public class RingtonePlayingService extends Service
     @Override
     public void onDestroy()
     {
-        System.out.println("On destroy called");
         mediaPlayer.stop();
     }
 }
