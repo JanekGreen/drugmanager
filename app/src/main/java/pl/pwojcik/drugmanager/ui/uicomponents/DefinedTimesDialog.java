@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.ui.uicomponents;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,8 +64,14 @@ public class DefinedTimesDialog {
         if (time != null && !time.isEmpty()) {
 
             String[] parts = time.split(":");
-            timePicker.setHour(Integer.valueOf(parts[0]));
-            timePicker.setMinute(Integer.valueOf(parts[1]));
+            if (Build.VERSION.SDK_INT >= 23 ){
+                timePicker.setHour(Integer.valueOf(parts[0]));
+                timePicker.setMinute(Integer.valueOf(parts[1]));
+            } else {
+                timePicker.setCurrentHour(Integer.valueOf(parts[0]));
+                timePicker.setCurrentMinute(Integer.valueOf(parts[1]));
+            }
+
         }
 
         AlertDialog dialog = new AlertDialog.Builder(activity)
@@ -82,8 +89,11 @@ public class DefinedTimesDialog {
 
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
             DefinedTimeDao definedTimeDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDao();
-
-                definedTime.setTime(String.format(Locale.getDefault(),"%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(),"%02d", timePicker.getMinute()));
+            if (Build.VERSION.SDK_INT >= 23 ) {
+                definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getMinute()));
+            }else{
+                definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getCurrentHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getCurrentMinute()));
+            }
                 definedTime.setName(etDefinedTimeName.getText().toString());
                 //definedTimeDao.insertDefinedTime(definedTime)
                 Observable.just(definedTime)

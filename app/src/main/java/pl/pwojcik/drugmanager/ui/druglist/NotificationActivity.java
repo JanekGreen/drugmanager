@@ -60,9 +60,9 @@ public class NotificationActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         System.out.println("on Start entered");
         if (extras != null) {
-
+/*
             Intent ringtonePlayingIntent = new Intent(this, RingtonePlayingService.class);
-            stopService(ringtonePlayingIntent);
+            stopService(ringtonePlayingIntent);*/
 
             NotificationManager notificationManager = (NotificationManager) this
                     .getSystemService(Context.NOTIFICATION_SERVICE);

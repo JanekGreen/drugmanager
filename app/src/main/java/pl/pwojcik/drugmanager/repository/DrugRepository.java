@@ -14,7 +14,6 @@ import io.reactivex.Single;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
-import pl.pwojcik.drugmanager.model.restEntity.Drug;
 
 /**
  * Created by pawel on 10.02.18.
@@ -36,6 +35,9 @@ public interface DrugRepository {
 
     Maybe<List<DefinedTime>> updateSaveAlarms(Context context);
     Maybe<List<DrugDb>> getDrugsForTime(String timeName);
+
+    Observable<DrugDb> getDrugsForRequestCode(int requestCode);
+
     Maybe<DrugDb> getDrugDbForId(long id);
 
 

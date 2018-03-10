@@ -25,6 +25,10 @@ public interface DrugDbDao {
             "left join defined_times on drug_time.time_id =defined_times.id where defined_times.name = :timeName")
     Maybe<List<DrugDb>> getDrugsForTime(String timeName);
 
+    @Query("SELECT drugs.name,drugs.pack_quantity,drugs.id,drugs.active_substance,drugs.dosage,drugs.usage_type,drugs.producer,drugs.leaflet, drugs.characteristics from drugs left join drug_time on drug_time.drug_id = drugs.id " +
+            "left join defined_times on drug_time.time_id =defined_times.id where defined_times.request_code = :requestCode")
+    Maybe<List<DrugDb>> getDrugsForRequestCode(int requestCode);
+
     @Query("SELECT * from drugs where id in (:ids)")
     Maybe<List<DrugDb>> getDrugsForIds(List<Long> ids);
 

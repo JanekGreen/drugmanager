@@ -39,7 +39,6 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
 
     private static final int RC_HANDLE_GMS = 9001;
     private static final int NO_TRIES = 3;
-    private BarcodeDetector barcodeDetector;
     private CameraSource mCameraSource;
     private DrugViewModel drugViewModel;
     private int tryCounter = 0;
@@ -48,6 +47,7 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
     CameraSourcePreview mPreview;
     @BindView(R.id.graphicOverlay)
     GraphicOverlay<BarcodeGraphic> graphicOverlay;
+    private boolean dialogActive =false;
 
 
     @Override
@@ -76,14 +76,12 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
         super.onViewCreated(view, savedInstanceState);
 
         drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
-        barcodeDetector = new BarcodeDetector
+        BarcodeDetector barcodeDetector = new BarcodeDetector
                 .Builder(getContext())
                 .setBarcodeFormats(Barcode.EAN_8 | Barcode.EAN_13)
                 .build();
 
         BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(graphicOverlay, getContext(),this);
-
-
         if (!barcodeDetector.isOperational()) {
             System.err.println("Barcode detector not working");
             return;
@@ -108,7 +106,7 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
 
     @Override
     public void onPositiveButtonClicked() {
-        tryCounter = NO_TRIES;
+        dialogActive = false;
         Intent intent = new Intent(getContext(), AddDrugManualActivity.class);
         startActivity(intent);
         getActivity().finish();
@@ -116,6 +114,7 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
 
     @Override
     public void onNegativeButtonClicked() {
+        dialogActive = false;
         tryCounter = 0;
     }
 
@@ -135,11 +134,15 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
                         },
                         e -> {
                             if (e instanceof EOFException) {
-                                String title = "Nie znaleziono leku w bazie";
-                                tryCounter++;
-                                if(tryCounter == NO_TRIES) {
+                                String title = "Nie znaleziono leku w bazie ";
+                                if(tryCounter == NO_TRIES && !dialogActive) {
+                                    dialogActive = true;
                                     DialogUtil dialog = new DialogUtil(this);
                                     dialog.showYestNoDialog(getContext(), title, "Chcesz dodać lek ręcznie?");
+                                }else {
+                                    tryCounter++;
+                                    System.out.println("try counter" + tryCounter );
+
                                 }
                             }
                         }
@@ -170,6 +173,7 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
 
     @Override
     public void onBarcodeDetected(Barcode barcode) {
+        System.out.println("Barcode detected: "+barcode.displayValue);
         getDrugData(barcode.displayValue);
     }
 

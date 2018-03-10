@@ -9,7 +9,6 @@ import android.provider.BaseColumns;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 
 import io.reactivex.Flowable;
@@ -25,7 +24,6 @@ import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTimeDao;
 import pl.pwojcik.drugmanager.model.persistence.DrugDbDao;
 import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
-import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.retrofit.DrugRestInterface;
 import pl.pwojcik.drugmanager.utils.Misc;
@@ -213,6 +211,16 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
+    @Override
+    public Observable<DrugDb> getDrugsForRequestCode(int requestCode) {
+        return drugDbDao.getDrugsForRequestCode(requestCode)
+                .toObservable()
+                .flatMap(Observable::fromIterable)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     @Override
     public Maybe<DrugDb> getDrugDbForId(long id) {
