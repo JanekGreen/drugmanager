@@ -135,7 +135,7 @@ public class AddByBarcodeFragment extends Fragment implements DialogUtil.DialogU
                         e -> {
                             if (e instanceof EOFException) {
                                 String title = "Nie znaleziono leku w bazie ";
-                                if(tryCounter == NO_TRIES && !dialogActive) {
+                                if(/*tryCounter == NO_TRIES && */!dialogActive) {
                                     dialogActive = true;
                                     DialogUtil dialog = new DialogUtil(this);
                                     dialog.showYestNoDialog(getContext(), title, "Chcesz dodać lek ręcznie?");
