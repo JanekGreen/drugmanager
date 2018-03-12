@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,14 +25,15 @@ import com.github.ivbaranov.mli.MaterialLetterIcon;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
-import pl.pwojcik.drugmanager.ui.druglist.AddDefinedTimeActivity;
 import pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity;
 import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
 import pl.pwojcik.drugmanager.utils.Misc;
@@ -298,9 +298,12 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     }
 
     @Override
-    public void onDialogPositiveButtonClicked() {
+    public void onDialogPositiveButtonClicked(DefinedTime definedTime, List<Integer> activeDays) {
 
-        drugViewModel.getDefinedTimesData();
+        drugViewModel.saveNewDefinedTimesData(definedTime,activeDays)
+                .subscribe(definedTimesDays -> drugViewModel.getDefinedTimesData(),
+                        //e -> Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show())
+                        Throwable::printStackTrace);
     }
 
     @Override

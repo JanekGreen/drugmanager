@@ -98,9 +98,9 @@ public class DayPicker extends LinearLayout implements View.OnClickListener {
                 d.materialLetterIcon.setBorderColor(Color.WHITE);
             } else {
                 d.materialLetterIcon.setShapeColor(Color.WHITE);
-                d.materialLetterIcon.setLetterColor(Color.BLACK);
+                d.materialLetterIcon.setLetterColor(Color.GRAY);
                 d.materialLetterIcon.setBorder(true);
-                d.materialLetterIcon.setBorderColor(Color.BLACK);
+                d.materialLetterIcon.setBorderColor(Color.GRAY);
             }
         }
     }
@@ -118,7 +118,7 @@ public class DayPicker extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    private List<Integer> getActiveDaysList() {
+    public List<Integer> getActiveDaysList() {
         List<Integer> selectedDays = new ArrayList<>();
         for (Day day : days.values()) {
             if (day.isActive)

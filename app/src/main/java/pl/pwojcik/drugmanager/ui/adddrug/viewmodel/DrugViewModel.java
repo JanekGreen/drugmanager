@@ -20,6 +20,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
@@ -43,7 +44,7 @@ public class DrugViewModel extends AndroidViewModel {
         super(application);
         drugRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService(),
                 DrugmanagerApplication.getDbInstance(application).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(application).getDrugDbDao(),
-                DrugmanagerApplication.getDbInstance(application).getDefinedTimesDao());
+                DrugmanagerApplication.getDbInstance(application).getDefinedTimesDao(), DrugmanagerApplication.getDbInstance(application).getDefinedTimesDaysDao());
 
         selectedTimesIds = new MutableLiveData<>();
         selectedTimesIds.setValue(new HashMap<>());
@@ -110,13 +111,13 @@ public class DrugViewModel extends AndroidViewModel {
         return drugRepository.updateSaveAlarms(context);
     }
 
-    public Maybe<DefinedTime> insertDefinedTime(DefinedTime definedTime) {
-        return drugRepository.insertDefineTime(definedTime);
+    public Maybe<DefinedTime> insertDefinedTime(DefinedTime definedTime,List<DefinedTimesDays> definedTimesDays) {
+        return drugRepository.insertDefineTime(definedTime,definedTimesDays);
 
     }
 
-    public Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime) {
-        return drugRepository.removeDefinedTime(definedTime);
+    public Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime,List<DefinedTimesDays> definedTimesDays) {
+        return drugRepository.removeDefinedTime(definedTime, definedTimesDays);
     }
 
     public LiveData<DrugDb> getDrugDbData(long id) {
@@ -149,7 +150,17 @@ public class DrugViewModel extends AndroidViewModel {
     public Single<DrugDb> saveDrug(DrugDb drugDb){
         return drugRepository.saveDrug(drugDb);
     }
+
+    public Observable<List<DefinedTimesDays>> saveNewDefinedTimesData(DefinedTime definedTime, List<Integer> activeDays) {
+        return drugRepository.saveNewDefinedTimesData(definedTime,activeDays);
+    }
+
+    public Maybe<List<DefinedTimesDays>> getDefinedTimesDays(long id){
+        return drugRepository.getDefinedTimeDaysForDefinedTime(id);
+    }
 }
+
+
 
 
 

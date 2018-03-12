@@ -22,11 +22,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimesAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
+import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pwojcik.pl.archcomponentstestproject.R;
 
 public class DefinedTimesActivity extends AppCompatActivity implements NewDefinedTimeAdapter.OnNewDefinedTimesAdapterItemClick,
@@ -110,28 +114,35 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         if (viewHolder instanceof NewDefinedTimeAdapter.DefinedTimeViewHolder) {
             NewDefinedTimeAdapter definedTimeAdapter = (NewDefinedTimeAdapter) rvDefinedTimes.getAdapter();
             DefinedTime removedItem = definedTimeAdapter.removeItem(position);
-            drugViewModel.removeDefinedTime(removedItem)
-                    .subscribe(definedTime -> {
-                                Snackbar snackbar = Snackbar
-                                        .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-                                snackbar.setAction("COFNIJ!", view -> {
-                                    restoreItem(removedItem, position);
-                                });
-                                snackbar.setActionTextColor(Color.YELLOW);
-                                snackbar.show();
-                            },
-                            e -> {
-                                Toast.makeText(this, handleError(e), Toast.LENGTH_SHORT).show();
-                                restoreItem(removedItem, position);
-                            });
 
+            drugViewModel.getDefinedTimesDays(removedItem.getId())
+                    .subscribe(definedTimesDays -> {
+                                drugViewModel.removeDefinedTime(removedItem, definedTimesDays)
+                                        .subscribe(definedTime -> {
+                                                    Snackbar snackbar = Snackbar
+                                                            .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                                    snackbar.setAction("COFNIJ!", view -> {
+                                                        restoreItem(removedItem, position, definedTimesDays);
+                                                    });
+                                                    snackbar.setActionTextColor(Color.YELLOW);
+                                                    snackbar.show();
+                                                },
+                                                e -> {
+                                                    Toast.makeText(this, handleError(e), Toast.LENGTH_SHORT).show();
+                                                    restoreItem(removedItem, position, definedTimesDays);
+                                                });
+                    },
+                            Throwable::printStackTrace);
         }
     }
 
-    private void restoreItem(DefinedTime removedItem, int position) {
+    private void restoreItem(DefinedTime removedItem, int position, List<DefinedTimesDays> definedTimesDays) {
         definedTimeAdapter.restoreItem(removedItem, position);
-        drugViewModel.insertDefinedTime(removedItem)
-                .subscribe(definedTime1 -> System.out.println("Przywrócono"),
+        drugViewModel.insertDefinedTime(removedItem,definedTimesDays)
+                .subscribe(definedTime1 -> {
+                        System.out.println("Przywrócono");
+                        //drugViewModel.in
+                        },
                         e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
@@ -153,11 +164,13 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
 
     @Override
-    public void onDialogPositiveButtonClicked() {
-        System.out.println("Listener invoked");
-        drugViewModel.getDefinedTimesData();
-    }
+    public void onDialogPositiveButtonClicked(DefinedTime definedTime, List<Integer> activeDays) {
 
+        drugViewModel.saveNewDefinedTimesData(definedTime,activeDays)
+                .subscribe(definedTimesDays -> drugViewModel.getDefinedTimesData(),
+                        //e -> Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show())
+                        Throwable::printStackTrace);
+    }
 
     @Override
     public void onDialogNegativeButtonClicked() {

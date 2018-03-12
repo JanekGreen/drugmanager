@@ -1,8 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    tools:context="pl.pwojcik.drugmanager.ui.druglist.AddDefinedTimeActivity">
+    android:layout_height="wrap_content">
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,6 +30,20 @@
                 android:layout_marginEnd="@dimen/list_item_spacing"
                 android:layout_marginStart="@dimen/list_item_spacing"
                 android:text="Nazwa dla pory przyjmowania leku"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+            <pl.pwojcik.drugmanager.ui.uicomponents.DayPicker
+                android:id="@+id/dayPicker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.1"
+                android:layout_marginBottom="@dimen/list_item_spacing"
+                android:layout_marginEnd="@dimen/list_item_spacing"
+                android:layout_marginStart="@dimen/list_item_spacing"
+                android:text="Dni"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
             <pl.pwojcik.drugmanager.ui.uicomponents.CustomTimePicker
                 android:id="@+id/timePicker"

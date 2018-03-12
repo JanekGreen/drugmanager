@@ -33,7 +33,7 @@ public interface DefinedTimeDao {
     Maybe<List<DefinedTime>> getDefinedTimesForDrug(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertDefinedTime(DefinedTime definedTime);
+    long insertDefinedTime(DefinedTime definedTime);
 
     @Insert
     void insertDefinedTimes(DefinedTime... definedTimes);

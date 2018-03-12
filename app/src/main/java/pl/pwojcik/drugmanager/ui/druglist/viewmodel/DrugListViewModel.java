@@ -34,7 +34,7 @@ public class DrugListViewModel extends AndroidViewModel {
 
         drugListRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService(),
         DrugmanagerApplication.getDbInstance(application).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(application).getDrugDbDao(),
-                DrugmanagerApplication.getDbInstance(application).getDefinedTimesDao());
+                DrugmanagerApplication.getDbInstance(application).getDefinedTimesDao(), DrugmanagerApplication.getDbInstance(application).getDefinedTimesDaysDao());
 
         drugListLiveData = new MutableLiveData<>();
     }
@@ -103,10 +103,6 @@ public class DrugListViewModel extends AndroidViewModel {
     }
     public void restoreDrugTimes(List<DrugTime> drugTimes){
          drugListRepository.restoreDrugTimes(drugTimes);
-    }
-    public Maybe<DefinedTime> insertDefinedTime(DefinedTime definedTime){
-
-        return drugListRepository.insertDefineTime(definedTime);
     }
     public Maybe<List<DefinedTime>> updateOrSetAlarms(Context context) {
         return drugListRepository.updateSaveAlarms(context);

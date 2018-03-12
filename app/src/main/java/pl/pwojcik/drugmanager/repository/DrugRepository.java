@@ -12,6 +12,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 
@@ -29,8 +30,9 @@ public interface DrugRepository {
     Maybe<List<String>> getAllDefinedTimesWithNames();
     Maybe<List<String>> getAllDefinedTimesWithNamesAndRequestCodeId(int requestCode);
     Maybe<List<DefinedTime>> getDefinedTimesForDrug(long id);
-    Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime);
-    Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime);
+    Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime,List<DefinedTimesDays> definedTimesDays);
+    Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime,List<DefinedTimesDays> definedTimesDaysList);
+    Maybe<List<DefinedTimesDays>> getDefinedTimeDaysForDefinedTime(long id);
 
 
     Maybe<List<DefinedTime>> updateSaveAlarms(Context context);
@@ -59,4 +61,6 @@ public interface DrugRepository {
     Single<DrugDb> saveDrug(DrugDb drugDb);
 
     void removeDrugTime(DrugTime drugTime);
+
+    Observable<List<DefinedTimesDays>> saveNewDefinedTimesData(DefinedTime definedTime, List<Integer> activeDays);
 }

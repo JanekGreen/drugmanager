@@ -17,6 +17,8 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDaysDao;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.persistence.DrugTimeDao;
@@ -37,16 +39,19 @@ public class DrugRepostioryImpl implements DrugRepository {
     private DrugRestInterface drugRestInterface;
     private DrugTimeDao drugTimeDao;
     private DrugDbDao drugDbDao;
-    private final DefinedTimeDao definedTimeDao;
+    private  DefinedTimeDao definedTimeDao;
+    private DefinedTimesDaysDao definedTimesDaysDao;
 
     public DrugRepostioryImpl(DrugRestInterface drugRestInterface,
                               DrugTimeDao drugTimeDao,
-                              DrugDbDao drugDbDao, DefinedTimeDao definedTimeDao) {
+                              DrugDbDao drugDbDao, DefinedTimeDao definedTimeDao,
+                              DefinedTimesDaysDao definedTimesDaysDao) {
 
         this.drugRestInterface = drugRestInterface;
         this.drugTimeDao = drugTimeDao;
         this.drugDbDao = drugDbDao;
         this.definedTimeDao = definedTimeDao;
+        this.definedTimesDaysDao = definedTimesDaysDao;
     }
 
     /**
@@ -114,6 +119,31 @@ public class DrugRepostioryImpl implements DrugRepository {
      * ---------------------------------------------------------------------------------------
      * DefinedTimesEntity methods
      **/
+    @Override
+    public Observable<List<DefinedTimesDays>> saveNewDefinedTimesData(DefinedTime definedTime, List<Integer> activeDays) {
+        return Observable.just(definedTime)
+                .subscribeOn(Schedulers.io())
+                .map(definedTime1 -> definedTimeDao.insertDefinedTime(definedTime1))
+                .doOnNext(definedTimeId -> definedTimesDaysDao.removeDefinedTimesDaysForDefinedTime(definedTimeId))
+                .flatMap(definedTimeId -> Observable.fromIterable(activeDays)
+                        .map(activeDay -> {
+                                DefinedTimesDays definedTimesDays = new DefinedTimesDays();
+                                definedTimesDays.setDefinedTimeId(definedTimeId);
+                                definedTimesDays.setDay(activeDay);
+                                return definedTimesDays;
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .toList()
+                        .doOnSuccess(list -> definedTimesDaysDao.insertDefineTimeDays(list))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .toObservable());
+    }
+
+    public Maybe<List<DefinedTimesDays>> getDefinedTimeDaysForDefinedTime(long id){
+        return definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 
     public Maybe<List<DefinedTime>> updateSaveAlarms(Context context) {
 
@@ -182,17 +212,23 @@ public class DrugRepostioryImpl implements DrugRepository {
 
 
     @Override
-    public Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime) {
+    public Maybe<DefinedTime> insertDefineTime(DefinedTime definedTime,List<DefinedTimesDays> definedTimesDays) {
         return Maybe.just(definedTime)
                 .subscribeOn(Schedulers.io())
-                .doOnSuccess(definedTime1 -> definedTimeDao.insertDefinedTime(definedTime))
+                .doOnSuccess(definedTime1 -> {
+                    definedTimeDao.insertDefinedTime(definedTime);
+                    definedTimesDaysDao.insertDefineTimeDays(definedTimesDays);
+                })
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
-    public Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime) {
+    public Maybe<DefinedTime> removeDefinedTime(DefinedTime definedTime,List<DefinedTimesDays> definedTimesDaysList) {
         return Maybe.just(definedTime)
                 .subscribeOn(Schedulers.io())
+                .doOnSuccess(definedTime1 -> {
+                    definedTimesDaysDao.removeDefinedTimesDaysForDefinedTime(definedTime1.getId());
+                })
                 .doOnSuccess(definedTime1 -> {
                     definedTimeDao.removeDefinedTime(definedTime);
 
@@ -255,6 +291,7 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
     }
+
 
     @Override
     public Single<List<DrugTime>> removeDrugTimes(List<DrugTime> drugTimes) {
@@ -365,5 +402,9 @@ public class DrugRepostioryImpl implements DrugRepository {
         }
         return cursor;
     }
+
+    /**
+     * **/
+
 }
 

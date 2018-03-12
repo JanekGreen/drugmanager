@@ -105,7 +105,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         if (extras != null) {
             drugListRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService(),
                     DrugmanagerApplication.getDbInstance(context).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(context).getDrugDbDao(),
-                    DrugmanagerApplication.getDbInstance(context).getDefinedTimesDao());
+                    DrugmanagerApplication.getDbInstance(context).getDefinedTimesDao(), DrugmanagerApplication.getDbInstance(context).getDefinedTimesDaysDao());
             /*Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
             context.startService(ringtonePlayingIntent);*/
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
