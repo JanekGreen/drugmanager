@@ -69,8 +69,6 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         DayPicker dayPicker = dialogView.findViewById(R.id.dayPicker);
         dayPicker.setDaySelectionChangedListener(this);
 
-        this.activeDays = dayPicker.getActiveDaysList();
-
         if(definedTime.getId()>0) {
             definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTime.getId())
                     .subscribeOn(Schedulers.io())
@@ -83,6 +81,8 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
                         this.activeDays = activeDays_;
                         dayPicker.setActiveDays(activeDays);
                     });
+        }else{
+            this.activeDays = dayPicker.getActiveDaysList();
         }
 
         String time = definedTime.getTime();

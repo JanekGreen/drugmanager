@@ -43,7 +43,7 @@
                 android:layout_marginBottom="@dimen/list_item_spacing"
                 android:layout_marginEnd="@dimen/list_item_spacing"
                 android:layout_marginStart="@dimen/list_item_spacing"
-                android:text="Dni"
+                android:text="Dni uruchamiania powiadomienia"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
             <pl.pwojcik.drugmanager.ui.uicomponents.CustomTimePicker
                 android:id="@+id/timePicker"
