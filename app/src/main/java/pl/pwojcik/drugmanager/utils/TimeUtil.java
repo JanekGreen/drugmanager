@@ -1,6 +1,7 @@
 package pl.pwojcik.drugmanager.utils;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by pawel on 14.02.18.
@@ -30,7 +31,6 @@ public class TimeUtil {
         }else{
             System.out.println("Not adding day");
         }
-
 
         return calendar.getTimeInMillis();
     }

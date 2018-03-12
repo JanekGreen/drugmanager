@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 import okhttp3.ResponseBody;
@@ -27,16 +29,12 @@ import retrofit2.Response;
 
 public class Misc {
 
-    public static boolean parseTimeInput(String hour, String minute) {
-        //asserting positive value
-        if (hour == null || hour.isEmpty() || minute == null || minute.isEmpty()) {
-            return false;
+    public static Calendar getNextDay(Calendar calendar,int day){
+        if(calendar.get(Calendar.DAY_OF_WEEK) != day){
+            while (calendar.get(Calendar.DAY_OF_WEEK)!= day)
+                calendar.add(Calendar.DATE,1);
         }
-
-        int hour_ = Integer.valueOf(hour);
-        int minute_ = Integer.valueOf(minute);
-
-        return hour_ <= 24 && minute_ <= 59;
+        return calendar;
     }
 
     public static ArrayList<String> getContentsDataFromDrugDb(DrugDb drugDb) {

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/ivPon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="2dp"
+        app:mli_initials_number="3"
+        app:mli_letter="Pon" />
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/ivWt"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="2dp"
+        app:mli_initials_number="2"
+        app:mli_letter="Wt" />
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/ivSr"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="2dp"
+        app:mli_initials_number="2"
+        app:mli_letter="Śr" />
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/ivCzw"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="2dp"
+        app:mli_letters_number="2"
+        app:mli_initials="false"
+        app:mli_letter="Czw" />
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/ivPt"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="2dp"
+        app:mli_initials_number="2"
+        app:mli_letter="Pt" />
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/ivSob"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="2dp"
+        app:mli_initials_number="3"
+        app:mli_letter="Sob" />
+
+    <com.github.ivbaranov.mli.MaterialLetterIcon
+        android:id="@+id/ivNd"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="2dp"
+        app:mli_initials_number="2"
+        app:mli_letter="Nd" />
+</merge>
