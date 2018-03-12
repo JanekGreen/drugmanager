@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import okhttp3.ResponseBody;
@@ -29,12 +30,22 @@ import retrofit2.Response;
 
 public class Misc {
 
-    public static Calendar getNextDay(Calendar calendar,int day){
+    public static Calendar getNextDayDate(Calendar calendar,int day){
         if(calendar.get(Calendar.DAY_OF_WEEK) != day){
             while (calendar.get(Calendar.DAY_OF_WEEK)!= day)
                 calendar.add(Calendar.DATE,1);
         }
         return calendar;
+    }
+
+    public static int getNextDay(List<Integer> list){
+        int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        for(int day : list){
+            if(day>=currentDay){
+                return day;
+            }
+        }
+        return list.get(0);
     }
 
     public static ArrayList<String> getContentsDataFromDrugDb(DrugDb drugDb) {

@@ -25,7 +25,7 @@ public interface DefinedTimesDaysDao {
     @Delete
     void removeDefinedTimesDays(List<DefinedTimesDays> definedTimesDays);
 
-    @Query("SELECT * from defined_time_days where time_id=:definedTimeId")
+    @Query("SELECT * from defined_time_days where time_id=:definedTimeId order by day asc")
     Maybe<List<DefinedTimesDays>> getDefinedTimeDaysForDefinedTime(long definedTimeId);
 
     @Query("DELETE from defined_time_days where time_id = :id")

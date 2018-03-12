@@ -19,8 +19,8 @@ public class TimeUtil {
 
         return calendar.getTimeInMillis();
     }
-    public static long getSpecificTime(int hour, int minute, boolean nextDay){
-        Calendar calendar = Calendar.getInstance();
+    public static long getSpecificTime(int hour, int minute,int day, boolean nextDay){
+        Calendar calendar = Misc.getNextDayDate(Calendar.getInstance(), day);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE,minute);
         calendar.set(Calendar.SECOND,0);

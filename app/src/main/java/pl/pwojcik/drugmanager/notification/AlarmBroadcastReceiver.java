@@ -18,7 +18,11 @@ import android.support.v4.app.NotificationCompat;
 import android.view.WindowManager;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDaysDao;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
@@ -27,6 +31,7 @@ import pl.pwojcik.drugmanager.retrofit.DrugRestService;
 import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pl.pwojcik.drugmanager.ui.druglist.NotificationActivity;
 import pl.pwojcik.drugmanager.utils.Constants;
+import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -36,6 +41,7 @@ import pwojcik.pl.archcomponentstestproject.R;
 public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     private DrugRepostioryImpl drugListRepository;
+    private DefinedTimesDaysDao definedTimesDaysDao;
 
     public void sendNotification(Context context, int requestCode) {
         System.out.println("Send notification...");
@@ -128,7 +134,19 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         String hourMinuteParts[] = definedTime.getTime().split(":");
                         hour = Integer.valueOf(hourMinuteParts[0]);
                         minute = Integer.valueOf(hourMinuteParts[1]);
-                        alarmHelper.setAlarmForTimeRepeating(hour, minute, 1, definedTime.getRequestCode(), 0, true);
+                        definedTimesDaysDao  = DrugmanagerApplication.getDbInstance(context).getDefinedTimesDaysDao();
+
+                        definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTime.getId())
+                                .subscribeOn(Schedulers.io())
+                                .flatMap(definedTimesDays -> io.reactivex.Observable.fromIterable(definedTimesDays)
+                                        .map(DefinedTimesDays::getDay)
+                                        .toList()
+                                        .map(Misc::getNextDay)
+                                        .toMaybe())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(day -> {
+                                    alarmHelper.setAlarmForTimeRepeating(hour, minute, day, definedTime.getRequestCode(), 0, false);
+                                });
                     });
 
             sendNotification(context, requestCode);
