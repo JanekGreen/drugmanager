@@ -64,7 +64,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
             if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
-
                 spinner.setSelection(selectedItemPosition);
             } else {
                 switchFragments(currentFragmentSelected, true);

@@ -145,8 +145,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
             drugListViewModel.getDrugsForTime(selectedTimeName)
                     .subscribe(drugsForTime -> {
                                 drugsForTimeGlobal = new ArrayList<>(drugsForTime);
-                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime, drugListViewModel);
-                                drugListAdapter.setDrugTimeName(selectedTimeName);
+                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
                                 rvDrugList.setAdapter(drugListAdapter);
                                 drugListAdapter.setOnDrugListAdapterItemClick(this);
                             },

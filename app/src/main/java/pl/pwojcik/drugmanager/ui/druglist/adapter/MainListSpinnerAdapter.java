@@ -12,12 +12,23 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import pl.pwojcik.drugmanager.DrugmanagerApplication;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimeDao;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDaysDao;
+import pl.pwojcik.drugmanager.utils.Misc;
+import pwojcik.pl.archcomponentstestproject.R;
+
 /**
  * Created by pawel on 19.02.18.
  */
 
 public  class MainListSpinnerAdapter extends ArrayAdapter<String> implements ThemedSpinnerAdapter {
     private final ThemedSpinnerAdapter.Helper mDropDownHelper;
+    private DefinedTimeDao definedTimeDao = DrugmanagerApplication.getDbInstance(getContext()).getDefinedTimesDao();
+    private DefinedTimesDaysDao definedTimesDaysDao = DrugmanagerApplication.getDbInstance(getContext()).getDefinedTimesDaysDao();
 
     public MainListSpinnerAdapter(Context context, List<String> drugTakingTimes) {
         super(context, android.R.layout.simple_list_item_1, drugTakingTimes);
@@ -28,15 +39,34 @@ public  class MainListSpinnerAdapter extends ArrayAdapter<String> implements The
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         View view;
 
-        if (convertView == null) {
+        if (convertView == null){
             LayoutInflater inflater = mDropDownHelper.getDropDownViewInflater();
-            view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            view = inflater.inflate(R.layout.spinner_view, parent, false);
         } else {
             view = convertView;
         }
 
-        TextView textView = (TextView) view.findViewById(android.R.id.text1);
+        TextView textView = view.findViewById(R.id.tvSpinTimeName);
+        TextView textView2 = view.findViewById(R.id.tvSpinTimeDays);
         textView.setText(getItem(position));
+        String query = getItem(position).substring(0,getItem(position).indexOf(" -")).trim();
+        definedTimeDao.getDefinedTimeIdForName(query)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(definedTimeId ->{
+                    System.out.println("getItemPosition INSIDE"+definedTimeId);
+                    definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTimeId)
+                            .subscribeOn(Schedulers.io())
+                            .flatMap(definedTimesDays -> io.reactivex.Observable.fromIterable(definedTimesDays)
+                                    .map(DefinedTimesDays::getDay)
+                                    .toList()
+                                    .map(Misc::getWeekDayNames)
+                                    .toMaybe())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(textView2::setText);
+                });
+
+        //textView2.setText("test");
 
         return view;
     }
