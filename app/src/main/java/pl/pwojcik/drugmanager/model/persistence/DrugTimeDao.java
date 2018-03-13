@@ -48,7 +48,7 @@ public interface DrugTimeDao {
     void removeDrugTimes(List<DrugTime> drugTimes);
 
     @Delete
-    void removeDrugTime(DrugTime drugTime);
+    int removeDrugTime(DrugTime drugTime);
 
     @Insert
     void restoreDrugTimes(List<DrugTime> drugTimes);

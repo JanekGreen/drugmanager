@@ -284,12 +284,11 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .subscribe();
     }
     @Override
-    public void removeDrugTime(DrugTime drugTime) {
-        io.reactivex.Observable.just(drugTimeDao)
+    public Observable<Integer> removeDrugTime(DrugTime drugTime) {
+       return io.reactivex.Observable.just(drugTimeDao)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(drugTimeDao1 -> drugTimeDao1.removeDrugTime(drugTime))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .map(drugTimeDao1 ->  drugTimeDao1.removeDrugTime(drugTime))
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
 
@@ -332,12 +331,11 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public void restoreDrugTimeItem(DrugTime drugTime) {
-        io.reactivex.Observable.just(drugTime)
+    public Observable<DrugTime> restoreDrugTimeItem(DrugTime drugTime) {
+        return io.reactivex.Observable.just(drugTime)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(dt_ -> drugTimeDao.insertDrugTime(dt_))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

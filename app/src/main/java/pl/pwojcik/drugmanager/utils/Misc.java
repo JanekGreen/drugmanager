@@ -133,4 +133,24 @@ public class Misc {
         }
         return file;
     }
+
+    public static String getWeekDayName(int day){
+        switch (day){
+            case 1: return  "Nd";
+            case 2: return  "Pon";
+            case 3: return  "Wt";
+            case 4: return  "Śr";
+            case 5: return  "Czw";
+            case 6: return  "Pt";
+            case 7: return  "Sob";
+            default: return  "";
+        }
+    }
+    public static String getWeekDayNames(List<Integer> days){
+        StringBuilder sb = new StringBuilder();
+        for(int d: days){
+            sb.append(getWeekDayName(d)).append(" ,");
+        }
+        return sb.subSequence(0,sb.toString().length()-1).toString();
+    }
 }

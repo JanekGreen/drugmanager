@@ -51,7 +51,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private DrugListAdapter drugListAdapter;
 
     public DrugListFragment() {
-         drugListAdapter = new DrugListAdapter();
+        drugListAdapter = new DrugListAdapter();
     }
 
     public static DrugListFragment newInstance() {
@@ -74,7 +74,8 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
-        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL)); rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         refreshView();
     }
 
@@ -82,72 +83,75 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof DrugListAdapter.DrugListViewHolder) {
             DrugListAdapter drugListAdapter = (DrugListAdapter) rvDrugList.getAdapter();
-            DrugDb removedItem = drugListAdapter.removeItem(position);
-            long drugId = removedItem.getId();
-            List<DrugTime> relatedDrugTimes = new ArrayList<>();
+            long drugId = drugListAdapter.getItemIdForPosition(position);
+            final List<DrugTime> relatedDrugTimes = new ArrayList<>();
 
-            if(selectedTimeName.equals("DRUG_LIST__")) {
+            if (selectedTimeName.equals("DRUG_LIST__")) {
 
                 drugListViewModel.getDrugTimesForDrug(drugId)
+                        .doOnSuccess(list -> {
+                            if (list.size() > 0) {
+                                throw new IllegalStateException("Proszę usunąć powiadomienia dotyczące leku");
+                            }
+                        })
                         .subscribe(list -> {
+                            DrugDb removedItem = drugListAdapter.removeItem(position);
+                            relatedDrugTimes.clear();
                             relatedDrugTimes.addAll(list);
                             drugListViewModel.removeDrugTimes(list)
                                     .subscribe(drugTimes -> {
                                         drugListViewModel.removeDrug(removedItem);
+
+                                        Snackbar snackbar = Snackbar
+                                                .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                        snackbar.setAction("COFNIJ!", view -> {
+
+                                            drugListAdapter.restoreItem(removedItem, position);
+                                            drugListViewModel.restoreDrug(removedItem)
+                                                    .subscribe(drugDb -> {
+                                                        drugListViewModel.restoreDrugTimes(relatedDrugTimes);
+                                                    });
+                                        });
+
+                                        View view = snackbar.getView();
+                                        CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+                                        para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
+                                        view.setLayoutParams(para);
+                                        snackbar.setActionTextColor(Color.YELLOW);
+                                        snackbar.show();
                                     });
 
                         }, e -> {
-
+                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            drugListAdapter.notifyDataSetChanged();
                         });
-                Snackbar snackbar = Snackbar
-                        .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-                snackbar.setAction("COFNIJ!", view -> {
-
-                    drugListAdapter.restoreItem(removedItem, position);
-                    drugListViewModel.restoreDrug(removedItem)
-                            .subscribe(drugDb -> {
-                                drugListViewModel.restoreDrugTimes(relatedDrugTimes);
-                            });
-                });
-
-                View view = snackbar.getView();
-                CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-                para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
-                view.setLayoutParams(para);
-                snackbar.setActionTextColor(Color.YELLOW);
-                snackbar.show();
-            }else{
+            } else {
+                DrugDb removedItem = drugListAdapter.removeItem(position);
                 drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
-                        .doOnSuccess(definedTimeId -> {
-                            drugListViewModel.getDrugTime(drugId, definedTimeId)
-                                    .subscribe(drugTime -> {
-                                        relatedDrugTimes.add(drugTime);
-                                        drugListViewModel.removeDrugTime(drugTime);
-                                        drugListViewModel.updateOrSetAlarms(getContext())
-                                                .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size()),
-                                                        e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+                        .doOnSuccess(definedTimeId -> drugListViewModel.getDrugTime(drugId, definedTimeId)
+                                .subscribe(drugTime -> {
+                                    relatedDrugTimes.add(drugTime);
+                                    drugListViewModel.removeDrugTime(drugTime)
+                                            .subscribe(removedId -> drugListViewModel.updateOrSetAlarms(getContext())
+                                                    .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                                    Snackbar snackbar = Snackbar
+                                            .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                    snackbar.setAction("COFNIJ!", view -> {
+
+                                        drugListAdapter.restoreItem(removedItem, position);
+                                        drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0))
+                                                .subscribe(drugTime_ -> drugListViewModel.updateOrSetAlarms(getContext())
+                                                        .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
                                     });
-
-                        })
-                        .subscribe();
-
-                Snackbar snackbar = Snackbar
-                        .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-                snackbar.setAction("COFNIJ!", view -> {
-
-                    drugListAdapter.restoreItem(removedItem, position);
-                    drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0));
-                    drugListViewModel.updateOrSetAlarms(getContext())
-                            .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size()),
-                                    e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
-                });
-                View view = snackbar.getView();
-                CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams)view.getLayoutParams();
-                para.bottomMargin = Misc.dpToPx(getContext(),62+4);
-                view.setLayoutParams(para);
-                snackbar.setActionTextColor(Color.YELLOW);
-                snackbar.show();
-
+                                    View view = snackbar.getView();
+                                    CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+                                    para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
+                                    view.setLayoutParams(para);
+                                    snackbar.setActionTextColor(Color.YELLOW);
+                                    snackbar.show();
+                                }))
+                        .subscribe(id -> System.out.println("Status OK"), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
             }
         }
 
@@ -168,11 +172,11 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         ActivityOptions options = ActivityOptions
                 .makeSceneTransitionAnimation(getActivity(), sharedElement, drugsForTimeGlobal.get(position).getName());
 
-        startActivity(intent,options.toBundle());
+        startActivity(intent, options.toBundle());
 
     }
 
-    private void refreshView(){
+    private void refreshView() {
         Bundle args = getArguments();
         selectedTimeName = args.getString("SELECTED_TIME", "Rano");
         ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
@@ -183,7 +187,8 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
             drugListViewModel.getDrugsForTime(selectedTimeName)
                     .subscribe(drugsForTime -> {
                                 drugsForTimeGlobal = new ArrayList<>(drugsForTime);
-                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
+                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime, drugListViewModel);
+                                drugListAdapter.setDrugTimeName(selectedTimeName);
                                 rvDrugList.setAdapter(drugListAdapter);
                                 drugListAdapter.setOnDrugListAdapterItemClick(this);
                             },

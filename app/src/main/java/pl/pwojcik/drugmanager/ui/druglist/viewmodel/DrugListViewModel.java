@@ -13,6 +13,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.repository.DrugRepository;
@@ -59,12 +60,12 @@ public class DrugListViewModel extends AndroidViewModel {
         drugListRepository.removeDrugTime(definedTimeId,drugId);
     }
 
-    public void removeDrugTime(DrugTime drugTime) {
-        drugListRepository.removeDrugTime(drugTime);
+    public io.reactivex.Observable<Integer> removeDrugTime(DrugTime drugTime) {
+       return drugListRepository.removeDrugTime(drugTime);
     }
 
-    public void restoreDrugTime(DrugTime drugTime) {
-        drugListRepository.restoreDrugTimeItem(drugTime);
+    public io.reactivex.Observable<DrugTime> restoreDrugTime(DrugTime drugTime) {
+        return drugListRepository.restoreDrugTimeItem(drugTime);
     }
     public Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId) {
        return drugListRepository.getDrugTime(drugId,definedTimeId);
@@ -106,5 +107,8 @@ public class DrugListViewModel extends AndroidViewModel {
     }
     public Maybe<List<DefinedTime>> updateOrSetAlarms(Context context) {
         return drugListRepository.updateSaveAlarms(context);
+    }
+    public Maybe<List<DefinedTimesDays>> getDefinedTimesDays(long id){
+        return drugListRepository.getDefinedTimeDaysForDefinedTime(id);
     }
 }

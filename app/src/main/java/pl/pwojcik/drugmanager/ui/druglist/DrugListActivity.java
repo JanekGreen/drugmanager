@@ -213,7 +213,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 }
                 break;
             case R.id.notificationItem:
-                String selectedTime = "";
+                String selectedTime;
                 selectedItemPosition = spinner.getSelectedItemPosition();
                 if (selectedItemPosition != -1) {
                     selectedTime = spinner.getSelectedItem().toString()

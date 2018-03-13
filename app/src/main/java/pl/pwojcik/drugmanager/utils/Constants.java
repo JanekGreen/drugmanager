@@ -17,5 +17,4 @@ public class Constants {
     public static final int INTENT_REQUEST_CODE = 17;
     public static final String DRUG_LIST = "DRUG_LIST__";
     public static final String DRUG_NOTIFICATION = "DRUG_NOTIFICATION__";
-    public static final int RC_PERMISSIONS = 777;
 }

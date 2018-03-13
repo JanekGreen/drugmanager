@@ -49,7 +49,7 @@ public interface DrugRepository {
     void removeDrugDb(DrugDb drugDb);
     Single<DrugDb> restoreDrugDb(DrugDb drugDb);
 
-    void restoreDrugTimeItem(DrugTime drugTime);
+    Observable<DrugTime> restoreDrugTimeItem(DrugTime drugTime);
     Maybe<DrugTime> getDrugTime(long drugId, long definedTimeId);
     Maybe<List<DrugTime>> getDrugTimesForDrug(long drugId);
     Maybe<HashMap<Long, DrugTime>> getSelectedTimeIdsForDrug(long id);
@@ -60,7 +60,7 @@ public interface DrugRepository {
 
     Single<DrugDb> saveDrug(DrugDb drugDb);
 
-    void removeDrugTime(DrugTime drugTime);
+    Observable<Integer> removeDrugTime(DrugTime drugTime);
 
     Observable<List<DefinedTimesDays>> saveNewDefinedTimesData(DefinedTime definedTime, List<Integer> activeDays);
 }
