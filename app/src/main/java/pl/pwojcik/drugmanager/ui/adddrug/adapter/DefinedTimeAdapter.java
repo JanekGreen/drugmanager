@@ -17,9 +17,14 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.model.restEntity.Drug;
+import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -30,6 +35,7 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
    private List<DefinedTime> definedTimes;
    private Set<Long> drugTimes;
    private SwitchChangeCallback switchChangeCallback;
+   private DrugViewModel drugViewModel;
 
 
     public DefinedTimeAdapter(List<DefinedTime> definedTimes) {
@@ -41,6 +47,10 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
 
     public void setDrugTimes(Set<Long> drugTimes) {
         this.drugTimes = drugTimes;
+    }
+
+    public void setDrugViewModel(DrugViewModel drugViewModel) {
+        this.drugViewModel = drugViewModel;
     }
 
     public void setSwitchChangeCallback(SwitchChangeCallback switchChangeCallback) {
@@ -74,6 +84,18 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
         }else{
             holder.tvTime.setTextColor(Color.GRAY);
         }
+        drugViewModel.getDefinedTimesDays(definedTimes.get(position).getId())
+                .subscribeOn(Schedulers.io())
+                .flatMap(definedTimesDays -> io.reactivex.Observable.fromIterable(definedTimesDays)
+                        .map(DefinedTimesDays::getDay)
+                        .toList()
+                        .map(Misc::getWeekDayNames)
+                        .toMaybe())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(daysNames -> {
+                    holder.tvDrugDays.setText(daysNames);
+                });
+
     }
 
     @Override
@@ -93,6 +115,9 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
 
         @BindView(R.id.tvTime)
         TextView tvTime;
+
+         @BindView(R.id.tvDefinedDays)
+         TextView tvDrugDays;
 
         @BindView(R.id.swSelected)
         Switch swSelected;

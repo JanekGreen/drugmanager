@@ -106,6 +106,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         drugViewModel.getDrugDbData().observe(this, this::initializeView);
         drugViewModel.getDefinedTimesData().observe(this, definedTimes -> {
             definedTimeAdapter.setDefinedTimes(definedTimes);
+            definedTimeAdapter.setDrugViewModel(drugViewModel);
             definedTimeAdapter.notifyDataSetChanged();
         });
         drugViewModel.getSelectedTimesIds().observe(this, selectedIds -> {

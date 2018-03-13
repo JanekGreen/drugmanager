@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.8"
             android:text="Godzina"
+            android:textSize="20sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         <Switch
@@ -32,4 +33,12 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:text="Pora dnia"/>
+
+    <TextView
+        android:id="@+id/tvDefinedDays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:text=""/>
 </LinearLayout>
