@@ -32,6 +32,7 @@ import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
+import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
@@ -74,84 +75,41 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
-        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         refreshView();
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof DrugListAdapter.DrugListViewHolder) {
-            DrugListAdapter drugListAdapter = (DrugListAdapter) rvDrugList.getAdapter();
-            long drugId = drugListAdapter.getItemIdForPosition(position);
-            final List<DrugTime> relatedDrugTimes = new ArrayList<>();
+            drugListAdapter = (DrugListAdapter) rvDrugList.getAdapter();
+            DrugDb toBeRemoved = drugListAdapter.getItemIdForPosition(position);
 
             if (selectedTimeName.equals("DRUG_LIST__")) {
-
-                drugListViewModel.getDrugTimesForDrug(drugId)
+                drugListViewModel.getDrugTimesForDrug(toBeRemoved.getId())
                         .doOnSuccess(list -> {
                             if (list.size() > 0) {
-                                throw new IllegalStateException("Proszę usunąć powiadomienia dotyczące leku");
+                                DialogUtil dialogUtil = new DialogUtil(this);
+                                dialogUtil.setButtonListener(new DialogUtil.DialogUtilButtonListener() {
+                                    @Override
+                                    public void onPositiveButtonClicked() {
+                                        deleteDrugWithDrugs(list, position);
+                                    }
+                                    @Override
+                                    public void onNegativeButtonClicked() {
+                                        drugListAdapter.restoreItem(toBeRemoved,position);
+
+                                    }
+                                });
+                                dialogUtil.showYestNoDialog(getContext(),"Uwaga","Lek posiada przypomnienia, usunąć mimo to?");
+                                throw new IllegalStateException("Nie można usunąć ponieważ przypisano przypomnienie do leku");
                             }
                         })
-                        .subscribe(list -> {
-                            DrugDb removedItem = drugListAdapter.removeItem(position);
-                            relatedDrugTimes.clear();
-                            relatedDrugTimes.addAll(list);
-                            drugListViewModel.removeDrugTimes(list)
-                                    .subscribe(drugTimes -> {
-                                        drugListViewModel.removeDrug(removedItem);
-
-                                        Snackbar snackbar = Snackbar
-                                                .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-                                        snackbar.setAction("COFNIJ!", view -> {
-
-                                            drugListAdapter.restoreItem(removedItem, position);
-                                            drugListViewModel.restoreDrug(removedItem)
-                                                    .subscribe(drugDb -> {
-                                                        drugListViewModel.restoreDrugTimes(relatedDrugTimes);
-                                                    });
-                                        });
-
-                                        View view = snackbar.getView();
-                                        CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-                                        para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
-                                        view.setLayoutParams(para);
-                                        snackbar.setActionTextColor(Color.YELLOW);
-                                        snackbar.show();
-                                    });
-
-                        }, e -> {
-                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            drugListAdapter.notifyDataSetChanged();
+                        .subscribe(list -> deleteDrugWithDrugs(list, position), e -> {
+                            //Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            //drugListAdapter.notifyDataSetChanged();
                         });
             } else {
-                DrugDb removedItem = drugListAdapter.removeItem(position);
-                drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
-                        .doOnSuccess(definedTimeId -> drugListViewModel.getDrugTime(drugId, definedTimeId)
-                                .subscribe(drugTime -> {
-                                    relatedDrugTimes.add(drugTime);
-                                    drugListViewModel.removeDrugTime(drugTime)
-                                            .subscribe(removedId -> drugListViewModel.updateOrSetAlarms(getContext())
-                                                    .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
-
-                                    Snackbar snackbar = Snackbar
-                                            .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-                                    snackbar.setAction("COFNIJ!", view -> {
-
-                                        drugListAdapter.restoreItem(removedItem, position);
-                                        drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0))
-                                                .subscribe(drugTime_ -> drugListViewModel.updateOrSetAlarms(getContext())
-                                                        .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
-                                    });
-                                    View view = snackbar.getView();
-                                    CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-                                    para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
-                                    view.setLayoutParams(para);
-                                    snackbar.setActionTextColor(Color.YELLOW);
-                                    snackbar.show();
-                                }))
-                        .subscribe(id -> System.out.println("Status OK"), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+               deleteDrugTime(toBeRemoved.getId(), position);
             }
         }
 
@@ -207,4 +165,60 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                                     .show());
         }
     }
+    private void deleteDrugWithDrugs(List<DrugTime> list, int position){
+        DrugDb removedItem = drugListAdapter.removeItem(position);
+        drugListViewModel.removeDrugTimes(list)
+                .subscribe(drugTimes -> {
+                    drugListViewModel.removeDrug(removedItem);
+
+                    Snackbar snackbar = Snackbar
+                            .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                    snackbar.setAction("COFNIJ!", view -> {
+
+                        drugListAdapter.restoreItem(removedItem, position);
+                        drugListViewModel.restoreDrug(removedItem)
+                                .subscribe(drugDb -> {
+                                    drugListViewModel.restoreDrugTimes(list);
+                                });
+                    });
+
+                    View view = snackbar.getView();
+                    CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+                    para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
+                    view.setLayoutParams(para);
+                    snackbar.setActionTextColor(Color.YELLOW);
+                    snackbar.show();
+                });
+
+    }
+    private void deleteDrugTime(long drugId, int position){
+        final List<DrugTime> relatedDrugTimes = new ArrayList<>();
+        DrugDb removedItem = drugListAdapter.removeItem(position);
+        drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
+                .doOnSuccess(definedTimeId -> drugListViewModel.getDrugTime(drugId, definedTimeId)
+                        .subscribe(drugTime -> {
+                            relatedDrugTimes.add(drugTime);
+                            drugListViewModel.removeDrugTime(drugTime)
+                                    .subscribe(removedId -> drugListViewModel.updateOrSetAlarms(getContext())
+                                            .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                            Snackbar snackbar = Snackbar
+                                    .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                            snackbar.setAction("COFNIJ!", view -> {
+
+                                drugListAdapter.restoreItem(removedItem, position);
+                                drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0))
+                                        .subscribe(drugTime_ -> drugListViewModel.updateOrSetAlarms(getContext())
+                                                .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+                            });
+                            View view = snackbar.getView();
+                            CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+                            para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
+                            view.setLayoutParams(para);
+                            snackbar.setActionTextColor(Color.YELLOW);
+                            snackbar.show();
+                        }))
+                .subscribe(id -> System.out.println("Status OK"), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
 }

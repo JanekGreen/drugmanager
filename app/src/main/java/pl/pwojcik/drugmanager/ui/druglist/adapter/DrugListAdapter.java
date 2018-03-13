@@ -38,8 +38,8 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
         this.drugTimeName = drugTimeName;
     }
 
-    public long getItemIdForPosition(int position) {
-       return drugsForTime.get(position).getId();
+    public DrugDb getItemIdForPosition(int position) {
+       return drugsForTime.get(position);
     }
 
 

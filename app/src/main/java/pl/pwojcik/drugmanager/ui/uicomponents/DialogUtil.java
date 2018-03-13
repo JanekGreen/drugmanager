@@ -19,23 +19,20 @@ public class DialogUtil {
 
     }
 
+    public void setButtonListener(DialogUtilButtonListener buttonListener) {
+        this.buttonListener = buttonListener;
+    }
+
     private DialogUtilButtonListener buttonListener;
 
     public DialogUtil(Fragment fragment) {
         if(fragment instanceof DialogUtilButtonListener)
             buttonListener = (DialogUtilButtonListener)fragment;
-        else{
-            throw new  IllegalArgumentException("Aktywność nie implementuje interfejsu DialogUtilButtonListener");
-        }
 
     }
     public DialogUtil(Activity activity) {
         if(activity instanceof DialogUtilButtonListener)
             buttonListener = (DialogUtilButtonListener)activity;
-        else{
-            throw new  IllegalArgumentException("Aktywność nie implementuje interfejsu DialogUtilButtonListener");
-        }
-
     }
 
     public void showInfo(Context context, String text) {
