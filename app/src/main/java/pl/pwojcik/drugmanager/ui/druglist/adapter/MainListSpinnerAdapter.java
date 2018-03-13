@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -53,20 +52,16 @@ public  class MainListSpinnerAdapter extends ArrayAdapter<String> implements The
         definedTimeDao.getDefinedTimeIdForName(query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(definedTimeId ->{
-                    System.out.println("getItemPosition INSIDE"+definedTimeId);
-                    definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTimeId)
-                            .subscribeOn(Schedulers.io())
-                            .flatMap(definedTimesDays -> io.reactivex.Observable.fromIterable(definedTimesDays)
-                                    .map(DefinedTimesDays::getDay)
-                                    .toList()
-                                    .map(Misc::getWeekDayNames)
-                                    .toMaybe())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(textView2::setText);
-                });
+                .subscribe(definedTimeId -> definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTimeId)
+                        .subscribeOn(Schedulers.io())
+                        .flatMap(definedTimesDays -> io.reactivex.Observable.fromIterable(definedTimesDays)
+                                .map(DefinedTimesDays::getDay)
+                                .toList()
+                                .map(Misc::getWeekDayNames)
+                                .toMaybe())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(textView2::setText));
 
-        //textView2.setText("test");
 
         return view;
     }
