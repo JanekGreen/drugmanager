@@ -1,5 +1,6 @@
 package pl.pwojcik.drugmanager.ui.druglist.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDaysDao;
+import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
 /**
@@ -20,14 +27,17 @@ import pwojcik.pl.archcomponentstestproject.R;
 
 public class NewDefinedTimeAdapter extends RecyclerView.Adapter<NewDefinedTimeAdapter.DefinedTimeViewHolder> {
 
-   private List<DefinedTime> definedTimes;
-   private OnNewDefinedTimesAdapterItemClick onNewDefinedTimesAdapterItemClick;
+    private final Context context;
+    private List<DefinedTime> definedTimes;
+    private OnNewDefinedTimesAdapterItemClick onNewDefinedTimesAdapterItemClick;
+    private DefinedTimesDaysDao definedTimesDaysDao;
 
     public interface OnNewDefinedTimesAdapterItemClick {
         void onDefinedTimeAdapterItemClick(int position);
     }
-    public NewDefinedTimeAdapter(){
-
+    public NewDefinedTimeAdapter(Context context){
+        this.context = context;
+        definedTimesDaysDao = DrugmanagerApplication.getDbInstance(context).getDefinedTimesDaysDao();
     }
 
     public List<DefinedTime> getDefinedTimes() {
@@ -55,6 +65,18 @@ public class NewDefinedTimeAdapter extends RecyclerView.Adapter<NewDefinedTimeAd
         DefinedTime definedTime = definedTimes.get(position);
         holder.tvDefinedTime.setText(definedTime.getName());
         holder.tvTime.setText(definedTime.getTime());
+
+        definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTimes.get(position).getId())
+                .subscribeOn(Schedulers.io())
+                .flatMap(definedTimesDays -> io.reactivex.Observable.fromIterable(definedTimesDays)
+                        .map(DefinedTimesDays::getDay)
+                        .toList()
+                        .map(Misc::getWeekDayNames)
+                        .toMaybe())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(daysNames -> {
+                    holder.tvDefinedDays.setText(daysNames);
+                });
     }
 
     @Override
@@ -79,6 +101,8 @@ public class NewDefinedTimeAdapter extends RecyclerView.Adapter<NewDefinedTimeAd
         TextView tvDefinedTime;
         @BindView(R.id.tvTime)
         TextView tvTime;
+        @BindView(R.id.tvDefinedDays)
+        TextView tvDefinedDays;
 
         public DefinedTimeViewHolder(View itemView) {
             super(itemView);

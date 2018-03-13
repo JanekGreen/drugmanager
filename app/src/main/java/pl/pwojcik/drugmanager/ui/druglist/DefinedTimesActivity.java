@@ -62,7 +62,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        definedTimeAdapter = new NewDefinedTimeAdapter();
+        definedTimeAdapter = new NewDefinedTimeAdapter(this);
         drugViewModel = ViewModelProviders.of(this).get(DrugViewModel.class);
         drugViewModel.getDefinedTimesData().observe(this, definedTimes -> {
             definedTimesGlobal = new ArrayList<>(definedTimes);
