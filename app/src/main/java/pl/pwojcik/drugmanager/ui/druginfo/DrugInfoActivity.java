@@ -1,5 +1,6 @@
 package pl.pwojcik.drugmanager.ui.druginfo;
 
+import android.animation.LayoutTransition;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -18,6 +19,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,15 +74,24 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @BindView(R.id.rvActiveSubstances)
     RecyclerView rvActiveSubstance;
 
+    @BindView(R.id.ivExpand)
+    ImageView ivExpand;
 
     @BindView(R.id.rvDefinedTimes)
     RecyclerView rvDefinedTimes;
+
+    @BindView(R.id.remindersArea)
+    LinearLayout remindersArea;
+
+    @BindView(R.id.rootLayout)
+    LinearLayout rootLayout;
+
     private DefinedTimeAdapter definedTimeAdapter;
     private DrugViewModel drugViewModel;
     private ActiveSubstanceAdapter activeSubstanceAdapter;
     private String characteristicsUrl;
     private String leafletUrl;
-    ArrayList<File> filesToDelete;
+    private ArrayList<File> filesToDelete;
 
 
     @Override
@@ -93,7 +105,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         getSupportActionBar().setHomeButtonEnabled(true);
         definedTimeAdapter = new DefinedTimeAdapter();
         definedTimeAdapter.setSwitchChangeCallback(this);
-
+        rootLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
         rvDefinedTimes.setAdapter(definedTimeAdapter);
         rvDefinedTimes.setLayoutManager(new LinearLayoutManager(this));
@@ -291,6 +303,19 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         popup.show();
     }
 
+    @OnClick(R.id.ivExpand)
+    public void showReminders(View view){
+      if(remindersArea.getVisibility() == View.VISIBLE) {
+          remindersArea.setVisibility(View.GONE);
+          ivExpand.setImageResource(R.drawable.ic_expand_more_black_24dp);
+      }
+      else {
+          remindersArea.setVisibility(View.VISIBLE);
+          ivExpand.setImageResource(R.drawable.ic_expand_less_black_24dp);
+      }
+
+    }
+
     private void removeFiles() {
         for (File file : filesToDelete) {
             file.delete();
@@ -305,6 +330,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                 .subscribe(definedTimesDays -> drugViewModel.getDefinedTimesData(),
                         //e -> Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show())
                         Throwable::printStackTrace);
+        remindersArea.setVisibility(View.VISIBLE);
     }
 
     @Override

@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity"
+    android:animateLayoutChanges="true"
     tools:showIn="@layout/activity_new_drug_info">
 
     <LinearLayout
+        android:id="@+id/rootLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:descendantFocusability="blocksDescendants"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_vertical_margin"
+        android:animateLayoutChanges="true"
+        android:descendantFocusability="blocksDescendants"
         android:orientation="vertical">
 
         <TextView
@@ -38,9 +40,9 @@
             android:id="@+id/tvDrugNameDetails2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginEnd="@dimen/activity_vertical_margin"
             android:layout_marginStart="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:text="Wielkość opakowania"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
@@ -90,49 +92,70 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginEnd="@dimen/activity_vertical_margin"
-            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_margin="@dimen/activity_vertical_margin"
             android:background="@android:color/darker_gray" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_vertical_margin"
-            android:weightSum="1"
-            android:orientation="horizontal">
+            android:layout_margin="@dimen/activity_vertical_margin">
+
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="0.8"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:id="@+id/remindersText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_notifications_black_24dp"
+                android:onClick="showReminders"
                 android:text="  Przypomnienia"
-                android:layout_height="wrap_content" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <ImageView
+                android:id="@+id/ivExpand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_expand_more_black_24dp" />
+
             <ImageView
                 android:id="@+id/ivMenu"
-                android:layout_weight="0.2"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
                 android:layout_gravity="end"
-                android:src="@drawable/ic_more_vert_black_24dp"/>
-        </LinearLayout>
+                android:src="@drawable/ic_more_vert_black_24dp" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvDefinedTimes"
-            android:layout_marginStart="@dimen/activity_vertical_margin"
-            android:layout_marginEnd="@dimen/activity_vertical_margin"
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/remindersArea"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvDefinedTimes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_vertical_margin"
+                android:layout_marginStart="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_margin="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:background="@android:color/darker_gray" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:layout_marginStart="@dimen/activity_vertical_margin"
             android:drawableStart="@drawable/ic_business_black_24dp"
             android:text="  Producent"
@@ -171,7 +194,6 @@
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginEnd="@dimen/activity_vertical_margin"
             android:layout_marginStart="@dimen/activity_vertical_margin" />
-
 
     </LinearLayout>
 
