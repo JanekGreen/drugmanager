@@ -32,16 +32,17 @@ import pwojcik.pl.archcomponentstestproject.R;
  */
 
 public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.DefinedTimeViewHolder> {
-   private List<DefinedTime> definedTimes;
-   private Set<Long> drugTimes;
-   private SwitchChangeCallback switchChangeCallback;
-   private DrugViewModel drugViewModel;
+    private List<DefinedTime> definedTimes;
+    private Set<Long> drugTimes;
+    private SwitchChangeCallback switchChangeCallback;
+    private DrugViewModel drugViewModel;
 
 
     public DefinedTimeAdapter(List<DefinedTime> definedTimes) {
         this.definedTimes = definedTimes;
     }
-    public DefinedTimeAdapter(){
+
+    public DefinedTimeAdapter() {
 
     }
 
@@ -74,14 +75,14 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
 
     @Override
     public void onBindViewHolder(DefinedTimeViewHolder holder, int position) {
-
+        System.out.println("OnBindViewHolder called " + definedTimes.get(position).getName());
         DefinedTime definedTime = definedTimes.get(position);
         holder.tvDefinedTime.setText(definedTime.getName());
         holder.tvTime.setText(definedTime.getTime());
-        if(drugTimes.contains(definedTime.getId())){
-          holder.swSelected.setChecked(true);
-          holder.tvTime.setTextColor(Color.BLACK);
-        }else{
+        if (drugTimes.contains(definedTime.getId())) {
+            holder.swSelected.setChecked(true);
+            holder.tvTime.setTextColor(Color.BLACK);
+        } else {
             holder.tvTime.setTextColor(Color.GRAY);
         }
         drugViewModel.getDefinedTimesDays(definedTimes.get(position).getId())
@@ -92,9 +93,7 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
                         .map(Misc::getWeekDayNames)
                         .toMaybe())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daysNames -> {
-                    holder.tvDrugDays.setText(daysNames);
-                });
+                .subscribe(daysNames -> holder.tvDrugDays.setText(daysNames));
 
     }
 
@@ -103,12 +102,12 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
         return definedTimes == null ? 0 : definedTimes.size();
     }
 
-   public interface SwitchChangeCallback{
+    public interface SwitchChangeCallback {
         void onCheckedChangedCallback(long definedTimeId, boolean isSelected);
 
     }
 
-     class DefinedTimeViewHolder extends RecyclerView.ViewHolder{
+     class DefinedTimeViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.tvDefinedTime)
         TextView tvDefinedTime;
@@ -116,8 +115,8 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
         @BindView(R.id.tvTime)
         TextView tvTime;
 
-         @BindView(R.id.tvDefinedDays)
-         TextView tvDrugDays;
+        @BindView(R.id.tvDefinedDays)
+        TextView tvDrugDays;
 
         @BindView(R.id.swSelected)
         Switch swSelected;
@@ -126,9 +125,15 @@ public class DefinedTimeAdapter extends RecyclerView.Adapter<DefinedTimeAdapter.
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
         @OnCheckedChanged(R.id.swSelected)
-        public void onCheckedChanged(CompoundButton compoundButton, boolean isSelected){
-            switchChangeCallback.onCheckedChangedCallback(definedTimes.get(getAdapterPosition()).getId(),isSelected);
+        public void onCheckedChanged(CompoundButton compoundButton, boolean isSelected) {
+            if (isSelected) {
+                tvTime.setTextColor(Color.BLACK);
+            } else {
+                tvTime.setTextColor(Color.GRAY);
+            }
+            switchChangeCallback.onCheckedChangedCallback(definedTimes.get(getAdapterPosition()).getId(), isSelected);
 
 
         }

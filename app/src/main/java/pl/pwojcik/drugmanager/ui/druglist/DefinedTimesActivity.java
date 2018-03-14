@@ -3,6 +3,7 @@ package pl.pwojcik.drugmanager.ui.druglist;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -49,7 +50,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     FloatingActionButton addDefinedTimes;
 
     @BindView(R.id.definedTimesActivityRoot)
-    LinearLayout rootLayout;
+    CoordinatorLayout rootLayout;
 
 
     @Override
@@ -128,7 +129,9 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
                                                     snackbar.show();
                                                 },
                                                 e -> {
-                                                    Toast.makeText(this, handleError(e), Toast.LENGTH_SHORT).show();
+                                                     DialogUtil dialogUtil = new DialogUtil(this);
+                                                     dialogUtil.showInfo(this,handleError(e));
+                                                    //Toast.makeText(this, handleError(e), Toast.LENGTH_SHORT).show();
                                                     restoreItem(removedItem, position, definedTimesDays);
                                                 });
                     },
@@ -157,7 +160,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     private String handleError(Throwable t) {
         if (t instanceof android.database.sqlite.SQLiteConstraintException) {
-            return "W bazie występują leki przypisane do tej pory, usuń je najpierw";
+            return "Nie można usunąć. W bazie występują leki przypisane do tej pory";
         }
         return t.getMessage();
     }

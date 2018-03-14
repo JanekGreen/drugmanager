@@ -94,6 +94,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         definedTimeAdapter = new DefinedTimeAdapter();
         definedTimeAdapter.setSwitchChangeCallback(this);
 
+
         rvDefinedTimes.setAdapter(definedTimeAdapter);
         rvDefinedTimes.setLayoutManager(new LinearLayoutManager(this));
         filesToDelete = new ArrayList<>();
@@ -112,7 +113,6 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         drugViewModel.getSelectedTimesIds().observe(this, selectedIds -> {
             if (selectedIds != null) {
                 definedTimeAdapter.setDrugTimes(selectedIds.keySet());
-                new Handler().post(() -> definedTimeAdapter.notifyDataSetChanged());
             }
         });
 

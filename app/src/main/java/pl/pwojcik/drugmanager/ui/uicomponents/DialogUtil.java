@@ -38,10 +38,13 @@ public class DialogUtil {
     public void showInfo(Context context, String text) {
 
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(text)
+                .setTitle("Uwaga!")
+                .setMessage(text)
                 .setPositiveButton("OK", (dialog1, which) -> {
                     dialog1.dismiss();
-                    buttonListener.onPositiveButtonClicked();
+                    if(buttonListener!=null) {
+                        buttonListener.onPositiveButtonClicked();
+                    }
                 })
                 .create();
 

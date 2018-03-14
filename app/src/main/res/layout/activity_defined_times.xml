@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/definedTimesActivityRoot"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/activity_vertical_margin"
-        android:orientation="vertical">
+        android:fillViewport="true">
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_margin="@dimen/activity_vertical_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rvDefinedTimes"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvDefinedTimes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+    </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabAddDefinedTimes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:elevation="6dp"
         android:src="@mipmap/ic_add_white_18dp"
-        app:backgroundTint="@color/colorPrimaryDark"/>
-    </LinearLayout>
-</LinearLayout>
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:layout_anchor="@+id/scrollView2"
+        app:layout_anchorGravity="right|bottom"
+        android:layout_marginBottom="45dp"
+        android:layout_marginEnd="45dp"/>
+</android.support.design.widget.CoordinatorLayout>
