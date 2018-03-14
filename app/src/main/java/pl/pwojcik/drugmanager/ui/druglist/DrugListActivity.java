@@ -212,18 +212,17 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 }
                 break;
             case R.id.notificationItem:
-                String selectedTime;
+                String selectedTime = "";
                 selectedItemPosition = spinner.getSelectedItemPosition();
                 if (selectedItemPosition != -1) {
                     selectedTime = spinner.getSelectedItem().toString()
                             .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
-
-                    if (!selectedTime.equals(currentFragmentSelected)) {
-                        currentTimeSelected = selectedTime;
-                        currentFragmentSelected = DRUG_NOTIFICATION;
-                        changeViewForMode();
-                        switchFragments(selectedTime, false);
-                    }
+                }
+                if (!selectedTime.equals(currentFragmentSelected)) {
+                    currentTimeSelected = selectedTime;
+                    currentFragmentSelected = DRUG_NOTIFICATION;
+                    changeViewForMode();
+                    switchFragments(selectedTime, false);
                 }
                 return true;
         }

@@ -174,7 +174,7 @@ public class DrugRepostioryImpl implements DrugRepository {
 
     @Override
     public Maybe<List<String>> getAllDefinedTimesWithNames() {
-        return definedTimeDao.getAll()
+        return definedTimeDao.getAllActive()
                 .toObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(list -> Observable.fromIterable(list)

@@ -20,6 +20,9 @@ public interface DefinedTimeDao {
     @Query("SELECT * from defined_times")
     Maybe<List<DefinedTime>> getAll();
 
+    @Query("SELECT * from defined_times where id in (select distinct time_id from drug_time)")
+    Maybe<List<DefinedTime>> getAllActive();
+
     @Query("SELECT count (*) as size from defined_times")
     Maybe<Integer> getDefinedTimesCount();
 
