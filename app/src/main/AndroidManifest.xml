@@ -54,6 +54,9 @@
         <activity
             android:name="pl.pwojcik.drugmanager.ui.druginfo.AddDrugManualActivity"
             android:label="Dodaj lek" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="381e1e95511cfae5f192bdfe9720deac79bc1ba7" />
     </application>
 
 </manifest>

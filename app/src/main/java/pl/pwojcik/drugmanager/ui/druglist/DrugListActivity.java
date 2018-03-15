@@ -21,6 +21,8 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.MainListSpinnerAdapter;
@@ -52,6 +54,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_drug_list2);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
