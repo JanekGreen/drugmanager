@@ -1,15 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:fillViewport="true">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:weightSum="1"
             android:orientation="vertical">
 
@@ -18,24 +18,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.1"
-                android:layout_marginEnd="@dimen/list_item_spacing"
-                android:layout_marginStart="@dimen/list_item_spacing"
-                android:layout_marginTop="@dimen/list_item_spacing" />
+                android:layout_marginTop="@dimen/list_item_spacing"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.1"
+                android:text="Nazwa dla pory przyjmowania leku"
                 android:layout_marginBottom="@dimen/list_item_spacing"
                 android:layout_marginEnd="@dimen/list_item_spacing"
                 android:layout_marginStart="@dimen/list_item_spacing"
-                android:text="Nazwa dla pory przyjmowania leku"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
             <pl.pwojcik.drugmanager.ui.uicomponents.DayPicker
                 android:id="@+id/dayPicker"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -48,7 +46,7 @@
             <pl.pwojcik.drugmanager.ui.uicomponents.CustomTimePicker
                 android:id="@+id/timePicker"
                 android:layout_weight="0.8"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="0dp" />
 
         </LinearLayout>

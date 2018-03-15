@@ -151,6 +151,6 @@ public class Misc {
         for(int d: days){
             sb.append(getWeekDayName(d)).append(" ,");
         }
-        return sb.subSequence(0,sb.toString().length()-1).toString();
+        return !days.isEmpty()?sb.subSequence(0,sb.toString().length()-1).toString(): "Nigdy";
     }
 }

@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.model.persistence.DefinedTimeDao;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDaysDao;
 import pl.pwojcik.drugmanager.utils.UUIDUtil;
@@ -60,6 +62,7 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         View dialogView = inflater.inflate(R.layout.dialog_add_defined_time, null);
 
         definedTimesDaysDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDaysDao();
+
 
         EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefinedTimeName);
         etDefinedTimeName.setText(definedTime.getName());
@@ -109,12 +112,22 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         dialog.show();
 
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if(activeDays.size()== 0){
+                Toast.makeText(activity ,"Należy zaznaczyć chociaż jeden dzień", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if(etDefinedTimeName.getText().toString().isEmpty()){
+                Toast.makeText(activity ,"Należy podać nazwę pory przyjmowania leku", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (Build.VERSION.SDK_INT >= 23) {
                 definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getMinute()));
             } else {
                 definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getCurrentHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getCurrentMinute()));
             }
             definedTime.setName(etDefinedTimeName.getText().toString());
+
             onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
             dialog.dismiss();
         });

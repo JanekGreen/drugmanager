@@ -16,6 +16,7 @@
     <string name="title_activity_drug_list2">Lista leków</string>
     <string name="action_settings">Settings</string>
     <string name="action_set_defined_times">Ustaw pory przyjmowania leków</string>
+    <string name="crash_app">Wywal apke (używaj odpowiedzialnie!:))</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_drug_details">DrugDetailsActivity</string>
     <string name="large_text">

@@ -24,9 +24,6 @@ public class DrugmanagerApplication extends Application {
         super.onCreate();
         if (db == null)
             getDbInstance(getApplicationContext());
-
-        writeToDatabaseRequiredValues();
-
     }
 
     public static AppDatabase getDbInstance(Context context) {

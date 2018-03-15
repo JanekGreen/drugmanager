@@ -125,6 +125,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.crashApp:
+                throw new UnsupportedOperationException("Test crash to check error reporting");
         }
 
         return super.onOptionsItemSelected(item);
