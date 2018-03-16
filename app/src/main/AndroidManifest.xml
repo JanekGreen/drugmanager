@@ -42,7 +42,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity" />
+        <activity android:name="pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity"
+            android:label="@string/title_activity_defined_times">
+        </activity>
         <activity
             android:name="pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity"
             android:label="@string/title_activity_new_drug_info"
