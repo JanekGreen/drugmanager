@@ -34,11 +34,11 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
     private Activity activity;
     private OnDialogButtonClickedListener onDialogButtonClicked;
     private List<Integer> activeDays;
-    private DefinedTimesDaysDao definedTimesDaysDao;
 
 
     public interface OnDialogButtonClickedListener {
         void onDialogPositiveButtonClicked(DefinedTime definedTime, List<Integer> activeDays);
+
         void onDialogNegativeButtonClicked();
     }
 
@@ -61,8 +61,8 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         LayoutInflater inflater = activity.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_defined_time, null);
 
-        definedTimesDaysDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDaysDao();
-
+        DefinedTimesDaysDao definedTimesDaysDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDaysDao();
+        DefinedTimeDao definedTimeDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDao();
 
         EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefinedTimeName);
         etDefinedTimeName.setText(definedTime.getName());
@@ -72,19 +72,19 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         DayPicker dayPicker = dialogView.findViewById(R.id.dayPicker);
         dayPicker.setDaySelectionChangedListener(this);
 
-        if(definedTime.getId()>0) {
+        if (definedTime.getId() > 0) {
             definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTime.getId())
                     .subscribeOn(Schedulers.io())
                     .flatMap(definedTimesDays -> io.reactivex.Observable.fromIterable(definedTimesDays)
-                    .map(DefinedTimesDays::getDay)
-                    .toList()
-                    .toMaybe())
+                            .map(DefinedTimesDays::getDay)
+                            .toList()
+                            .toMaybe())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(activeDays_->{
+                    .subscribe(activeDays_ -> {
                         this.activeDays = activeDays_;
                         dayPicker.setActiveDays(activeDays);
                     });
-        }else{
+        } else {
             this.activeDays = dayPicker.getActiveDaysList();
         }
 
@@ -105,32 +105,50 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(null)
                 .setView(dialogView)
-                .setPositiveButton("OK", (dialog1, which) -> {})
-                .setNegativeButton("Anuluj", (dialog12, which) -> {})
+                .setPositiveButton("OK", (dialog1, which) -> {
+                })
+                .setNegativeButton("Anuluj", (dialog12, which) -> {
+                })
                 .create();
 
         dialog.show();
 
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
-            if(activeDays.size()== 0){
-                Toast.makeText(activity ,"Należy zaznaczyć chociaż jeden dzień", Toast.LENGTH_SHORT).show();
+            if (activeDays.size() == 0) {
+                Toast.makeText(activity, "Należy zaznaczyć chociaż jeden dzień", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(etDefinedTimeName.getText().toString().isEmpty()){
-                Toast.makeText(activity ,"Należy podać nazwę pory przyjmowania leku", Toast.LENGTH_SHORT).show();
+            if (etDefinedTimeName.getText().toString().isEmpty()) {
+                Toast.makeText(activity, "Należy podać nazwę pory przyjmowania leku", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (Build.VERSION.SDK_INT >= 23) {
-                definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getMinute()));
-            } else {
-                definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getCurrentHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getCurrentMinute()));
-            }
-            definedTime.setName(etDefinedTimeName.getText().toString());
+            definedTimeDao.getDefinedTimeIdForName(etDefinedTimeName.getText().toString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .switchIfEmpty(Maybe.just(-1L))
+                    .subscribe(id -> {
+                        System.out.println("id " + id + " definedtime id " + definedTime.getId());
+                        if (id != -1 && id!=definedTime.getId()) {
+                            Toast.makeText(activity, "Nazwa powinna być unikalna", Toast.LENGTH_SHORT).show();
+                        } else {
+                            saveDefinedTime(definedTime, etDefinedTimeName, timePicker, dialog);
+                        }
+                    });
 
-            onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
-            dialog.dismiss();
         });
+    }
+
+    private void saveDefinedTime(DefinedTime definedTime, EditText etDefinedTimeName, CustomTimePicker timePicker, AlertDialog dialog) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getMinute()));
+        } else {
+            definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getCurrentHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getCurrentMinute()));
+        }
+        definedTime.setName(etDefinedTimeName.getText().toString());
+
+        onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
+        dialog.dismiss();
     }
 
     @Override

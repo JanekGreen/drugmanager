@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,8 +22,6 @@ import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
-import pl.pwojcik.drugmanager.model.persistence.TypeConverter;
-import pl.pwojcik.drugmanager.model.restEntity.Drug;
 import pl.pwojcik.drugmanager.retrofit.DrugRestService;
 import pl.pwojcik.drugmanager.repository.DrugRepository;
 import pl.pwojcik.drugmanager.repository.DrugRepostioryImpl;
@@ -101,10 +98,19 @@ public class DrugViewModel extends AndroidViewModel {
         return selectedTimesIds;
     }
 
-    public MutableLiveData<HashMap<Long, DrugTime>> getSelectedTimesIds(long drugDbId) {
+    public void getSelectedTimesIds(long drugDbId) {
         drugRepository.getSelectedTimeIdsForDrug(drugDbId)
                 .subscribe(hm -> selectedTimesIds.setValue(hm));
-        return selectedTimesIds;
+    }
+
+    public Single<Boolean> shouldPromptForSave(){
+        DrugDb drugDb = drugDbMutableLiveData.getValue();
+        if(drugDb!=null && drugDb.getId()>0 &&  selectedTimesIds.getValue()!= null){
+           return drugRepository.shouldPromptForSave(drugDb.getId(), selectedTimesIds.getValue());
+
+        }
+
+        return Single.just(false);
     }
 
     public Maybe<List<DefinedTime>> updateOrSetAlarms(Context context) {
@@ -158,6 +164,8 @@ public class DrugViewModel extends AndroidViewModel {
     public Maybe<List<DefinedTimesDays>> getDefinedTimesDays(long id){
         return drugRepository.getDefinedTimeDaysForDefinedTime(id);
     }
+
+
 }
 
 

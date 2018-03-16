@@ -54,6 +54,7 @@ public interface DrugRepository {
     Maybe<List<DrugTime>> getDrugTimesForDrug(long drugId);
     Maybe<HashMap<Long, DrugTime>> getSelectedTimeIdsForDrug(long id);
     Observable<List<DrugTime>> saveNewDrugTimeData(HashMap<Long,DrugTime> selectedIds, DrugDb drugDb);
+    Single<Boolean> shouldPromptForSave(long id,HashMap<Long,DrugTime> data);
 
     Maybe<List<DrugDb>> getAll();
     Observable<File> downloadFileByUrl(String url);

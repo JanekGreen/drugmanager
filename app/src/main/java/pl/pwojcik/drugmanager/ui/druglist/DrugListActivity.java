@@ -21,7 +21,9 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 import com.crashlytics.android.Crashlytics;
+
 import io.fabric.sdk.android.Fabric;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
@@ -220,8 +222,13 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 String selectedTime = "";
                 selectedItemPosition = spinner.getSelectedItemPosition();
                 if (selectedItemPosition != -1) {
-                    selectedTime = spinner.getSelectedItem().toString()
-                            .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+                    if(spinner.getSelectedItem()!=null) {
+                        selectedTime = spinner.getSelectedItem().toString()
+                                .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+                    }
+                } else {
+                    drugListViewModel.getDefinedTimes();
+
                 }
                 if (!selectedTime.equals(currentFragmentSelected)) {
                     currentTimeSelected = selectedTime;

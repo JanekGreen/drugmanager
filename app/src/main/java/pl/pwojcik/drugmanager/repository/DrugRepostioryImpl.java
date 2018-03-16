@@ -368,6 +368,30 @@ public class DrugRepostioryImpl implements DrugRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Single<Boolean> shouldPromptForSave(long id,HashMap<Long,DrugTime> data){
+         return getSelectedTimeIdsForDrug(id)
+                 .map(databaseState -> areHashMapsTheSame(databaseState,data))
+                 .toSingle();
+    }
+
+    private boolean areHashMapsTheSame(HashMap<Long,DrugTime> data, HashMap<Long,DrugTime> data2){
+        if(data == null)
+            return false;
+
+        for (HashMap.Entry<Long, DrugTime> entry : data.entrySet()){
+            if(!data2.containsKey(entry.getKey())){
+                return false;
+            }else{
+               DrugTime drugTime2 = data2.get(entry.getValue());
+               DrugTime drugTime = entry.getValue();
+                if(drugTime.getId()!= drugTime2.getId() || drugTime.getTime_id() != drugTime2.getTime_id()
+                        || drugTime.getDrugId()!=drugTime2.getDrugId())
+                    return false;
+            }
+        }
+            return true;
+    }
+
 
     @Override
     public Observable<List<DrugTime>> saveNewDrugTimeData(HashMap<Long, DrugTime> selectedIds, DrugDb drugDb) {

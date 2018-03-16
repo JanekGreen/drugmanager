@@ -39,6 +39,7 @@ import pl.pwojcik.drugmanager.ui.adddrug.adapter.DefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity;
 import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
+import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
@@ -92,6 +93,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     private String characteristicsUrl;
     private String leafletUrl;
     private ArrayList<File> filesToDelete;
+    private boolean contentChanged =false;
 
 
     @Override
@@ -200,16 +202,37 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+                        if(!contentChanged) {
+                            onBackPressed();
+                        } else{
+                            DialogUtil dialogUtil = new DialogUtil(this);
+                            dialogUtil.showYestNoDialog(this,"Uwaga!","Czy chcesz zapisać zmiany?");
+                            dialogUtil.setButtonListener(new DialogUtil.DialogUtilButtonListener() {
+                                @Override
+                                public void onPositiveButtonClicked() {
+                                    saveAndExit();
+                                }
+
+                                @Override
+                                public void onNegativeButtonClicked() {
+                                    onBackPressed();
+                                }
+                            });
+                        }
+
         }else if (item.getItemId() == R.id.action_save_drug) {
-            drugViewModel.saveDrugTimeData()
-                    .subscribe(list -> drugViewModel.updateOrSetAlarms(this)
-                                    .subscribe(definedTimes -> finishAfterTransition()
-                                            , Throwable::printStackTrace)
-                            , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
-            onBackPressed();
+            saveAndExit();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveAndExit() {
+        drugViewModel.saveDrugTimeData()
+                .subscribe(list -> drugViewModel.updateOrSetAlarms(this)
+                                .subscribe(definedTimes -> finishAfterTransition()
+                                        , Throwable::printStackTrace)
+                        , throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+        onBackPressed();
     }
 
     @Override
@@ -223,6 +246,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     public void onCheckedChangedCallback(long definedTimeId, boolean isSelected) {
         System.out.println("checkChanged definedTimeId" + definedTimeId + " isSelected " + isSelected);
         drugViewModel.addSelectedTimeForDrug(definedTimeId, isSelected);
+        contentChanged = true;
     }
 
     @OnClick(R.id.tvCharacteristics)
