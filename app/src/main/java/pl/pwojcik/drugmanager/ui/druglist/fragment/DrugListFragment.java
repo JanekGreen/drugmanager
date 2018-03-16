@@ -93,12 +93,10 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                                     @Override
                                     public void onPositiveButtonClicked() {
                                         deleteDrugWithDrugs(list, position);
-                                        drugListAdapter.notifyDataSetChanged();
 
                                     }
                                     @Override
                                     public void onNegativeButtonClicked() {
-                                        //drugListAdapter.restoreItem(toBeRemoved,position);
                                         drugListAdapter.notifyDataSetChanged();
 
                                     }
@@ -108,12 +106,9 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                             }
                         })
                         .subscribe(list -> deleteDrugWithDrugs(list, position), e -> {
-                            //Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                             //drugListAdapter.notifyItemRemoved(position);
                         });
             } else {
                deleteDrugTime(toBeRemoved.getId(), position);
-               //drugListAdapter.notifyItemRemoved(position);
             }
         }
 
@@ -198,7 +193,6 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private void deleteDrugTime(long drugId, int position){
         final List<DrugTime> relatedDrugTimes = new ArrayList<>();
         DrugDb removedItem = drugListAdapter.removeItem(position);
-        drugListAdapter.notifyItemRemoved(position);
         drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
                 .doOnSuccess(definedTimeId -> drugListViewModel.getDrugTime(drugId, definedTimeId)
                         .subscribe(drugTime -> {
