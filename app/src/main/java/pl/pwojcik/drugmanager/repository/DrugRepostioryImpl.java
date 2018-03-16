@@ -375,14 +375,14 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     private boolean areHashMapsTheSame(HashMap<Long,DrugTime> data, HashMap<Long,DrugTime> data2){
-        if(data == null)
+        if(data == null || data.isEmpty())
             return false;
 
         for (HashMap.Entry<Long, DrugTime> entry : data.entrySet()){
             if(!data2.containsKey(entry.getKey())){
                 return false;
             }else{
-               DrugTime drugTime2 = data2.get(entry.getValue());
+               DrugTime drugTime2 = data2.get(entry.getKey());
                DrugTime drugTime = entry.getValue();
                 if(drugTime.getId()!= drugTime2.getId() || drugTime.getTime_id() != drugTime2.getTime_id()
                         || drugTime.getDrugId()!=drugTime2.getDrugId())

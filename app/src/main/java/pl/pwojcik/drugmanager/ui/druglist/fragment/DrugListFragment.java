@@ -75,6 +75,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
+        rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         refreshView();
     }
 
