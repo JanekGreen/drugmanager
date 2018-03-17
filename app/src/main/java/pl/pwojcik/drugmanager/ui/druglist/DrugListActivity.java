@@ -3,7 +3,6 @@ package pl.pwojcik.drugmanager.ui.druglist;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +48,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     String currentFragmentSelected = DRUG_NOTIFICATION;
     String currentTimeSelected = "";
     private DrugListViewModel drugListViewModel;
-    boolean backPressed = false;
     private int selectedItemPosition;
 
     @Override
