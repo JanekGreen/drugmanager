@@ -162,7 +162,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         System.out.println("On resume");
         drugListViewModel.getDefinedTimes();
     }
-    
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
