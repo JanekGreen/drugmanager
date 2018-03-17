@@ -61,7 +61,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         if (savedInstanceState != null) {
@@ -78,6 +78,12 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
+            if(listDefinedTimes ==null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)){
+                currentTimeSelected ="";
+                spinner.setVisibility(View.GONE);
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+                getSupportActionBar().setTitle("Powiadomienia");
+            }
             spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
             if (savedInstanceState != null) {
                 spinner.setSelection(selectedItemPosition);
@@ -156,22 +162,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         System.out.println("On resume");
         drugListViewModel.getDefinedTimes();
     }
-
-    @Override
-    public void onBackPressed() {
-        if (!backPressed) {
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                backPressed = false;
-
-            }, 3000);
-
-            backPressed = true;
-            Toast.makeText(this, "Naciśnij jeszcze raz aby wyjść", Toast.LENGTH_SHORT).show();
-        } else {
-            this.finishAffinity();
-        }
-    }
+    
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -228,7 +219,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                     }
                 } else {
                     drugListViewModel.getDefinedTimes();
-
                 }
                 if (!selectedTime.equals(currentFragmentSelected)) {
                     currentTimeSelected = selectedTime;

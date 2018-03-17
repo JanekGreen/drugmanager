@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.EOFException;
@@ -17,6 +18,7 @@ import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByBarcodeFragment;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.AddByNameFragment;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
+import pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity;
 import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pwojcik.pl.archcomponentstestproject.R;
 
@@ -44,6 +46,17 @@ public class AddDrugActivity extends AppCompatActivity  {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+           default: return super.onOptionsItemSelected(item);
+        }
+
+    }
 
     private void setFragment(String tag) {
         FragmentManager manager = getSupportFragmentManager();
