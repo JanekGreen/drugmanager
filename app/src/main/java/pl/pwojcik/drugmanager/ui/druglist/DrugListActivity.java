@@ -82,12 +82,12 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
-            if(listDefinedTimes ==null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)){
-                currentTimeSelected ="";
+            if (listDefinedTimes == null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)) {
+                currentTimeSelected = "";
                 spinner.setVisibility(View.GONE);
                 getSupportActionBar().setDisplayShowTitleEnabled(true);
                 getSupportActionBar().setTitle("Powiadomienia");
-            }else{
+            } else {
                 this.listDefinedTimes = listDefinedTimes;
                 spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
             }
@@ -117,11 +117,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             spinner.setVisibility(View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setTitle("Lista leków");
-        } else if (currentFragmentSelected.equals(DRUG_NOTIFICATION)){
-            if(listDefinedTimes != null && !listDefinedTimes.isEmpty()) {
+        } else if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+            if (listDefinedTimes != null && !listDefinedTimes.isEmpty()) {
                 spinner.setVisibility(View.VISIBLE);
                 getSupportActionBar().setDisplayShowTitleEnabled(false);
-            }else{
+            } else {
                 spinner.setVisibility(View.GONE);
                 getSupportActionBar().setDisplayShowTitleEnabled(true);
                 getSupportActionBar().setTitle("Powiadomienia");
@@ -228,7 +228,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 String selectedTime = "";
                 selectedItemPosition = spinner.getSelectedItemPosition();
                 if (selectedItemPosition != -1) {
-                    if(spinner.getSelectedItem()!=null) {
+                    if (spinner.getSelectedItem() != null) {
                         selectedTime = spinner.getSelectedItem().toString()
                                 .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
                     }

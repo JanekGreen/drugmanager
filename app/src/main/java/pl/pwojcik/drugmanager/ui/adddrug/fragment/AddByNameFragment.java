@@ -190,8 +190,6 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
                                     drugListAdapter.clearData();
                                     showSnackBar();
                                 } else {
-                                    if(snackbar.isShownOrQueued())
-                                        snackbar.dismiss();
                                     drugListGlobal = new ArrayList<>(list);
                                     drugListAdapter.setDrugsForTime(list);
                                 }
