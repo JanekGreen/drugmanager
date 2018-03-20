@@ -204,7 +204,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         } else {
             if (!noAnimation)
                 transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
-            drugListViewModel.getDefinedTimes();
+            if (drugListViewModel != null)
+                drugListViewModel.getDefinedTimes();
         }
 
         changeViewForMode();
