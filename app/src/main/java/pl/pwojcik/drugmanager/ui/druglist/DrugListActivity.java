@@ -3,6 +3,7 @@ package pl.pwojcik.drugmanager.ui.druglist;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import com.crashlytics.android.Crashlytics;
+
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
@@ -49,6 +52,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     String currentTimeSelected = "";
     private DrugListViewModel drugListViewModel;
     private int selectedItemPosition;
+    private List<String> listDefinedTimes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(0);
 
         if (savedInstanceState != null) {
             selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM", 0);
@@ -80,11 +87,14 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 spinner.setVisibility(View.GONE);
                 getSupportActionBar().setDisplayShowTitleEnabled(true);
                 getSupportActionBar().setTitle("Powiadomienia");
+            }else{
+                this.listDefinedTimes = listDefinedTimes;
+                spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
             }
-            spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
             if (savedInstanceState != null) {
                 spinner.setSelection(selectedItemPosition);
             }
+
         });
 
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -107,9 +117,17 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             spinner.setVisibility(View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setTitle("Lista leków");
-        } else {
-            spinner.setVisibility(View.VISIBLE);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        } else if (currentFragmentSelected.equals(DRUG_NOTIFICATION)){
+            if(listDefinedTimes != null && !listDefinedTimes.isEmpty()) {
+                spinner.setVisibility(View.VISIBLE);
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }else{
+                spinner.setVisibility(View.GONE);
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+                getSupportActionBar().setTitle("Powiadomienia");
+            }
+
+
         }
     }
 
@@ -186,12 +204,13 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         } else {
             if (!noAnimation)
                 transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+            drugListViewModel.getDefinedTimes();
         }
 
+        changeViewForMode();
         transaction
                 .replace(R.id.container, fragment, argument)
                 .commit();
-        changeViewForMode();
 
     }
 
@@ -201,7 +220,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
                     currentFragmentSelected = DRUG_LIST;
                     currentTimeSelected = "";
-                    changeViewForMode();
                     switchFragments(DRUG_LIST, false);
                     return true;
                 }
@@ -220,7 +238,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 if (!selectedTime.equals(currentFragmentSelected)) {
                     currentTimeSelected = selectedTime;
                     currentFragmentSelected = DRUG_NOTIFICATION;
-                    changeViewForMode();
                     switchFragments(selectedTime, false);
                 }
                 return true;
@@ -228,4 +245,5 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
         return false;
     }
+
 }

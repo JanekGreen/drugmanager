@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -22,12 +24,15 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +43,7 @@ import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.IDrugFound;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druginfo.AddDrugManualActivity;
 import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
 import pwojcik.pl.archcomponentstestproject.R;
@@ -46,13 +52,14 @@ import pwojcik.pl.archcomponentstestproject.R;
 public class AddByNameFragment extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener, DrugListAdapter.OnDrugListAdapterItemClick {
     private CursorAdapter suggestionsAdapter;
     private DrugViewModel drugViewModel;
-    private  SearchView searchView;
+    private SearchView searchView;
     private DrugListAdapter drugListAdapter;
     private ArrayList<DrugDb> drugListGlobal;
     @BindView(R.id.rvDrugList)
     RecyclerView rvDrugList;
     private Handler handler;
     private String mqueryString;
+    private Snackbar snackbar;
 
 
     @Override
@@ -72,7 +79,7 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_add_by_name, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_by_name, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -87,8 +94,8 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         drugListAdapter.setOnDrugListAdapterItemClick(this);
         rvDrugList.setAdapter(drugListAdapter);
 
-        if(savedInstanceState!=null){
-            mqueryString = savedInstanceState.getString("QUERY",null);
+        if (savedInstanceState != null) {
+            mqueryString = savedInstanceState.getString("QUERY", null);
         }
     }
 
@@ -105,15 +112,15 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         searchView.setSuggestionsAdapter(suggestionsAdapter);
         searchView.setOnSuggestionListener(this);
         searchView.setOnQueryTextListener(this);
-        if(mqueryString!=null){
+        if (mqueryString != null) {
             handleSearch(mqueryString);
-            searchView.setQuery(mqueryString,true);
+            searchView.setQuery(mqueryString, true);
         }
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        System.out.println("onQuery text change "+query);
+        System.out.println("onQuery text change " + query);
 
         return false;
     }
@@ -137,9 +144,9 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public boolean onSuggestionClick(int position) {
         String selectedItem = getDrugName(position);
-        searchView.setQuery(selectedItem,false);
+        searchView.setQuery(selectedItem, false);
         drugViewModel.getDrugsForName(selectedItem)
-                .subscribe(list->{
+                .subscribe(list -> {
                     drugListGlobal = new ArrayList<>(list);
                     drugListAdapter.setDrugsForTime(list);
                     drugListAdapter.notifyDataSetChanged();
@@ -147,6 +154,7 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
 
         return true;
     }
+
     private CursorAdapter getSuggestionsAdapter() {
         return new SimpleCursorAdapter(getContext(),
                 R.layout.dropdown_li_query_suggestion,
@@ -155,9 +163,10 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
                 new int[]{android.R.id.text1},
                 0);
     }
-    private String getDrugName(int position){
+
+    private String getDrugName(int position) {
         Cursor cursor = suggestionsAdapter.getCursor();
-        cursor.moveToPosition( position );
+        cursor.moveToPosition(position);
         return cursor.getString(1);
     }
 
@@ -169,7 +178,7 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         ActivityOptions options = ActivityOptions
                 .makeSceneTransitionAnimation(getActivity(), sharedElement, drugListGlobal.get(position).getName());
 
-        startActivity(intent,options.toBundle());
+        startActivity(intent, options.toBundle());
 
     }
 
@@ -177,13 +186,37 @@ public class AddByNameFragment extends Fragment implements SearchView.OnQueryTex
         if (query.length() > 2) {
             drugViewModel.getDrugsForName(query)
                     .subscribe(list -> {
-                                drugListGlobal = new ArrayList<>(list);
-                                drugListAdapter.setDrugsForTime(list);
+                                if (list == null || list.size() == 0) {
+                                    drugListAdapter.clearData();
+                                    showSnackBar();
+                                } else {
+                                    if(snackbar.isShownOrQueued())
+                                        snackbar.dismiss();
+                                    drugListGlobal = new ArrayList<>(list);
+                                    drugListAdapter.setDrugsForTime(list);
+                                }
                             },
                             throwable -> System.err.println(throwable.getMessage()));
-        }else{
+        } else {
 
             drugListAdapter.clearData();
         }
+    }
+
+    private void showSnackBar() {
+        snackbar = Snackbar
+                .make(rvDrugList, "Nie znaleziono!", Snackbar.LENGTH_LONG);
+        snackbar.setAction("Dodaj ręcznie", view -> {
+            Intent intent = new Intent(getContext(), AddDrugManualActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        });
+        View view = snackbar.getView();
+        FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
+        params.gravity = Gravity.TOP;
+        view.setLayoutParams(params);
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+
     }
 }
