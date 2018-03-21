@@ -52,6 +52,10 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     @BindView(R.id.definedTimesActivityRoot)
     CoordinatorLayout rootLayout;
 
+    private DefinedTimesDialog definedTimesDialog;
+    private int definedTimePosition = -1;
+    private boolean dialogVisible = false;
+    private boolean alreadyShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,23 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
             definedTimesGlobal = new ArrayList<>(definedTimes);
             definedTimeAdapter.setDefinedTimes(definedTimes);
             definedTimeAdapter.notifyDataSetChanged();
+
+            if (savedInstanceState != null && !alreadyShown) {
+                this.dialogVisible = savedInstanceState.getBoolean("DIALOG_VISIBLE", false);
+                this.definedTimePosition = savedInstanceState.getInt("DEFINED_TIME_POS", -1);
+                if (dialogVisible) {
+                    System.out.println("dialog visible!");
+                    DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+                    definedTimesDialog.setOnDialogButtonClicked(this);
+                    if (definedTimePosition != -1 && definedTimesGlobal != null && !definedTimesGlobal.isEmpty()) {
+                        definedTimesDialog.buildNewDefinedTimeDialog(definedTimesGlobal.get(definedTimePosition));
+                    } else {
+                        definedTimesDialog.buildNewDefinedTimeDialog();
+                    }
+
+                    alreadyShown = true;
+                }
+            }
         });
 
         definedTimeAdapter.setOnNewDefinedTimesAdapterItemClick(this);
@@ -78,11 +99,20 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         rvDefinedTimes.setItemAnimator(new DefaultItemAnimator());
         ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new NewDefinedTimesAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
         new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(rvDefinedTimes);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("DIALOG_VISIBLE", dialogVisible);
+        outState.putInt("DEFINED_TIME_POS", definedTimePosition);
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -96,18 +126,20 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @OnClick(R.id.fabAddDefinedTimes)
     void onBtnAddDefinedTimesClicked() {
-        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+        definedTimesDialog = new DefinedTimesDialog(this);
         definedTimesDialog.setOnDialogButtonClicked(this);
         definedTimesDialog.buildNewDefinedTimeDialog();
+        dialogVisible = true;
     }
 
 
     @Override
     public void onDefinedTimeAdapterItemClick(int position) {
-        DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+        definedTimesDialog = new DefinedTimesDialog(this);
         definedTimesDialog.setOnDialogButtonClicked(this);
         definedTimesDialog.buildNewDefinedTimeDialog(definedTimesGlobal.get(position));
-
+        dialogVisible = true;
+        this.definedTimePosition = position;
     }
 
     @Override
@@ -129,22 +161,22 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
                                                     snackbar.show();
                                                 },
                                                 e -> {
-                                                     DialogUtil dialogUtil = new DialogUtil(this);
-                                                     dialogUtil.showInfo(this,handleError(e));
+                                                    DialogUtil dialogUtil = new DialogUtil(this);
+                                                    dialogUtil.showInfo(this, handleError(e));
                                                     //Toast.makeText(this, handleError(e), Toast.LENGTH_SHORT).show();
                                                     restoreItem(removedItem, position, definedTimesDays);
                                                 });
-                    },
+                            },
                             Throwable::printStackTrace);
         }
     }
 
     private void restoreItem(DefinedTime removedItem, int position, List<DefinedTimesDays> definedTimesDays) {
         definedTimeAdapter.restoreItem(removedItem, position);
-        drugViewModel.insertDefinedTime(removedItem,definedTimesDays)
+        drugViewModel.insertDefinedTime(removedItem, definedTimesDays)
                 .subscribe(definedTime1 -> {
-                        System.out.println("Przywrócono");
-                        //drugViewModel.in
+                            System.out.println("Przywrócono");
+                            //drugViewModel.in
                         },
                         e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
@@ -153,6 +185,9 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     @Override
     protected void onStop() {
         super.onStop();
+        if(definedTimesDialog!=null){
+            definedTimesDialog.dismiss();
+        }
         drugViewModel.updateOrSetAlarms(this)
                 .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size()),
                         e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
@@ -168,8 +203,9 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @Override
     public void onDialogPositiveButtonClicked(DefinedTime definedTime, List<Integer> activeDays) {
-
-        drugViewModel.saveNewDefinedTimesData(definedTime,activeDays)
+        definedTimePosition = -1;
+        dialogVisible = false;
+        drugViewModel.saveNewDefinedTimesData(definedTime, activeDays)
                 .subscribe(definedTimesDays -> drugViewModel.getDefinedTimesData(),
                         //e -> Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show())
                         Throwable::printStackTrace);
@@ -177,7 +213,8 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
 
     @Override
     public void onDialogNegativeButtonClicked() {
-
+        definedTimePosition = -1;
+        dialogVisible = false;
     }
 }
 

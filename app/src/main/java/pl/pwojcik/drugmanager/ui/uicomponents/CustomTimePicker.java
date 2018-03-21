@@ -3,7 +3,9 @@ package pl.pwojcik.drugmanager.ui.uicomponents;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewParent;
+import android.widget.ScrollView;
 import android.widget.TimePicker;
 
 /**
@@ -32,8 +34,10 @@ public class CustomTimePicker extends TimePicker {
         // Stop ScrollView from getting involved once you interact with the View
         if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
             ViewParent p = getParent();
-            if (p != null)
+            if (p != null) {
                 p.requestDisallowInterceptTouchEvent(true);
+
+            }
         }
         return false;
     }

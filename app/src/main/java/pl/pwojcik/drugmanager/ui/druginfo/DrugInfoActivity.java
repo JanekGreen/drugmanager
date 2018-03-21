@@ -93,8 +93,9 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     private String characteristicsUrl;
     private String leafletUrl;
     private ArrayList<File> filesToDelete;
-    private boolean contentChanged =false;
-
+    private boolean contentChanged = false;
+    private boolean dialogVisible = false;
+    private boolean alreadyShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +124,17 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
             definedTimeAdapter.setDefinedTimes(definedTimes);
             definedTimeAdapter.setDrugViewModel(drugViewModel);
             definedTimeAdapter.notifyDataSetChanged();
+
+            if (savedInstanceState != null && !alreadyShown) {
+                this.dialogVisible = savedInstanceState.getBoolean("DIALOG_VISIBLE", false);
+                if (dialogVisible) {
+                    System.out.println("dialog visible!");
+                    DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+                    definedTimesDialog.setOnDialogButtonClicked(this);
+                    definedTimesDialog.buildNewDefinedTimeDialog();
+                    alreadyShown = true;
+                }
+            }
         });
         drugViewModel.getSelectedTimesIds().observe(this, selectedIds -> {
             if (selectedIds != null) {
@@ -130,6 +142,13 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
             }
         });
 
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("DIALOG_VISIBLE", dialogVisible);
 
     }
 
@@ -166,11 +185,11 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         supportStartPostponedEnterTransition();
         activeSubstanceAdapter.notifyDataSetChanged();
         characteristicsUrl = drugDb.getCharacteristics();
-        if(characteristicsUrl == null || characteristicsUrl.isEmpty()){
+        if (characteristicsUrl == null || characteristicsUrl.isEmpty()) {
             tvCharacteristics.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
         }
         leafletUrl = drugDb.getFeaflet();
-        if(leafletUrl == null || leafletUrl.isEmpty()){
+        if (leafletUrl == null || leafletUrl.isEmpty()) {
             tvLeaflet.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
         }
     }
@@ -184,14 +203,15 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.add_defined_time:
                 DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
                 definedTimesDialog.setOnDialogButtonClicked(this);
                 definedTimesDialog.buildNewDefinedTimeDialog();
+                dialogVisible = true;
                 return true;
             case R.id.open_defined_time_activity:
-                Intent intent = new Intent(this,DefinedTimesActivity.class);
+                Intent intent = new Intent(this, DefinedTimesActivity.class);
                 startActivity(intent);
                 return true;
         }
@@ -202,25 +222,25 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-                        if(!contentChanged) {
-                            onBackPressed();
-                        } else{
-                            DialogUtil dialogUtil = new DialogUtil(this);
-                            dialogUtil.showYestNoDialog(this,"Uwaga!","Czy chcesz zapisać zmiany?");
-                            dialogUtil.setButtonListener(new DialogUtil.DialogUtilButtonListener() {
-                                @Override
-                                public void onPositiveButtonClicked() {
-                                    saveAndExit();
-                                }
+            if (!contentChanged) {
+                onBackPressed();
+            } else {
+                DialogUtil dialogUtil = new DialogUtil(this);
+                dialogUtil.showYestNoDialog(this, "Uwaga!", "Czy chcesz zapisać zmiany?");
+                dialogUtil.setButtonListener(new DialogUtil.DialogUtilButtonListener() {
+                    @Override
+                    public void onPositiveButtonClicked() {
+                        saveAndExit();
+                    }
 
-                                @Override
-                                public void onNegativeButtonClicked() {
-                                    onBackPressed();
-                                }
-                            });
-                        }
+                    @Override
+                    public void onNegativeButtonClicked() {
+                        onBackPressed();
+                    }
+                });
+            }
 
-        }else if (item.getItemId() == R.id.action_save_drug) {
+        } else if (item.getItemId() == R.id.action_save_drug) {
             saveAndExit();
         }
         return super.onOptionsItemSelected(item);
@@ -297,7 +317,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     }
 
     private void handleFileDownload(String url) {
-        if(url == null || url.isEmpty()){
+        if (url == null || url.isEmpty()) {
             Toast.makeText(this, "Lek nie posiada pliku", Toast.LENGTH_LONG).show();
             return;
         }
@@ -328,15 +348,14 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     }
 
     @OnClick(R.id.ivExpand)
-    public void showReminders(View view){
-      if(remindersArea.getVisibility() == View.VISIBLE) {
-          remindersArea.setVisibility(View.GONE);
-          ivExpand.setImageResource(R.drawable.ic_expand_more_black_24dp);
-      }
-      else {
-          remindersArea.setVisibility(View.VISIBLE);
-          ivExpand.setImageResource(R.drawable.ic_expand_less_black_24dp);
-      }
+    public void showReminders(View view) {
+        if (remindersArea.getVisibility() == View.VISIBLE) {
+            remindersArea.setVisibility(View.GONE);
+            ivExpand.setImageResource(R.drawable.ic_expand_more_black_24dp);
+        } else {
+            remindersArea.setVisibility(View.VISIBLE);
+            ivExpand.setImageResource(R.drawable.ic_expand_less_black_24dp);
+        }
 
     }
 
@@ -350,16 +369,17 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     public void onDialogPositiveButtonClicked(DefinedTime definedTime, List<Integer> activeDays) {
 
-        drugViewModel.saveNewDefinedTimesData(definedTime,activeDays)
+        drugViewModel.saveNewDefinedTimesData(definedTime, activeDays)
                 .subscribe(definedTimesDays -> drugViewModel.getDefinedTimesData(),
                         //e -> Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show())
                         Throwable::printStackTrace);
         remindersArea.setVisibility(View.VISIBLE);
+        dialogVisible = false;
     }
 
     @Override
     public void onDialogNegativeButtonClicked() {
-
+        dialogVisible = false;
     }
 
 }

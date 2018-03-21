@@ -86,7 +86,7 @@ public class NotificationActivity extends AppCompatActivity {
                                     .subscribe(drugDbs -> {
                                         drugListAdapter = new DrugListAdapter(drugDbs);
                                         rvDrugList.setAdapter(drugListAdapter);
-                                        tvDrugCount.setText("Do wzięcia jest " + drugDbs.size() + " leków:");
+                                        tvDrugCount.setText("Liczba leków do wzięcia: " + drugDbs.size());
                                     });
                         })
                         .subscribe(System.out::println,

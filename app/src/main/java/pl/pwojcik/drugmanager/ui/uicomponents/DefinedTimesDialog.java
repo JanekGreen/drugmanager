@@ -1,11 +1,13 @@
 package pl.pwojcik.drugmanager.ui.uicomponents;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
     private Activity activity;
     private OnDialogButtonClickedListener onDialogButtonClicked;
     private List<Integer> activeDays;
+    private AlertDialog dialog;
 
 
     public interface OnDialogButtonClickedListener {
@@ -102,12 +105,14 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
 
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(activity)
+         dialog = new AlertDialog.Builder(activity)
                 .setTitle(null)
                 .setView(dialogView)
                 .setPositiveButton("OK", (dialog1, which) -> {
                 })
                 .setNegativeButton("Anuluj", (dialog12, which) -> {
+                    System.out.println("anuluj!");
+                    onDialogButtonClicked.onDialogNegativeButtonClicked();
                 })
                 .create();
 
@@ -139,6 +144,12 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         });
     }
 
+    public void dismiss(){
+        if(dialog!=null && dialog.isShowing()){
+            dialog.dismiss();
+        }
+    }
+
     private void saveDefinedTime(DefinedTime definedTime, EditText etDefinedTimeName, CustomTimePicker timePicker, AlertDialog dialog) {
         if (Build.VERSION.SDK_INT >= 23) {
             definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getMinute()));
@@ -150,6 +161,8 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
         dialog.dismiss();
     }
+
+
 
     @Override
     public void onDaySelectionChanged(List<Integer> activeDays, List<String> selectedDaysNames) {
