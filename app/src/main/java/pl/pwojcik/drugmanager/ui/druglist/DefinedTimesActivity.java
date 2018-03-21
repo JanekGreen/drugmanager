@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -77,15 +78,28 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
             if (savedInstanceState != null && !alreadyShown) {
                 this.dialogVisible = savedInstanceState.getBoolean("DIALOG_VISIBLE", false);
                 this.definedTimePosition = savedInstanceState.getInt("DEFINED_TIME_POS", -1);
+                int hour = savedInstanceState.getInt("DIALOG_HOUR");
+                int minute = savedInstanceState.getInt("DIALOG_MINUTE");
+                String name =savedInstanceState.getString("DEFINED_TIME_NAME");
+
+                List<Integer> activeDays = savedInstanceState.getIntegerArrayList("ACTIVE_DAYS");
+
+
                 if (dialogVisible) {
-                    System.out.println("dialog visible!");
-                    DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+                    definedTimesDialog = new DefinedTimesDialog(this);
                     definedTimesDialog.setOnDialogButtonClicked(this);
+
                     if (definedTimePosition != -1 && definedTimesGlobal != null && !definedTimesGlobal.isEmpty()) {
                         definedTimesDialog.buildNewDefinedTimeDialog(definedTimesGlobal.get(definedTimePosition));
                     } else {
                         definedTimesDialog.buildNewDefinedTimeDialog();
                     }
+                    definedTimesDialog.setHour(hour);
+                    definedTimesDialog.setMinute(minute);
+                    if(activeDays!=null)
+                        definedTimesDialog.setActiveDays(activeDays);
+                    if(name!=null)
+                        definedTimesDialog.setDefinedTimeName(name);
 
                     alreadyShown = true;
                 }
@@ -107,7 +121,12 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         super.onSaveInstanceState(outState);
         outState.putBoolean("DIALOG_VISIBLE", dialogVisible);
         outState.putInt("DEFINED_TIME_POS", definedTimePosition);
-
+        if (definedTimesDialog != null) {
+            outState.putInt("DIALOG_HOUR", definedTimesDialog.getHour());
+            outState.putInt("DIALOG_MINUTE", definedTimesDialog.getMinute());
+            outState.putIntegerArrayList("ACTIVE_DAYS", new ArrayList<>(definedTimesDialog.getActiveDays()));
+            outState.putString("DEFINED_TIME_NAME", definedTimesDialog.getDefinedTimeName());
+        }
     }
 
     @Override
@@ -185,7 +204,7 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     @Override
     protected void onStop() {
         super.onStop();
-        if(definedTimesDialog!=null){
+        if (definedTimesDialog != null) {
             definedTimesDialog.dismiss();
         }
         drugViewModel.updateOrSetAlarms(this)

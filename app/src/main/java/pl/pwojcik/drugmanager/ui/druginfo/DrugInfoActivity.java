@@ -96,6 +96,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     private boolean contentChanged = false;
     private boolean dialogVisible = false;
     private boolean alreadyShown = false;
+    private DefinedTimesDialog definedTimesDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,11 +128,23 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
             if (savedInstanceState != null && !alreadyShown) {
                 this.dialogVisible = savedInstanceState.getBoolean("DIALOG_VISIBLE", false);
+
                 if (dialogVisible) {
                     System.out.println("dialog visible!");
-                    DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
-                    definedTimesDialog.setOnDialogButtonClicked(this);
+                    int hour = savedInstanceState.getInt("DIALOG_HOUR");
+                    int minute = savedInstanceState.getInt("DIALOG_MINUTE");
+                    String name =savedInstanceState.getString("DEFINED_TIME_NAME");
+                    List<Integer> activeDays = savedInstanceState.getIntegerArrayList("ACTIVE_DAYS");
+                    definedTimesDialog = new DefinedTimesDialog(this);
                     definedTimesDialog.buildNewDefinedTimeDialog();
+                    definedTimesDialog.setOnDialogButtonClicked(this);
+                    definedTimesDialog.setHour(hour);
+                    definedTimesDialog.setMinute(minute);
+                    if(activeDays!=null)
+                        definedTimesDialog.setActiveDays(activeDays);
+                    if(name!=null)
+                        definedTimesDialog.setDefinedTimeName(name);
+
                     alreadyShown = true;
                 }
             }
@@ -149,6 +162,12 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("DIALOG_VISIBLE", dialogVisible);
+        if (definedTimesDialog != null) {
+            outState.putInt("DIALOG_HOUR", definedTimesDialog.getHour());
+            outState.putInt("DIALOG_MINUTE", definedTimesDialog.getMinute());
+            outState.putIntegerArrayList("ACTIVE_DAYS", new ArrayList<>(definedTimesDialog.getActiveDays()));
+            outState.putString("DEFINED_TIME_NAME", definedTimesDialog.getDefinedTimeName());
+        }
 
     }
 
@@ -205,7 +224,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_defined_time:
-                DefinedTimesDialog definedTimesDialog = new DefinedTimesDialog(this);
+                definedTimesDialog = new DefinedTimesDialog(this);
                 definedTimesDialog.setOnDialogButtonClicked(this);
                 definedTimesDialog.buildNewDefinedTimeDialog();
                 dialogVisible = true;

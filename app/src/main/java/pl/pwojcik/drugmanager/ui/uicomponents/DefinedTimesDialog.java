@@ -37,6 +37,9 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
     private OnDialogButtonClickedListener onDialogButtonClicked;
     private List<Integer> activeDays;
     private AlertDialog dialog;
+    private CustomTimePicker timePicker;
+    private DayPicker dayPicker;
+    private  EditText etDefinedTimeName;
 
 
     public interface OnDialogButtonClickedListener {
@@ -47,6 +50,23 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
 
     public DefinedTimesDialog(Activity activity) {
         this.activity = activity;
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_defined_time, null);
+        timePicker = dialogView.findViewById(R.id.timePicker);
+        timePicker.setIs24HourView(true);
+        dayPicker = dialogView.findViewById(R.id.dayPicker);
+        dayPicker.setDaySelectionChangedListener(this);
+        etDefinedTimeName = dialogView.findViewById(R.id.etDefinedTimeName);
+
+        dialog = new AlertDialog.Builder(activity)
+                .setTitle(null)
+                .setView(dialogView)
+                .setPositiveButton("OK", (dialog1, which) -> {
+                })
+                .setNegativeButton("Anuluj", (dialog12, which) -> {
+                    onDialogButtonClicked.onDialogNegativeButtonClicked();
+                })
+                .create();
     }
 
     public void buildNewDefinedTimeDialog() {
@@ -61,19 +81,10 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
 
     public void buildNewDefinedTimeDialog(DefinedTime definedTime) {
 
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_defined_time, null);
-
         DefinedTimesDaysDao definedTimesDaysDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDaysDao();
         DefinedTimeDao definedTimeDao = DrugmanagerApplication.getDbInstance(activity).getDefinedTimesDao();
 
-        EditText etDefinedTimeName = dialogView.findViewById(R.id.etDefinedTimeName);
         etDefinedTimeName.setText(definedTime.getName());
-
-        CustomTimePicker timePicker = dialogView.findViewById(R.id.timePicker);
-        timePicker.setIs24HourView(true);
-        DayPicker dayPicker = dialogView.findViewById(R.id.dayPicker);
-        dayPicker.setDaySelectionChangedListener(this);
 
         if (definedTime.getId() > 0) {
             definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTime.getId())
@@ -95,26 +106,9 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         if (time != null && !time.isEmpty()) {
 
             String[] parts = time.split(":");
-            if (Build.VERSION.SDK_INT >= 23) {
-                timePicker.setHour(Integer.valueOf(parts[0]));
-                timePicker.setMinute(Integer.valueOf(parts[1]));
-            } else {
-                timePicker.setCurrentHour(Integer.valueOf(parts[0]));
-                timePicker.setCurrentMinute(Integer.valueOf(parts[1]));
-            }
-
+            setHour(Integer.valueOf(parts[0]));
+            setMinute(Integer.valueOf(parts[1]));
         }
-
-         dialog = new AlertDialog.Builder(activity)
-                .setTitle(null)
-                .setView(dialogView)
-                .setPositiveButton("OK", (dialog1, which) -> {
-                })
-                .setNegativeButton("Anuluj", (dialog12, which) -> {
-                    System.out.println("anuluj!");
-                    onDialogButtonClicked.onDialogNegativeButtonClicked();
-                })
-                .create();
 
         dialog.show();
 
@@ -133,35 +127,74 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
                     .observeOn(AndroidSchedulers.mainThread())
                     .switchIfEmpty(Maybe.just(-1L))
                     .subscribe(id -> {
-                        System.out.println("id " + id + " definedtime id " + definedTime.getId());
-                        if (id != -1 && id!=definedTime.getId()) {
+                        if (id != -1 && id != definedTime.getId()) {
                             Toast.makeText(activity, "Nazwa powinna być unikalna", Toast.LENGTH_SHORT).show();
                         } else {
-                            saveDefinedTime(definedTime, etDefinedTimeName, timePicker, dialog);
+                            definedTime.setTime(String.format(Locale.getDefault(), "%02d", getHour()) + ":" + String.format(Locale.getDefault(), "%02d", getMinute()));
+                            definedTime.setName(etDefinedTimeName.getText().toString());
+                            onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
+                            dialog.dismiss();
                         }
                     });
 
         });
     }
+    public void setDefinedTimeName(String name){
+        System.out.println("DEF_TIME_NAME set" + name);
+        etDefinedTimeName.setText(name);
+    }
 
-    public void dismiss(){
-        if(dialog!=null && dialog.isShowing()){
+    public String getDefinedTimeName(){
+        System.out.println("DEF_TIME_NAME" + etDefinedTimeName.getText().toString());
+        return etDefinedTimeName.getText().toString();
+    }
+
+    public int getHour() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            return timePicker.getHour();
+        } else {
+            return timePicker.getCurrentHour();
+        }
+
+    }
+
+    public int getMinute() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            return timePicker.getMinute();
+        } else {
+            return timePicker.getCurrentMinute();
+        }
+    }
+
+    public void setHour(int hour) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            timePicker.setHour(hour);
+        } else {
+            timePicker.setCurrentHour(hour);
+        }
+    }
+
+    public void setMinute(int minute) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            timePicker.setMinute(minute);
+        } else {
+            timePicker.setCurrentMinute(minute);
+        }
+    }
+
+    public List<Integer> getActiveDays() {
+        return dayPicker.getActiveDaysList();
+    }
+
+    public void setActiveDays(List<Integer> activeDays) {
+        dayPicker.setActiveDays(activeDays);
+    }
+
+    public void dismiss() {
+        if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
     }
-
-    private void saveDefinedTime(DefinedTime definedTime, EditText etDefinedTimeName, CustomTimePicker timePicker, AlertDialog dialog) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getMinute()));
-        } else {
-            definedTime.setTime(String.format(Locale.getDefault(), "%02d", timePicker.getCurrentHour()) + ":" + String.format(Locale.getDefault(), "%02d", timePicker.getCurrentMinute()));
-        }
-        definedTime.setName(etDefinedTimeName.getText().toString());
-
-        onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
-        dialog.dismiss();
-    }
-
 
 
     @Override
