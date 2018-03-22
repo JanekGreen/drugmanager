@@ -1,13 +1,65 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment">
 
     <android.support.v7.widget.RecyclerView
+        android:visibility="gone"
         android:id="@+id/rvDrugList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-</android.support.constraint.ConstraintLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="100dp"
+        android:id="@+id/emptyNotificationListView">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:tint="@color/description"
+            android:src="@drawable/ic_notifications_off_black_24dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:layout_centerHorizontal="true"
+            android:text="Nie ma powiadomień"
+            android:textSize="25sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="100dp"
+        android:id="@+id/emptyDrugListView">
+        <ImageView
+
+            android:id="@+id/imageView2"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:tint="@color/description"
+            android:src="@drawable/ic_add_circle_black_24dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/imageView2"
+            android:text="Nie ma leków na liście"
+            android:textSize="25sp"/>
+    </RelativeLayout>
+</LinearLayout>

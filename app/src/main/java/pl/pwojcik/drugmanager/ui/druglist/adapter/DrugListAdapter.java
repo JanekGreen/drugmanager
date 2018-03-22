@@ -31,11 +31,7 @@ import pwojcik.pl.archcomponentstestproject.R;
 public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugListViewHolder> {
    private List<DrugDb> drugsForTime;
    private OnDrugListAdapterItemClick onDrugListAdapterItemClick;
-   private String drugTimeName;
 
-    public void setDrugTimeName(String drugTimeName) {
-        this.drugTimeName = drugTimeName;
-    }
 
     public DrugDb getItemIdForPosition(int position) {
        return drugsForTime.get(position);

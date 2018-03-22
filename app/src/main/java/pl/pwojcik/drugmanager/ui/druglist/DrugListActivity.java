@@ -53,6 +53,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     private DrugListViewModel drugListViewModel;
     private int selectedItemPosition;
     private List<String> listDefinedTimes;
+    private boolean initializeFragment = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +75,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
             if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
                 spinner.setSelection(selectedItemPosition);
-            } else {
-                switchFragments(currentFragmentSelected, true);
             }
-            changeViewForMode();
         }
-
+        switchFragments(currentFragmentSelected, true);
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
             if (listDefinedTimes == null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)) {

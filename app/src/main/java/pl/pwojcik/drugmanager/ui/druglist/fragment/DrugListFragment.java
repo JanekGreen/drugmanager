@@ -20,9 +20,12 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,9 +35,11 @@ import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
+import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterObserver;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
 import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
+import pl.pwojcik.drugmanager.utils.Constants;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
@@ -46,12 +51,17 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     @BindView(R.id.rvDrugList)
     RecyclerView rvDrugList;
     @BindView(R.id.constraintLayout)
-    ConstraintLayout rootLayout;
+    LinearLayout rootLayout;
+    @BindView(R.id.emptyDrugListView)
+    RelativeLayout emptyDrugListView;
+    @BindView(R.id.emptyNotificationListView)
+    RelativeLayout emptyNotificationListView;
 
     private DrugListViewModel drugListViewModel;
     private String selectedTimeName;
     private ArrayList<DrugDb> drugsForTimeGlobal;
     private DrugListAdapter drugListAdapter;
+    private  DrugListAdapterObserver observer;
 
     public DrugListFragment() {
         drugListAdapter = new DrugListAdapter();
@@ -78,6 +88,18 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
         rvDrugList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
+        drugListAdapter = new DrugListAdapter();
+        rvDrugList.setAdapter(drugListAdapter);
+        drugListAdapter.setOnDrugListAdapterItemClick(this);
+        HashMap<String,View> emptyViews = new HashMap<>();
+        emptyViews.put(Constants.DRUG_LIST,emptyDrugListView);
+        emptyViews.put(Constants.DRUG_NOTIFICATION,emptyNotificationListView);
+        String currentView = Constants.DRUG_NOTIFICATION;
+
+        observer = new DrugListAdapterObserver(rvDrugList, emptyViews, currentView);
+        drugListAdapter.registerAdapterDataObserver(observer);
         refreshView();
     }
 
@@ -141,17 +163,15 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private void refreshView() {
         Bundle args = getArguments();
         selectedTimeName = args.getString("SELECTED_TIME", "Rano");
-        ItemTouchHelper.SimpleCallback itSimpleCallback = new DrugListAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itSimpleCallback).attachToRecyclerView(rvDrugList);
-
+        String currentView = "DRUG_LIST__".equals(selectedTimeName)? Constants.DRUG_LIST : Constants.DRUG_NOTIFICATION;
+        observer.setActiveFragment(currentView);
         if (!selectedTimeName.equals("DRUG_LIST__")) {
             //list of notifications for drugs
             drugListViewModel.getDrugsForTime(selectedTimeName)
                     .subscribe(drugsForTime -> {
+                        System.out.println("DrugListInside");
                                 drugsForTimeGlobal = new ArrayList<>(drugsForTime);
-                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
-                                rvDrugList.setAdapter(drugListAdapter);
-                                drugListAdapter.setOnDrugListAdapterItemClick(this);
+                                drugListAdapter.setDrugsForTime(drugsForTime);
                             },
                             e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
                                     .show());
@@ -160,9 +180,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
             drugListViewModel.getAllDrugs()
                     .subscribe(drugsForTime -> {
                                 drugsForTimeGlobal = new ArrayList<>(drugsForTime);
-                                DrugListAdapter drugListAdapter = new DrugListAdapter(drugsForTime);
-                                rvDrugList.setAdapter(drugListAdapter);
-                                drugListAdapter.setOnDrugListAdapterItemClick(this);
+                                drugListAdapter.setDrugsForTime(drugsForTime);
                             },
                             e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
                                     .show());
