@@ -140,12 +140,10 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
         });
     }
     public void setDefinedTimeName(String name){
-        System.out.println("DEF_TIME_NAME set" + name);
         etDefinedTimeName.setText(name);
     }
 
     public String getDefinedTimeName(){
-        System.out.println("DEF_TIME_NAME" + etDefinedTimeName.getText().toString());
         return etDefinedTimeName.getText().toString();
     }
 
@@ -187,11 +185,12 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
     }
 
     public void setActiveDays(List<Integer> activeDays) {
-        dayPicker.setActiveDays(activeDays);
+        this.activeDays = activeDays;
+        dayPicker.setActiveDays(this.activeDays);
     }
 
     public void dismiss() {
-        if (dialog != null && dialog.isShowing()) {
+        if (dialog != null) {
             dialog.dismiss();
         }
     }

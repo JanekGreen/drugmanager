@@ -378,6 +378,14 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (definedTimesDialog != null) {
+            definedTimesDialog.dismiss();
+        }
+    }
+
     private void removeFiles() {
         for (File file : filesToDelete) {
             file.delete();
@@ -400,5 +408,4 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     public void onDialogNegativeButtonClicked() {
         dialogVisible = false;
     }
-
 }
