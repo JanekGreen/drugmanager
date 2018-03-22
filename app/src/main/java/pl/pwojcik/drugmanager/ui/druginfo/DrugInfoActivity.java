@@ -310,7 +310,6 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         if (extras != null) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                System.out.println("TRANSITION_NAME " + extras.getString("TRANSITION_NAME"));
                 if (initialLetterIcon.getTransitionName() == null)
                     supportPostponeEnterTransition();
                 initialLetterIcon.setTransitionName(extras.getString("TRANSITION_NAME"));
@@ -321,7 +320,6 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                 drugViewModel.getDrugDbData().setValue(drugDb);
                 getIntent().removeExtra("DRUG");
             } else if (drugId != -1L) {
-                System.out.println("onNewStart " + drugId);
                 drugViewModel.getSelectedTimesIds(drugId);
                 drugViewModel.getDrugDbData(drugId).observe(this, this::initializeView);
                 getIntent().removeExtra("DRUG_ID");
