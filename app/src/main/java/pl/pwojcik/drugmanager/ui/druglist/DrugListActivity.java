@@ -75,9 +75,10 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
             if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
                 spinner.setSelection(selectedItemPosition);
+            }else{
+                switchFragments(DRUG_LIST,true);
             }
         }
-        switchFragments(currentFragmentSelected, true);
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
             if (listDefinedTimes == null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)) {
@@ -88,9 +89,13 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             } else {
                 this.listDefinedTimes = listDefinedTimes;
                 spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
+
             }
             if (savedInstanceState != null) {
                 spinner.setSelection(selectedItemPosition);
+            }
+            if(currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+                handleViewChange(R.id.notificationItem);
             }
 
         });
@@ -115,6 +120,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             spinner.setVisibility(View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setTitle("Lista leków");
+            fab.show();
         } else if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
             if (listDefinedTimes != null && !listDefinedTimes.isEmpty()) {
                 spinner.setVisibility(View.VISIBLE);
@@ -125,7 +131,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 getSupportActionBar().setTitle("Powiadomienia");
             }
 
-
+            fab.hide();
         }
     }
 

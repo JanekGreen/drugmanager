@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -62,6 +63,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private ArrayList<DrugDb> drugsForTimeGlobal;
     private DrugListAdapter drugListAdapter;
     private  DrugListAdapterObserver observer;
+    private String currentView;
 
     public DrugListFragment() {
         drugListAdapter = new DrugListAdapter();
@@ -83,7 +85,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        System.out.println(" on view created");
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         rvDrugList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvDrugList.setItemAnimator(new DefaultItemAnimator());
@@ -95,12 +97,22 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         drugListAdapter.setOnDrugListAdapterItemClick(this);
         HashMap<String,View> emptyViews = new HashMap<>();
         emptyViews.put(Constants.DRUG_LIST,emptyDrugListView);
-        emptyViews.put(Constants.DRUG_NOTIFICATION,emptyNotificationListView);
-        String currentView = Constants.DRUG_NOTIFICATION;
+        emptyViews.put(Constants.DRUG_NOTIFICATION, emptyNotificationListView);
+        currentView = Constants.DRUG_NOTIFICATION;
+
+        if(savedInstanceState!=null){
+           currentView = savedInstanceState.getString("CURRENT_VIEW",Constants.DRUG_NOTIFICATION);
+        }
 
         observer = new DrugListAdapterObserver(rvDrugList, emptyViews, currentView);
         drugListAdapter.registerAdapterDataObserver(observer);
         refreshView();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+         outState.putString("CURRENT_VIEW",currentView);
     }
 
     @Override
@@ -163,7 +175,9 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private void refreshView() {
         Bundle args = getArguments();
         selectedTimeName = args.getString("SELECTED_TIME", "Rano");
-        String currentView = "DRUG_LIST__".equals(selectedTimeName)? Constants.DRUG_LIST : Constants.DRUG_NOTIFICATION;
+        System.out.println("selected time name "+selectedTimeName);
+        currentView = "DRUG_LIST__".equals(selectedTimeName)? Constants.DRUG_LIST : Constants.DRUG_NOTIFICATION;
+        System.out.println("current view after"+ currentView);
         observer.setActiveFragment(currentView);
         if (!selectedTimeName.equals("DRUG_LIST__")) {
             //list of notifications for drugs

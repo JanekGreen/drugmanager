@@ -92,6 +92,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setContentText(contentMessage)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setContentIntent(pendingIntent)
                 // .setDeleteIntent(deletePendingIntent)
