@@ -4,6 +4,8 @@ import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
+import com.squareup.leakcanary.LeakCanary;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,6 +24,12 @@ public class DrugmanagerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
         if (db == null)
             getDbInstance(getApplicationContext());
     }
