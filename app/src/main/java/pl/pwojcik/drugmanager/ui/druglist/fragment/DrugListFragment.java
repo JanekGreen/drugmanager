@@ -100,20 +100,11 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         emptyViews.put(Constants.DRUG_NOTIFICATION, emptyNotificationListView);
         currentView = Constants.DRUG_NOTIFICATION;
 
-        if(savedInstanceState!=null){
-           currentView = savedInstanceState.getString("CURRENT_VIEW",Constants.DRUG_NOTIFICATION);
-        }
-
         observer = new DrugListAdapterObserver(rvDrugList, emptyViews, currentView);
         drugListAdapter.registerAdapterDataObserver(observer);
         refreshView();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-         outState.putString("CURRENT_VIEW",currentView);
-    }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
@@ -175,15 +166,12 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private void refreshView() {
         Bundle args = getArguments();
         selectedTimeName = args.getString("SELECTED_TIME", "Rano");
-        System.out.println("selected time name "+selectedTimeName);
         currentView = "DRUG_LIST__".equals(selectedTimeName)? Constants.DRUG_LIST : Constants.DRUG_NOTIFICATION;
-        System.out.println("current view after"+ currentView);
         observer.setActiveFragment(currentView);
         if (!selectedTimeName.equals("DRUG_LIST__")) {
             //list of notifications for drugs
             drugListViewModel.getDrugsForTime(selectedTimeName)
                     .subscribe(drugsForTime -> {
-                        System.out.println("DrugListInside");
                                 drugsForTimeGlobal = new ArrayList<>(drugsForTime);
                                 drugListAdapter.setDrugsForTime(drugsForTime);
                             },
