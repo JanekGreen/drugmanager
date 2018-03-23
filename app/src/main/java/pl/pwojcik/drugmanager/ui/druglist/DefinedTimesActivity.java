@@ -14,11 +14,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -29,6 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
+import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapterObserver;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimeAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.NewDefinedTimesAdapterTouchHelper;
 import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
@@ -42,6 +46,10 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
     private DrugViewModel drugViewModel;
     private NewDefinedTimeAdapter definedTimeAdapter;
     private List<DefinedTime> definedTimesGlobal;
+
+
+    @BindView(R.id.emptyDefinedTimesList)
+    RelativeLayout emptyDefinedTimesList;
 
 
     @BindView(R.id.rvDefinedTimes)
@@ -111,6 +119,12 @@ public class DefinedTimesActivity extends AppCompatActivity implements NewDefine
         rvDefinedTimes.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvDefinedTimes.setLayoutManager(new LinearLayoutManager(this));
         rvDefinedTimes.setItemAnimator(new DefaultItemAnimator());
+
+        HashMap<String,View> emptyViews = new HashMap<>();
+        emptyViews.put("DEFINED_TIME",emptyDefinedTimesList);
+        DrugListAdapterObserver observer = new DrugListAdapterObserver(rvDefinedTimes,emptyViews,"DEFINED_TIME");
+        definedTimeAdapter.registerAdapterDataObserver(observer);
+
         ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new NewDefinedTimesAdapterTouchHelper(0, ItemTouchHelper.LEFT, this);
         new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(rvDefinedTimes);
 
