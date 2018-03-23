@@ -3,6 +3,8 @@ package pl.pwojcik.drugmanager;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 
 import com.squareup.leakcanary.LeakCanary;
 
@@ -12,6 +14,7 @@ import java.util.concurrent.Executors;
 import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.model.persistence.AppDatabase;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTime;
+import pl.pwojcik.drugmanager.notification.ConnectivityChangeReceiver;
 
 /**
  * Created by pawel on 01.02.18.
@@ -24,9 +27,11 @@ public class DrugmanagerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        getApplicationContext().
+                registerReceiver(new ConnectivityChangeReceiver(),
+                        new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
             return;
         }
         LeakCanary.install(this);
