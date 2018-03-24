@@ -46,7 +46,6 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     public void sendNotification(Context context, int requestCode) {
         System.out.println("Send notification...");
 
-
          /*
         Intent deleteIntent = new Intent(context, RingtonePlayingService.class);
         deleteIntent.putExtra("STOP_PLAYING",true);

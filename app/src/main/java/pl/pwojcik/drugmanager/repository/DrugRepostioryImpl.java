@@ -373,7 +373,6 @@ public class DrugRepostioryImpl implements DrugRepository {
                  .map(databaseState -> areHashMapsTheSame(databaseState,data))
                  .toSingle();
     }
-
     private boolean areHashMapsTheSame(HashMap<Long,DrugTime> data, HashMap<Long,DrugTime> data2){
         if(data == null || data.isEmpty())
             return false;

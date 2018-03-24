@@ -120,7 +120,8 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
 
         @OnClick(R.id.adapter_item)
         void onAdapterItemClick(){
-            onDrugListAdapterItemClick.onAdapterItemClick(getAdapterPosition(), materialLetterIcon);
+            if(onDrugListAdapterItemClick!=null)
+                onDrugListAdapterItemClick.onAdapterItemClick(getAdapterPosition(), materialLetterIcon);
         }
     }
 }

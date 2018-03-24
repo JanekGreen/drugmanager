@@ -74,7 +74,6 @@ public class AlarmHelper {
     }
 
     public void cancelAllAlarms(List<DefinedTime> definedTimes) {
-        //definedTimes.forEach(definedTime -> alarmManager.cancel(getPendingIntent(definedTime.getRequestCode(),0)));
         Observable.fromIterable(definedTimes)
                 .doOnNext(definedTime -> alarmManager.cancel(getPendingIntent(definedTime.getRequestCode(), 0)))
                 .subscribe();
