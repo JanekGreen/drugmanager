@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,6 +64,10 @@ public class AlarmHelper {
 
     public void setAlarmForTimeRepeating(int hour, int minute, int day, int requestCode, int intentFlag, boolean nextDay) {
         alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(TimeUtil.getSpecificTime(hour, minute, day ,nextDay), getActionPendingIntent(requestCode)), getPendingIntent(requestCode, intentFlag));
+    }
+
+    public void setAlarmForTimeWithDelayInMinutes(int minuteDelay, int requestCode) {
+        alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(Calendar.getInstance().getTimeInMillis()+1000*60*minuteDelay, getActionPendingIntent(requestCode)), getPendingIntent(requestCode, 0));
     }
 
     public boolean isIntentEqual(Intent intent1, Intent intent2) {

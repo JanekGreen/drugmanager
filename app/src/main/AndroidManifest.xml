@@ -21,6 +21,9 @@
         <service
             android:name="pl.pwojcik.drugmanager.notification.service.RingtonePlayingService"
             android:enabled="true" />
+        <service
+            android:name="pl.pwojcik.drugmanager.notification.service.AlarmRepeatService"
+            android:enabled="true" />
 
         <receiver android:name="pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver" />
         <receiver android:name="pl.pwojcik.drugmanager.notification.AlarmStarterBroadcastReceiver">

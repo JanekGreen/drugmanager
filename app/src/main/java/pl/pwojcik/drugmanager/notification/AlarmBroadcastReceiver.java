@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -25,6 +26,7 @@ import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDaysDao;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
+import pl.pwojcik.drugmanager.notification.service.AlarmRepeatService;
 import pl.pwojcik.drugmanager.notification.service.RingtonePlayingService;
 import pl.pwojcik.drugmanager.repository.DrugRepostioryImpl;
 import pl.pwojcik.drugmanager.retrofit.DrugRestService;
@@ -46,15 +48,6 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     public void sendNotification(Context context, int requestCode) {
         System.out.println("Send notification...");
 
-         /*
-        Intent deleteIntent = new Intent(context, RingtonePlayingService.class);
-        deleteIntent.putExtra("STOP_PLAYING",true);
-        PendingIntent deletePendingIntent = PendingIntent.getService(context,989,deleteIntent,PendingIntent.FLAG_CANCEL_CURRENT);
-        NotificationCompat.Action action = new NotificationCompat
-                .Action.Builder(R.mipmap.ic_launcher,
-                "Szczegóły", pendingIntent)
-                .build();*/
-
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -66,14 +59,15 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .map(DrugDb::getName)
                 .toList()
                 .subscribe(list -> {
-                    String contentMessage = android.text.TextUtils.join(", ", list);
-                    Notification notification = createNotification(context,"Pora na leki",contentMessage,requestCode);
-                    notification.flags = Notification.FLAG_INSISTENT;
+                    String content = android.text.TextUtils.join(", ", list);
+                    String title = "Leki do wzięcia: "+list.size();
+                    Notification notification = createNotification(context,title, content ,requestCode);
+                    notification.flags |= Notification.FLAG_INSISTENT;
                     notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
                 }, e -> {
                     System.out.println(e.getMessage());
-                    Notification notification = createNotification(context,"Pora na leki","Kliknij aby dowiedziec się więcej",requestCode);
-                    notification.flags = Notification.FLAG_INSISTENT;
+                    Notification notification = createNotification(context,"Pora na leki","Masz do wzięcia leki",requestCode);
+                    notification.flags |= Notification.FLAG_INSISTENT;
                     notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
                 });
 
@@ -81,26 +75,43 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     private Notification createNotification(Context context,String title, String contentMessage, int requestCode){
 
+        Intent repeatIntent = new Intent(context, AlarmRepeatService.class);
+        repeatIntent.putExtra("REQUEST_CODE",requestCode);
+        repeatIntent.putExtra("DELAY",5);
+        PendingIntent repeatNotificationIntent = PendingIntent.getService(context,989,repeatIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+
+        NotificationCompat.Action action = new NotificationCompat
+                .Action.Builder(R.drawable.ic_timer_off_black_24dp,
+                "Przypomnij za 5 minut", repeatNotificationIntent)
+                .build();
+
         Intent startIntent = new Intent(context, NotificationActivity.class);
         startIntent.putExtra("REQUEST_CODE", requestCode);
         startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent actionIntent = PendingIntent.getActivity(context, 1, startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        Intent soundStopIntent = new Intent(context, RingtonePlayingService.class);
+        soundStopIntent.putExtra("STOP_SOUND", true);
+
 
         return  new NotificationCompat.Builder(context, "channel-id")
                 .setContentTitle(title)
                 .setContentText(contentMessage)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setContentIntent(pendingIntent)
-                // .setDeleteIntent(deletePendingIntent)
-                //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+                .setContentIntent(actionIntent)
                 .setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound2))
-                .setSmallIcon(R.drawable.ic_info_black_24dp)
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setDefaults(0)
+                .setVibrate(new long[]{500,500})
                 .setWhen(System.currentTimeMillis())
+                .setLights(Color.GREEN,500,2000)
                 //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
-                //.addAction(action)
+                 .addAction(action)
+                //.setDeleteIntent(PendingIntent.getService(context,0,soundStopIntent,PendingIntent.FLAG_UPDATE_CURRENT))
+                //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
                 .build();
     }
 
@@ -112,13 +123,16 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             drugListRepository = new DrugRepostioryImpl(DrugRestService.getDrugRestService(),
                     DrugmanagerApplication.getDbInstance(context).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(context).getDrugDbDao(),
                     DrugmanagerApplication.getDbInstance(context).getDefinedTimesDao(), DrugmanagerApplication.getDbInstance(context).getDefinedTimesDaysDao());
-            /*Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
+
+/*            Intent ringtonePlayingIntent = new Intent(context, RingtonePlayingService.class);
             context.startService(ringtonePlayingIntent);*/
+
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                     PowerManager.ACQUIRE_CAUSES_WAKEUP |
                     PowerManager.ON_AFTER_RELEASE, "WakeLock");
-            wakeLock.acquire(5000);
+            wakeLock.acquire(1000*60);
+
 
 
             requestCode = extras.getInt("REQUEST_CODE");
