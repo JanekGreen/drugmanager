@@ -86,8 +86,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 "Przypomnij za 5 minut", repeatNotificationIntent)
                 .build();
 
-        Intent startIntent = new Intent(context, NotificationActivity.class);
-        startIntent.putExtra("REQUEST_CODE", requestCode);
+        /*Intent startIntent = new Intent(context, NotificationActivity.class);
+        startIntent.putExtra("REQUEST_CODE", requestCode);*/
+        Intent startIntent = new Intent(context, DrugListActivity.class);
+        startIntent.putExtra("NOTIFICATION_OFF",true);
         startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent actionIntent = PendingIntent.getActivity(context, 1, startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

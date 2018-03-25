@@ -1,6 +1,8 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
+import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -65,6 +67,18 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+       Bundle bundle = getIntent().getExtras();
+
+       if(bundle!=null && bundle.getBoolean("NOTIFICATION_OFF",false)){
+
+           NotificationManager notificationManager = (NotificationManager) this
+                   .getSystemService(Context.NOTIFICATION_SERVICE);
+
+           if(notificationManager!=null) {
+               notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+           }
+       }
 
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(0);
