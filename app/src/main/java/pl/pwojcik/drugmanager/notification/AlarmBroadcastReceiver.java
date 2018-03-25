@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -91,11 +92,11 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         PendingIntent actionIntent = PendingIntent.getActivity(context, 1, startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        Intent soundStopIntent = new Intent(context, RingtonePlayingService.class);
-        soundStopIntent.putExtra("STOP_SOUND", true);
+      /*  Intent soundStopIntent = new Intent(context, RingtonePlayingService.class);
+        soundStopIntent.putExtra("STOP_SOUND", true);*/
 
 
-        return new NotificationCompat.Builder(context, "channel-id")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel-id")
                 .setContentTitle(title)
                 .setContentText(contentMessage)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -105,14 +106,24 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound2))
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .setDefaults(0)
-                .setVibrate(new long[]{500, 500})
                 .setWhen(System.currentTimeMillis())
                 .setLights(Color.GREEN, 500, 2000)
-                //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
-                .addAction(action)
-                //.setDeleteIntent(PendingIntent.getService(context,0,soundStopIntent,PendingIntent.FLAG_UPDATE_CURRENT))
-                //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
-                .build();
+                .addAction(action);
+        //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
+        //.setDeleteIntent(PendingIntent.getService(context,0,soundStopIntent,PendingIntent.FLAG_UPDATE_CURRENT))
+        //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if(am!=null) {
+            if (am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+                builder.setVibrate(null);
+            } else {
+                if (am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                    builder.setVibrate(new long[]{500, 500});
+                }
+            }
+        }
+
+        return builder.build();
     }
 
     @Override
