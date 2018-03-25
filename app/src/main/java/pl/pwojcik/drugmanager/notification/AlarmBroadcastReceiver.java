@@ -60,25 +60,25 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .toList()
                 .subscribe(list -> {
                     String content = android.text.TextUtils.join(", ", list);
-                    String title = "Leki do wzięcia: "+list.size();
-                    Notification notification = createNotification(context,title, content ,requestCode);
+                    String title = "Leki do wzięcia: " + list.size();
+                    Notification notification = createNotification(context, title, content, requestCode);
                     notification.flags |= Notification.FLAG_INSISTENT;
                     notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
                 }, e -> {
                     System.out.println(e.getMessage());
-                    Notification notification = createNotification(context,"Pora na leki","Masz do wzięcia leki",requestCode);
+                    Notification notification = createNotification(context, "Pora na leki", "Masz do wzięcia leki", requestCode);
                     notification.flags |= Notification.FLAG_INSISTENT;
                     notificationManager.notify(Constants.INTENT_REQUEST_CODE, notification);
                 });
 
     }
 
-    private Notification createNotification(Context context,String title, String contentMessage, int requestCode){
+    private Notification createNotification(Context context, String title, String contentMessage, int requestCode) {
 
         Intent repeatIntent = new Intent(context, AlarmRepeatService.class);
-        repeatIntent.putExtra("REQUEST_CODE",requestCode);
-        repeatIntent.putExtra("DELAY",5);
-        PendingIntent repeatNotificationIntent = PendingIntent.getService(context,989,repeatIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+        repeatIntent.putExtra("REQUEST_CODE", requestCode);
+        repeatIntent.putExtra("DELAY", 5);
+        PendingIntent repeatNotificationIntent = PendingIntent.getService(context, 989, repeatIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Action action = new NotificationCompat
                 .Action.Builder(R.drawable.ic_timer_off_black_24dp,
@@ -95,7 +95,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         soundStopIntent.putExtra("STOP_SOUND", true);
 
 
-        return  new NotificationCompat.Builder(context, "channel-id")
+        return new NotificationCompat.Builder(context, "channel-id")
                 .setContentTitle(title)
                 .setContentText(contentMessage)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -105,11 +105,11 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound2))
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .setDefaults(0)
-                .setVibrate(new long[]{500,500})
+                .setVibrate(new long[]{500, 500})
                 .setWhen(System.currentTimeMillis())
-                .setLights(Color.GREEN,500,2000)
+                .setLights(Color.GREEN, 500, 2000)
                 //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
-                 .addAction(action)
+                .addAction(action)
                 //.setDeleteIntent(PendingIntent.getService(context,0,soundStopIntent,PendingIntent.FLAG_UPDATE_CURRENT))
                 //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
                 .build();
@@ -131,8 +131,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                     PowerManager.ACQUIRE_CAUSES_WAKEUP |
                     PowerManager.ON_AFTER_RELEASE, "WakeLock");
-            wakeLock.acquire(1000*60);
-
+            wakeLock.acquire(1000 * 60);
 
 
             requestCode = extras.getInt("REQUEST_CODE");
@@ -148,7 +147,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         String hourMinuteParts[] = definedTime.getTime().split(":");
                         hour = Integer.valueOf(hourMinuteParts[0]);
                         minute = Integer.valueOf(hourMinuteParts[1]);
-                        definedTimesDaysDao  = DrugmanagerApplication.getDbInstance(context).getDefinedTimesDaysDao();
+                        definedTimesDaysDao = DrugmanagerApplication.getDbInstance(context).getDefinedTimesDaysDao();
 
                         definedTimesDaysDao.getDefinedTimeDaysForDefinedTime(definedTime.getId())
                                 .subscribeOn(Schedulers.io())
