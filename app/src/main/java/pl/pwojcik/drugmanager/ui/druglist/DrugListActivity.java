@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import butterknife.BindView;
@@ -68,18 +69,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-       Bundle bundle = getIntent().getExtras();
-
-       if(bundle!=null && bundle.getBoolean("NOTIFICATION_OFF",false)){
-
-           NotificationManager notificationManager = (NotificationManager) this
-                   .getSystemService(Context.NOTIFICATION_SERVICE);
-
-           if(notificationManager!=null) {
-               notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
-           }
-       }
-
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(0);
 
@@ -89,8 +78,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
             if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
                 spinner.setSelection(selectedItemPosition);
-            }else{
-                switchFragments(DRUG_LIST,true);
+            } else {
+                switchFragments(DRUG_LIST, true);
             }
         }
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
@@ -108,9 +97,38 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             if (savedInstanceState != null) {
                 spinner.setSelection(selectedItemPosition);
             }
-            if(currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+            if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+
+                Bundle bundle = getIntent().getExtras();
+
+                if (bundle != null && bundle.getBoolean("NOTIFICATION_OFF", false)) {
+
+                    NotificationManager notificationManager = (NotificationManager) this
+                            .getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    if (notificationManager != null) {
+                        notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+                    }
+
+                    int requestCode = bundle.getInt("REQUEST_CODE", -1);
+
+                    if (requestCode != -1) {
+                        drugListViewModel.getDefinedTimeForRequestCode(requestCode)
+                                .filter(list -> list.size() > 0)
+                                .map(list -> list.get(0))
+                                .subscribe(definedTime -> {
+                                            if (this.listDefinedTimes != null && this.listDefinedTimes.contains(definedTime)) {
+                                                spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(definedTime));
+                                            }
+                                        },
+                                        e -> System.out.println(e.getMessage()));
+                    }
+
+                }
+
                 handleViewChange(R.id.notificationItem);
             }
+
 
         });
 
