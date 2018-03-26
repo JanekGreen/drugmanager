@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -43,7 +44,10 @@ import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
+
 public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAdapter.SwitchChangeCallback, DefinedTimesDialog.OnDialogButtonClickedListener, PopupMenu.OnMenuItemClickListener {
+
+    private static final String AUTHORITY = "pl.pwojcik.drugmanager.fileprovider";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -328,8 +332,15 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     }
 
     private void handleFileProcessing(File file) {
+
         Intent myIntent = new Intent(Intent.ACTION_VIEW);
-        myIntent.setDataAndType(Uri.fromFile(file), "application/pdf");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            myIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(this, AUTHORITY, file);
+            myIntent.setDataAndType(contentUri,"application/pdf");
+        }else{
+            myIntent.setDataAndType(Uri.fromFile(file), "application/pdf");
+        }
         startActivity(myIntent);
     }
 

@@ -1,15 +1,19 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -71,7 +75,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(0);
 
-        if (savedInstanceState != null) {
+
+            if (savedInstanceState != null) {
             selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM", 0);
             currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
@@ -146,6 +151,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> handleViewChange(item.getItemId(),false));
 
     }
+
+
 
     private void changeViewForMode() {
         if (currentFragmentSelected.equals(DRUG_LIST)) {
