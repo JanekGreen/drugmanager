@@ -56,7 +56,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     private DrugListViewModel drugListViewModel;
     private int selectedItemPosition;
     private List<String> listDefinedTimes;
-    private boolean initializeFragment = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,9 +123,10 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                                         e -> System.out.println(e.getMessage()));
                     }
 
+                    getIntent().putExtra("NOTIFICATION_OFF",false);
                 }
 
-                handleViewChange(R.id.notificationItem);
+                handleViewChange(R.id.notificationItem, true);
             }
 
 
@@ -135,7 +135,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                handleViewChange(R.id.notificationItem);
+                handleViewChange(R.id.notificationItem, true);
             }
 
             @Override
@@ -143,7 +143,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> handleViewChange(item.getItemId()));
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> handleViewChange(item.getItemId(),false));
 
     }
 
@@ -247,17 +247,17 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         changeViewForMode();
         transaction
                 .replace(R.id.container, fragment, argument)
-                .commit();
+                .commitAllowingStateLoss();
 
     }
 
-    private boolean handleViewChange(int type) {
+    private boolean handleViewChange(int type, boolean noAnimation) {
         switch (type) {
             case R.id.drugListItem:
                 if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
                     currentFragmentSelected = DRUG_LIST;
                     currentTimeSelected = "";
-                    switchFragments(DRUG_LIST, false);
+                    switchFragments(DRUG_LIST, noAnimation);
                     return true;
                 }
                 break;
@@ -275,7 +275,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 if (!selectedTime.equals(currentFragmentSelected)) {
                     currentTimeSelected = selectedTime;
                     currentFragmentSelected = DRUG_NOTIFICATION;
-                    switchFragments(selectedTime, false);
+                    switchFragments(selectedTime, noAnimation);
                 }
                 return true;
         }
