@@ -20,6 +20,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:layout_marginEnd="@dimen/list_item_spacing"
+                android:layout_marginStart="@dimen/list_item_spacing"
                 android:layout_marginTop="@dimen/list_item_spacing"/>
             <TextView
                 android:layout_width="match_parent"

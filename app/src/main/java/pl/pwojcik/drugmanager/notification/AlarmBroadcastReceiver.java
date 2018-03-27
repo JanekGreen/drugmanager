@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.media.AudioManager;
@@ -108,8 +110,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setContentIntent(actionIntent)
                 .setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound2))
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .setDefaults(0)
+                .setTicker("Powiadomienie")
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher))
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .setWhen(System.currentTimeMillis())
                 .setLights(Color.GREEN, 500, 2000)
                 .addAction(action);
