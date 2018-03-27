@@ -112,8 +112,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound2))
                 .setDefaults(0)
                 .setTicker("Powiadomienie")
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher))
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                //.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher))
+                .setSmallIcon(R.mipmap.ic_notification)
+                .setColor(context.getResources().getColor(R.color.colorAccent))
+                .setColorized(true)
                 .setWhen(System.currentTimeMillis())
                 .setLights(Color.GREEN, 500, 2000)
                 .addAction(action);

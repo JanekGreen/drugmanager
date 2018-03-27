@@ -149,8 +149,8 @@ public class Misc {
     public static String getWeekDayNames(List<Integer> days){
         StringBuilder sb = new StringBuilder();
         for(int d: days){
-            sb.append(getWeekDayName(d)).append(" ,");
+            sb.append(getWeekDayName(d)).append(", ");
         }
-        return !days.isEmpty()?sb.subSequence(0,sb.toString().length()-1).toString(): "Nigdy";
+        return !days.isEmpty()?sb.subSequence(0,sb.toString().length()-2).toString(): "Nigdy";
     }
 }
