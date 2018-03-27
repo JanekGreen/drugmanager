@@ -1,15 +1,19 @@
 package pl.pwojcik.drugmanager.ui.druginfo;
 
+import android.Manifest;
 import android.animation.LayoutTransition;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +45,7 @@ import pl.pwojcik.drugmanager.ui.adddrug.viewmodel.DrugViewModel;
 import pl.pwojcik.drugmanager.ui.druglist.DefinedTimesActivity;
 import pl.pwojcik.drugmanager.ui.uicomponents.DefinedTimesDialog;
 import pl.pwojcik.drugmanager.ui.uicomponents.DialogUtil;
+import pl.pwojcik.drugmanager.utils.Constants;
 import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
@@ -101,6 +106,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     private boolean dialogVisible = false;
     private boolean alreadyShown = false;
     private DefinedTimesDialog definedTimesDialog;
+    private String actionOnRequestPermission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,16 +143,16 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                     System.out.println("dialog visible!");
                     int hour = savedInstanceState.getInt("DIALOG_HOUR");
                     int minute = savedInstanceState.getInt("DIALOG_MINUTE");
-                    String name =savedInstanceState.getString("DEFINED_TIME_NAME");
+                    String name = savedInstanceState.getString("DEFINED_TIME_NAME");
                     List<Integer> activeDays = savedInstanceState.getIntegerArrayList("ACTIVE_DAYS");
                     definedTimesDialog = new DefinedTimesDialog(this);
                     definedTimesDialog.buildNewDefinedTimeDialog();
                     definedTimesDialog.setOnDialogButtonClicked(this);
                     definedTimesDialog.setHour(hour);
                     definedTimesDialog.setMinute(minute);
-                    if(activeDays!=null)
+                    if (activeDays != null)
                         definedTimesDialog.setActiveDays(activeDays);
-                    if(name!=null)
+                    if (name != null)
                         definedTimesDialog.setDefinedTimeName(name);
 
                     alreadyShown = true;
@@ -158,9 +164,8 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
                 definedTimeAdapter.setDrugTimes(selectedIds.keySet());
             }
         });
-
-
     }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -294,7 +299,19 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     @OnClick(R.id.tvCharacteristics)
     public void ontvCharacteristicsClicked() {
-        handleFileDownload(characteristicsUrl);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            actionOnRequestPermission = "CHARACTERISTICS";
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                    Constants.STORAGE_PERMISSIONS);
+
+        } else {
+            System.out.println("Storage already permissions granted");
+            handleFileDownload(characteristicsUrl);
+        }
+
     }
 
     @OnClick(R.id.tvInternetSearch)
@@ -307,7 +324,19 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
 
     @OnClick(R.id.tvLeaflet)
     public void onTvleafletClicked() {
-        handleFileDownload(leafletUrl);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            actionOnRequestPermission = "LEAFLET";
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    Constants.STORAGE_PERMISSIONS);
+
+        } else {
+            System.out.println("Storage already permissions granted");
+            handleFileDownload(leafletUrl);
+        }
+
+
     }
 
     private void handleExtras(Bundle extras) {
@@ -337,8 +366,8 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             myIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             Uri contentUri = FileProvider.getUriForFile(this, AUTHORITY, file);
-            myIntent.setDataAndType(contentUri,"application/pdf");
-        }else{
+            myIntent.setDataAndType(contentUri, "application/pdf");
+        } else {
             myIntent.setDataAndType(Uri.fromFile(file), "application/pdf");
         }
         startActivity(myIntent);
@@ -402,6 +431,7 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
         System.out.println("Deleted " + filesToDelete.size() + "Files ");
     }
 
+
     @Override
     public void onDialogPositiveButtonClicked(DefinedTime definedTime, List<Integer> activeDays) {
 
@@ -416,5 +446,32 @@ public class DrugInfoActivity extends AppCompatActivity implements DefinedTimeAd
     @Override
     public void onDialogNegativeButtonClicked() {
         dialogVisible = false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        System.out.println("RequestPermissionsResult");
+        switch (requestCode) {
+            case Constants.STORAGE_PERMISSIONS: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    System.out.println("Camera permissions granted after dialog response");
+                    if (actionOnRequestPermission != null && actionOnRequestPermission.equals("LEAFLET")) {
+                        handleFileDownload(leafletUrl);
+                    } else if (actionOnRequestPermission != null && actionOnRequestPermission.equals("CHARACTERISTICS")) {
+                        handleFileDownload(characteristicsUrl);
+                    }
+
+                } else {
+                    DialogUtil dialogUtil = new DialogUtil(this);
+                    dialogUtil.showInfo(this, "Nie można pobrać pliku nie nadano aplikacji odpowiednich uprawnień");
+                    System.out.println("Storage permissions denied");
+                }
+
+            }
+
+        }
     }
 }
