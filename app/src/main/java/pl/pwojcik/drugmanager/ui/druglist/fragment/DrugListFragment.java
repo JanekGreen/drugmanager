@@ -100,7 +100,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         emptyViews.put(Constants.DRUG_NOTIFICATION, emptyNotificationListView);
         currentView = Constants.DRUG_NOTIFICATION;
 
-        observer = new DrugListAdapterObserver(rvDrugList, emptyViews, currentView);
+        observer = new DrugListAdapterObserver(this,rvDrugList, emptyViews, currentView);
         drugListAdapter.registerAdapterDataObserver(observer);
         refreshView();
     }
@@ -243,6 +243,12 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                             snackbar.show();
                         }))
                 .subscribe(id -> System.out.println("Status OK"), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    public void setLayoutForView(int viewId){
+        DrugListActivity activity = (DrugListActivity) getActivity();
+        if(activity!=null)
+            activity.setLayoutForView(viewId);
     }
 
 }

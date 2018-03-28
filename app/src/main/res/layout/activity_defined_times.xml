@@ -37,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="65dp"
                     android:tint="@color/description"
-                    android:src="@drawable/ic_timer_off_black_24dp" />
+                    android:src="@mipmap/ic_timer_off_black_48dp" />
 
                 <TextView
                     android:id="@+id/textView2"
@@ -45,7 +45,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/imageView"
                     android:layout_centerHorizontal="true"
-                    android:text="Nie ma powiadomień"
+                    android:textAlignment="center"
+                    android:text="Nie ma pór przyjmowania leków"
                     android:textSize="25sp" />
             </RelativeLayout>
 

@@ -19,4 +19,6 @@ public class Constants {
     public static final String DRUG_NOTIFICATION = "DRUG_NOTIFICATION__";
     public static final int CAMERA_PERMISSIONS = 666;
     public static final int STORAGE_PERMISSIONS = 667;
+    public static final int EMPTY_VIEW = 668;
+    public static final int BUSY_VIEW = 669;
 }

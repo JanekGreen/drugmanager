@@ -9,19 +9,24 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 
 import butterknife.BindView;
@@ -39,6 +44,7 @@ import pl.pwojcik.drugmanager.ui.druglist.adapter.MainListSpinnerAdapter;
 import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
 import pl.pwojcik.drugmanager.ui.druglist.viewmodel.DrugListViewModel;
 import pl.pwojcik.drugmanager.utils.Constants;
+import pl.pwojcik.drugmanager.utils.Misc;
 import pwojcik.pl.archcomponentstestproject.R;
 
 import static pl.pwojcik.drugmanager.utils.Constants.DRUG_LIST;
@@ -54,6 +60,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     FloatingActionButton fab;
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
+    @BindView(R.id.container)
+    NestedScrollView nestedScrollView;
 
     String currentFragmentSelected = DRUG_NOTIFICATION;
     String currentTimeSelected = "";
@@ -75,8 +83,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(0);
 
-
-            if (savedInstanceState != null) {
+        if (savedInstanceState != null) {
             selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM", 0);
             currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
@@ -128,7 +135,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                                         e -> System.out.println(e.getMessage()));
                     }
 
-                    getIntent().putExtra("NOTIFICATION_OFF",false);
+                    getIntent().putExtra("NOTIFICATION_OFF", false);
                 }
 
                 handleViewChange(R.id.notificationItem, true);
@@ -148,10 +155,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> handleViewChange(item.getItemId(),false));
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> handleViewChange(item.getItemId(), false));
 
     }
-
 
 
     private void changeViewForMode() {
@@ -290,4 +296,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         return false;
     }
 
+    public void setLayoutForView(int viewId) {
+        nestedScrollView.setLayoutParams(Misc.getCoordinatorLayoutParams(this, viewId));
+    }
 }

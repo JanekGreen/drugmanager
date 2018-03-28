@@ -1,15 +1,20 @@
 package pl.pwojcik.drugmanager.ui.druglist.adapter;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.util.HashMap;
+
+import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
+import pl.pwojcik.drugmanager.utils.Constants;
 
 /**
  * Created by pawel on 22.03.18.
  */
 
 public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
+    private DrugListFragment fragment;
     private String activeFragment;
     private RecyclerView recyclerView;
     private HashMap<String,View> emptyViews;
@@ -18,6 +23,13 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
        this.emptyViews = emptyViews;
        this.recyclerView = rv;
        this.activeFragment = activeFragment;
+        checkIfEmpty();
+    }
+    public DrugListAdapterObserver(DrugListFragment fragment, RecyclerView rv, HashMap<String,View> emptyViews, String activeFragment) {
+        this.emptyViews = emptyViews;
+        this.recyclerView = rv;
+        this.activeFragment = activeFragment;
+        this.fragment = fragment;
         checkIfEmpty();
     }
 
@@ -31,6 +43,13 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
         View emptyView = emptyViews.get(activeFragment);
         if (emptyView != null && recyclerView.getAdapter() != null) {
             boolean emptyViewVisible = recyclerView.getAdapter().getItemCount() == 0;
+            if (fragment != null) {
+                if (emptyViewVisible) {
+                    fragment.setLayoutForView(Constants.EMPTY_VIEW);
+                } else {
+                    fragment.setLayoutForView(Constants.BUSY_VIEW);
+                }
+            }
             emptyView.setVisibility(emptyViewVisible ? View.VISIBLE : View.GONE);
             recyclerView.setVisibility(emptyViewVisible ? View.GONE : View.VISIBLE);
         }

@@ -2,7 +2,11 @@ package pl.pwojcik.drugmanager.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
@@ -30,18 +34,18 @@ import retrofit2.Response;
 
 public class Misc {
 
-    public static Calendar getNextDayDate(Calendar calendar,int day){
-        if(calendar.get(Calendar.DAY_OF_WEEK) != day){
-            while (calendar.get(Calendar.DAY_OF_WEEK)!= day)
-                calendar.add(Calendar.DATE,1);
+    public static Calendar getNextDayDate(Calendar calendar, int day) {
+        if (calendar.get(Calendar.DAY_OF_WEEK) != day) {
+            while (calendar.get(Calendar.DAY_OF_WEEK) != day)
+                calendar.add(Calendar.DATE, 1);
         }
         return calendar;
     }
 
-    public static int getNextDay(List<Integer> list){
+    public static int getNextDay(List<Integer> list) {
         int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        for(int day : list){
-            if(day>=currentDay){
+        for (int day : list) {
+            if (day >= currentDay) {
                 return day;
             }
         }
@@ -50,7 +54,7 @@ public class Misc {
 
     public static ArrayList<String> getContentsDataFromDrugDb(DrugDb drugDb) {
         ArrayList<String> result = new ArrayList<>();
-        if(drugDb.getActiveSubstance()!= null && !drugDb.getActiveSubstance().isEmpty()) {
+        if (drugDb.getActiveSubstance() != null && !drugDb.getActiveSubstance().isEmpty()) {
             String activeSubstances[] = drugDb.getActiveSubstance().split(",");
             result.addAll(Arrays.asList(activeSubstances));
         }
@@ -97,7 +101,7 @@ public class Misc {
         File file = null;
         try {
 
-            file = new File(Environment.getExternalStorageDirectory()+"/"+UUID.randomUUID().toString());
+            file = new File(Environment.getExternalStorageDirectory() + "/" + UUID.randomUUID().toString());
             inputStream = responseBody.byteStream();
 
             // write the inputStream to a FileOutputStream
@@ -134,23 +138,46 @@ public class Misc {
         return file;
     }
 
-    public static String getWeekDayName(int day){
-        switch (day){
-            case 1: return  "Nd";
-            case 2: return  "Pon";
-            case 3: return  "Wt";
-            case 4: return  "Śr";
-            case 5: return  "Czw";
-            case 6: return  "Pt";
-            case 7: return  "Sob";
-            default: return  "";
+    public static String getWeekDayName(int day) {
+        switch (day) {
+            case 1:
+                return "Nd";
+            case 2:
+                return "Pon";
+            case 3:
+                return "Wt";
+            case 4:
+                return "Śr";
+            case 5:
+                return "Czw";
+            case 6:
+                return "Pt";
+            case 7:
+                return "Sob";
+            default:
+                return "";
         }
     }
-    public static String getWeekDayNames(List<Integer> days){
+
+    public static String getWeekDayNames(List<Integer> days) {
         StringBuilder sb = new StringBuilder();
-        for(int d: days){
+        for (int d : days) {
             sb.append(getWeekDayName(d)).append(", ");
         }
-        return !days.isEmpty()?sb.subSequence(0,sb.toString().length()-2).toString(): "Nigdy";
+        return !days.isEmpty() ? sb.subSequence(0, sb.toString().length() - 2).toString() : "Nigdy";
+    }
+
+    public static CoordinatorLayout.LayoutParams getCoordinatorLayoutParams(Context context, int id) {
+        CoordinatorLayout.LayoutParams pms = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        pms.bottomMargin = Misc.pxToDp(context, 60);
+        switch (id) {
+            case Constants.EMPTY_VIEW:
+                pms.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+                break;
+            case Constants.BUSY_VIEW:
+                pms.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+                break;
+        }
+        return pms;
     }
 }
