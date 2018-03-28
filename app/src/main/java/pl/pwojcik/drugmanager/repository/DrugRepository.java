@@ -45,8 +45,8 @@ public interface DrugRepository {
 
     void removeDrugTime(long definedTimeId, long drugId);
     Single<List<DrugTime>> removeDrugTimes(List<DrugTime> drugTimes);
-    void restoreDrugTimes(List<DrugTime> drugTimes);
-    void removeDrugDb(DrugDb drugDb);
+    Single<List<DrugTime>> restoreDrugTimes(List<DrugTime> drugTimes);
+    Single<DrugDb> removeDrugDb(DrugDb drugDb);
     Single<DrugDb> restoreDrugDb(DrugDb drugDb);
 
     Observable<DrugTime> restoreDrugTimeItem(DrugTime drugTime);

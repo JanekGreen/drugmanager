@@ -7,7 +7,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.List;
-import java.util.Observable;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -93,8 +92,8 @@ public class DrugListViewModel extends AndroidViewModel {
        return drugListRepository.getDrugTimesForDrug(drugId);
     }
 
-    public void removeDrug(DrugDb drugDb){
-        drugListRepository.removeDrugDb(drugDb);
+    public Single<DrugDb> removeDrug(DrugDb drugDb){
+        return drugListRepository.removeDrugDb(drugDb);
     }
     public Single<DrugDb> restoreDrug(DrugDb drugDb){
        return drugListRepository.restoreDrugDb(drugDb);
@@ -102,8 +101,8 @@ public class DrugListViewModel extends AndroidViewModel {
     public Single<List<DrugTime>> removeDrugTimes(List<DrugTime> drugTimes){
         return drugListRepository.removeDrugTimes(drugTimes);
     }
-    public void restoreDrugTimes(List<DrugTime> drugTimes){
-         drugListRepository.restoreDrugTimes(drugTimes);
+    public Single<List<DrugTime>> restoreDrugTimes(List<DrugTime> drugTimes){
+         return drugListRepository.restoreDrugTimes(drugTimes);
     }
     public Maybe<List<DefinedTime>> updateOrSetAlarms(Context context) {
         return drugListRepository.updateSaveAlarms(context);

@@ -18,6 +18,7 @@ import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDays;
 import pl.pwojcik.drugmanager.model.persistence.DefinedTimesDaysDao;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
 import pl.pwojcik.drugmanager.notification.AlarmBroadcastReceiver;
+import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pl.pwojcik.drugmanager.ui.druglist.NotificationActivity;
 import pl.pwojcik.drugmanager.utils.Constants;
 import pl.pwojcik.drugmanager.utils.Misc;
@@ -50,8 +51,9 @@ public class AlarmHelper {
     }
 
     public PendingIntent getActionPendingIntent(int re) {
-        Intent intent = new Intent(context, NotificationActivity.class);
-        intent.putExtra("REQUEST_CODE", re);
+        Intent intent = new Intent(context, DrugListActivity.class);
+        intent.putExtra("REQUEST_CODE",re);
+        intent.putExtra("NOTIFICATION_OFF",true);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent
                 .getActivity(context,
@@ -79,6 +81,7 @@ public class AlarmHelper {
     }
 
     public void cancelAllAlarms(List<DefinedTime> definedTimes) {
+        System.out.println("defined times to delete "+definedTimes.size());
         Observable.fromIterable(definedTimes)
                 .doOnNext(definedTime -> alarmManager.cancel(getPendingIntent(definedTime.getRequestCode(), 0)))
                 .subscribe();

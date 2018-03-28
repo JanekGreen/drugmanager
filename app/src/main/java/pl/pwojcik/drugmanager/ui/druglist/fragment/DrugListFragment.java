@@ -33,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.pwojcik.drugmanager.model.persistence.DrugDb;
 import pl.pwojcik.drugmanager.model.persistence.DrugTime;
+import pl.pwojcik.drugmanager.notification.alarm.AlarmHelper;
 import pl.pwojcik.drugmanager.ui.druginfo.DrugInfoActivity;
 import pl.pwojcik.drugmanager.ui.druglist.DrugListActivity;
 import pl.pwojcik.drugmanager.ui.druglist.adapter.DrugListAdapter;
@@ -193,25 +194,32 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         drugListAdapter.notifyItemRemoved(position);
         drugListViewModel.removeDrugTimes(list)
                 .subscribe(drugTimes -> {
-                    drugListViewModel.removeDrug(removedItem);
-                    Snackbar snackbar = Snackbar
-                            .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-                    snackbar.setAction("COFNIJ!", view -> {
-
-                        drugListAdapter.restoreItem(removedItem, position);
-                        drugListViewModel.restoreDrug(removedItem)
-                                .subscribe(drugDb -> {
-                                    drugListViewModel.restoreDrugTimes(list);
-                                    drugListAdapter.notifyDataSetChanged();
+                    drugListViewModel.removeDrug(removedItem)
+                            .subscribe(drugDb_ -> {
+                                drugListViewModel.updateOrSetAlarms(getContext())
+                                        .subscribe(definedTimes -> System.out.println("Alarms have been set!"));
+                                Snackbar snackbar = Snackbar
+                                        .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                snackbar.setAction("COFNIJ!", view -> {
+                                    drugListAdapter.restoreItem(removedItem, position);
+                                    drugListViewModel.restoreDrug(removedItem)
+                                            .subscribe(drugDb -> {
+                                                drugListViewModel.restoreDrugTimes(list)
+                                                        .subscribe(drugTimes1 -> {
+                                                            drugListAdapter.notifyDataSetChanged();
+                                                            drugListViewModel.updateOrSetAlarms(getContext())
+                                                                    .subscribe(definedTimes -> System.out.println("Alarms have been set!"));
+                                                        });
+                                            });
                                 });
-                    });
 
-                    View view = snackbar.getView();
-                    CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-                    para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
-                    view.setLayoutParams(para);
-                    snackbar.setActionTextColor(Color.YELLOW);
-                    snackbar.show();
+                                View view = snackbar.getView();
+                                CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+                                para.bottomMargin = Misc.dpToPx(getContext(), 62 + 4);
+                                view.setLayoutParams(para);
+                                snackbar.setActionTextColor(Color.YELLOW);
+                                snackbar.show();
+                            });
                 });
 
     }

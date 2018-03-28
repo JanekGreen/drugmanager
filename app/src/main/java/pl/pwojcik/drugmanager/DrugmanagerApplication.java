@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 
-import com.squareup.leakcanary.LeakCanary;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,10 +30,6 @@ public class DrugmanagerApplication extends Application {
                 registerReceiver(new ConnectivityChangeReceiver(),
                         new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            return;
-        }
-        LeakCanary.install(this);
         if (db == null)
             getDbInstance(getApplicationContext());
     }

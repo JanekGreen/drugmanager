@@ -302,21 +302,20 @@ public class DrugRepostioryImpl implements DrugRepository {
     }
 
     @Override
-    public void restoreDrugTimes(List<DrugTime> drugTimes) {
-        Single.just(drugTimes)
+    public Single<List<DrugTime>> restoreDrugTimes(List<DrugTime> drugTimes) {
+        return Single.just(drugTimes)
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(drugTimes1 -> drugTimeDao.restoreDrugTimes(drugTimes1))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .observeOn(AndroidSchedulers.mainThread());
+
     }
 
     @Override
-    public void removeDrugDb(DrugDb drugDb) {
-        Single.just(drugDb)
+    public Single<DrugDb> removeDrugDb(DrugDb drugDb) {
+        return Single.just(drugDb)
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(drug -> drugDbDao.deleteDrug(drug))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .observeOn(AndroidSchedulers.mainThread());
 
     }
 
