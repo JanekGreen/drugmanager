@@ -257,8 +257,9 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                             relatedDrugTimes.add(drugTime);
                             drugListViewModel.removeDrugTime(drugTime)
                                     .subscribe(drugTime_ -> {
-                                        iActivityCommunication.setOrUpdateAlarms();
                                         iActivityCommunication.refreshActivityViewForFragment();
+                                        iActivityCommunication.setOrUpdateAlarms();
+
                                     });
                             Snackbar snackbar = Snackbar
                                     .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);

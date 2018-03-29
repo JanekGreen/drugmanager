@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.util.HashMap;
+import java.util.logging.Handler;
 
 import pl.pwojcik.drugmanager.ui.druglist.fragment.DrugListFragment;
 import pl.pwojcik.drugmanager.utils.Constants;
@@ -38,23 +39,10 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
     private void checkIfEmpty() {
         for(View v:  emptyViews.values())
             v.setVisibility(View.GONE);
-
         recyclerView.setVisibility(View.GONE);
 
-        View emptyView = emptyViews.get(activeFragment);
-        if (emptyView != null && recyclerView.getAdapter() != null) {
-            boolean emptyViewVisible = recyclerView.getAdapter().getItemCount() == 0;
-            emptyView.setVisibility(emptyViewVisible ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(emptyViewVisible ? View.GONE : View.VISIBLE);
-
-            if (fragment != null) {
-                if (emptyViewVisible) {
-                    fragment.setLayoutForView(Constants.EMPTY_VIEW);
-                } else {
-                    fragment.setLayoutForView(Constants.BUSY_VIEW);
-                }
-            }
-        }
+        android.os.Handler handler = new android.os.Handler();
+        handler.postDelayed(this::swapViews,100);
     }
 
     public void onChanged() {
@@ -70,6 +58,23 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
     public void onItemRangeRemoved(int positionStart, int itemCount) {
         checkIfEmpty();
 
+    }
+    private void swapViews(){
+        View emptyView = emptyViews.get(activeFragment);
+
+        if (emptyView != null && recyclerView.getAdapter() != null) {
+            boolean emptyViewVisible = recyclerView.getAdapter().getItemCount() == 0;
+            emptyView.setVisibility(emptyViewVisible ? View.VISIBLE : View.GONE);
+            recyclerView.setVisibility(emptyViewVisible ? View.GONE : View.VISIBLE);
+
+            if (fragment != null) {
+                if (emptyViewVisible) {
+                    fragment.setLayoutForView(Constants.EMPTY_VIEW);
+                } else {
+                    fragment.setLayoutForView(Constants.BUSY_VIEW);
+                }
+            }
+        }
     }
 
     public void setActiveFragment(String activeFragment){
