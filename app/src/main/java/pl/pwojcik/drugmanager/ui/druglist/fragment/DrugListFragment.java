@@ -3,6 +3,7 @@ package pl.pwojcik.drugmanager.ui.druglist.fragment;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -65,14 +66,18 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     private DrugListAdapter drugListAdapter;
     private  DrugListAdapterObserver observer;
     private String currentView;
+    private IActivityCommunication iActivityCommunication;
+
+    public interface IActivityCommunication{
+        void setOrUpdateAlarms();
+        void refreshActivityViewForFragment();
+    }
 
     public DrugListFragment() {
         drugListAdapter = new DrugListAdapter();
     }
-
     public static DrugListFragment newInstance() {
         return new DrugListFragment();
-
     }
 
     @Override
@@ -83,6 +88,25 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         return view;
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        _onAttach(activity);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        _onAttach(context);
+    }
+
+    private void _onAttach(Context context) {
+        if(context instanceof DrugListActivity){
+            iActivityCommunication = (IActivityCommunication) context;
+
+        }
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -196,19 +220,20 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                 .subscribe(drugTimes -> {
                     drugListViewModel.removeDrug(removedItem)
                             .subscribe(drugDb_ -> {
-                                drugListViewModel.updateOrSetAlarms(getContext())
-                                        .subscribe(definedTimes -> System.out.println("Alarms have been set!"));
+                                    iActivityCommunication.setOrUpdateAlarms();
+                                    iActivityCommunication.refreshActivityViewForFragment();
                                 Snackbar snackbar = Snackbar
                                         .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                drugListViewModel.getDefinedTimes();
                                 snackbar.setAction("COFNIJ!", view -> {
                                     drugListAdapter.restoreItem(removedItem, position);
                                     drugListViewModel.restoreDrug(removedItem)
                                             .subscribe(drugDb -> {
                                                 drugListViewModel.restoreDrugTimes(list)
-                                                        .subscribe(drugTimes1 -> {
+                                                        .subscribe(drugTime_ -> {
+                                                            iActivityCommunication.refreshActivityViewForFragment();
                                                             drugListAdapter.notifyDataSetChanged();
-                                                            drugListViewModel.updateOrSetAlarms(getContext())
-                                                                    .subscribe(definedTimes -> System.out.println("Alarms have been set!"));
+                                                            iActivityCommunication.setOrUpdateAlarms();
                                                         });
                                             });
                                 });
@@ -231,17 +256,20 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                         .subscribe(drugTime -> {
                             relatedDrugTimes.add(drugTime);
                             drugListViewModel.removeDrugTime(drugTime)
-                                    .subscribe(removedId -> drugListViewModel.updateOrSetAlarms(getContext())
-                                            .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
-
+                                    .subscribe(drugTime_ -> {
+                                        iActivityCommunication.setOrUpdateAlarms();
+                                        iActivityCommunication.refreshActivityViewForFragment();
+                                    });
                             Snackbar snackbar = Snackbar
                                     .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
                             snackbar.setAction("COFNIJ!", view -> {
 
                                 drugListAdapter.restoreItem(removedItem, position);
                                 drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0))
-                                        .subscribe(drugTime_ -> drugListViewModel.updateOrSetAlarms(getContext())
-                                                .subscribe(definedTimes -> System.out.println("Alarms have been set " + definedTimes.size())), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+                                        .subscribe(drugTime_ -> {
+                                            iActivityCommunication.setOrUpdateAlarms();
+                                            iActivityCommunication.refreshActivityViewForFragment();
+                                        });
                             });
                             View view = snackbar.getView();
                             CoordinatorLayout.LayoutParams para = (CoordinatorLayout.LayoutParams) view.getLayoutParams();

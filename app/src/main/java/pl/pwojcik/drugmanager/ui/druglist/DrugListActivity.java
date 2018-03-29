@@ -50,7 +50,7 @@ import pwojcik.pl.archcomponentstestproject.R;
 import static pl.pwojcik.drugmanager.utils.Constants.DRUG_LIST;
 import static pl.pwojcik.drugmanager.utils.Constants.DRUG_NOTIFICATION;
 
-public class DrugListActivity extends AppCompatActivity implements SearchTypeListDialogFragment.Listener {
+public class DrugListActivity extends AppCompatActivity implements SearchTypeListDialogFragment.Listener, DrugListFragment.IActivityCommunication {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -68,6 +68,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     private DrugListViewModel drugListViewModel;
     private int selectedItemPosition;
     private List<String> listDefinedTimes;
+    private boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
             bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
             if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+                if(spinner.getAdapter()!=null &&  selectedItemPosition<= spinner.getAdapter().getCount()-1)
                 spinner.setSelection(selectedItemPosition);
             } else {
                 switchFragments(DRUG_LIST, true);
@@ -95,55 +97,60 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         }
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
-            if (listDefinedTimes == null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)) {
-                currentTimeSelected = "";
-                spinner.setVisibility(View.GONE);
-                getSupportActionBar().setDisplayShowTitleEnabled(true);
-                getSupportActionBar().setTitle("Powiadomienia");
-            } else {
-                this.listDefinedTimes = listDefinedTimes;
-                spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
-
-            }
-            if (savedInstanceState != null) {
-                spinner.setSelection(selectedItemPosition);
-            }
-            if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
-
-                Bundle bundle = getIntent().getExtras();
-
-                if (bundle != null && bundle.getBoolean("NOTIFICATION_OFF", false)) {
-
-                    NotificationManager notificationManager = (NotificationManager) this
-                            .getSystemService(Context.NOTIFICATION_SERVICE);
-
-                    if (notificationManager != null) {
-                        notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+                if (listDefinedTimes == null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)) {
+                    currentTimeSelected = "";
+                    spinner.setVisibility(View.GONE);
+                    getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    getSupportActionBar().setTitle("Powiadomienia");
+                } else {
+                    this.listDefinedTimes = listDefinedTimes;
+                    spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
+                    if(currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
+                        getSupportActionBar().setDisplayShowTitleEnabled(false);
+                        spinner.setVisibility(View.VISIBLE);
                     }
 
-                    int requestCode = bundle.getInt("REQUEST_CODE", -1);
+                }
+                if (savedInstanceState != null) {
+                    if (spinner.getAdapter() != null && selectedItemPosition <= spinner.getAdapter().getCount() - 1)
+                        spinner.setSelection(selectedItemPosition);
+                }
+                if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
 
-                    if (requestCode != -1) {
-                        drugListViewModel.getDefinedTimeForRequestCode(requestCode)
-                                .filter(list -> list.size() > 0)
-                                .map(list -> list.get(0))
-                                .subscribe(definedTime -> {
-                                            if (this.listDefinedTimes != null && this.listDefinedTimes.contains(definedTime)) {
-                                                spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(definedTime));
-                                            }
-                                        },
-                                        e -> System.out.println(e.getMessage()));
+                    Bundle bundle = getIntent().getExtras();
+
+                    if (bundle != null && bundle.getBoolean("NOTIFICATION_OFF", false)) {
+
+                        NotificationManager notificationManager = (NotificationManager) this
+                                .getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        if (notificationManager != null) {
+                            notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+                        }
+
+                        int requestCode = bundle.getInt("REQUEST_CODE", -1);
+
+                        if (requestCode != -1) {
+                            drugListViewModel.getDefinedTimeForRequestCode(requestCode)
+                                    .filter(list -> list.size() > 0)
+                                    .map(list -> list.get(0))
+                                    .subscribe(definedTime -> {
+                                                if (this.listDefinedTimes != null && this.listDefinedTimes.contains(definedTime)) {
+                                                    spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(definedTime));
+                                                }
+                                            },
+                                            e -> System.out.println(e.getMessage()));
+                        }
+
+                        getIntent().putExtra("NOTIFICATION_OFF", false);
                     }
-
-                    getIntent().putExtra("NOTIFICATION_OFF", false);
+                }
+                if (!initialized) {
+                    handleViewChange(R.id.notificationItem, true);
+                    initialized = true;
                 }
 
-                handleViewChange(R.id.notificationItem, true);
-            }
-
-
         });
-
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -298,5 +305,16 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     public void setLayoutForView(int viewId) {
         nestedScrollView.setLayoutParams(Misc.getCoordinatorLayoutParams(this, viewId));
+    }
+
+    @Override
+    public void setOrUpdateAlarms() {
+        drugListViewModel.updateOrSetAlarms(this)
+                .subscribe();
+    }
+
+    @Override
+    public void refreshActivityViewForFragment() {
+        drugListViewModel.getDefinedTimes();
     }
 }

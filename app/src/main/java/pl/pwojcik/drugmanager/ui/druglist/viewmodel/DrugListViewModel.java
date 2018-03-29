@@ -40,7 +40,6 @@ public class DrugListViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<List<String>> getDefinedTimes() {
-
           drugListRepository
                 .getAllDefinedTimesWithNames()
           .subscribe(list -> drugListLiveData.postValue(list));

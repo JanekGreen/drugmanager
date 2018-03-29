@@ -23,14 +23,15 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
        this.emptyViews = emptyViews;
        this.recyclerView = rv;
        this.activeFragment = activeFragment;
-        checkIfEmpty();
+        System.out.println("constructor");
+        //checkIfEmpty();
     }
     public DrugListAdapterObserver(DrugListFragment fragment, RecyclerView rv, HashMap<String,View> emptyViews, String activeFragment) {
         this.emptyViews = emptyViews;
         this.recyclerView = rv;
         this.activeFragment = activeFragment;
         this.fragment = fragment;
-        checkIfEmpty();
+        //checkIfEmpty();
     }
 
 
@@ -43,6 +44,9 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
         View emptyView = emptyViews.get(activeFragment);
         if (emptyView != null && recyclerView.getAdapter() != null) {
             boolean emptyViewVisible = recyclerView.getAdapter().getItemCount() == 0;
+            emptyView.setVisibility(emptyViewVisible ? View.VISIBLE : View.GONE);
+            recyclerView.setVisibility(emptyViewVisible ? View.GONE : View.VISIBLE);
+
             if (fragment != null) {
                 if (emptyViewVisible) {
                     fragment.setLayoutForView(Constants.EMPTY_VIEW);
@@ -50,26 +54,26 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
                     fragment.setLayoutForView(Constants.BUSY_VIEW);
                 }
             }
-            emptyView.setVisibility(emptyViewVisible ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(emptyViewVisible ? View.GONE : View.VISIBLE);
         }
     }
 
     public void onChanged() {
+        System.out.println("onChanged");
         checkIfEmpty();
     }
 
     public void onItemRangeInserted(int positionStart, int itemCount) {
         checkIfEmpty();
+
     }
 
     public void onItemRangeRemoved(int positionStart, int itemCount) {
         checkIfEmpty();
+
     }
 
     public void setActiveFragment(String activeFragment){
         this.emptyViews.get(this.activeFragment).setVisibility(View.GONE);
         this.activeFragment = activeFragment;
-        checkIfEmpty();
     }
 }
