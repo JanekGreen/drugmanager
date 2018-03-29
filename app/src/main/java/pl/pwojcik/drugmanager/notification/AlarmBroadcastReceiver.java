@@ -72,9 +72,26 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         repeatIntent.putExtra("DELAY", 5);
         PendingIntent repeatNotificationIntent = PendingIntent.getService(context, 989, repeatIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        NotificationCompat.Action action = new NotificationCompat
-                .Action.Builder(R.drawable.ic_timer_off_black_24dp,
+
+        NotificationCompat.Action repeatAction = new NotificationCompat
+                .Action.Builder(R.drawable.ic_notifications_black2_24dp,
                 "Przypomnij za 5 minut", repeatNotificationIntent)
+                .build();
+
+        Intent intent = new Intent(context, DrugListActivity.class);
+        intent.putExtra("REQUEST_CODE",requestCode);
+        intent.putExtra("NOTIFICATION_OFF",true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent showListIntent = PendingIntent
+                .getActivity(context,
+                        1,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        NotificationCompat.Action showListAction = new NotificationCompat
+                .Action.Builder(R.drawable.ic_list_black_24dp,
+                "Pokaż listę", showListIntent)
                 .build();
 
         /*Intent startIntent = new Intent(context, NotificationActivity.class);
@@ -107,7 +124,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                 .setColorized(true)
                 .setWhen(System.currentTimeMillis())
                 .setLights(Color.GREEN, 500, 2000)
-                .addAction(action);
+                .addAction(showListAction)
+                .addAction(repeatAction);
         //.setLargeIcon(Bi.createWithResource(context, R.drawable.ic_info_black_24dp))
         //.setDeleteIntent(PendingIntent.getService(context,0,soundStopIntent,PendingIntent.FLAG_UPDATE_CURRENT))
         //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
