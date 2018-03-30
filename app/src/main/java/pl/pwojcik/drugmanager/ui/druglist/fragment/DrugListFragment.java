@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.ui.druglist.fragment;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -262,10 +263,10 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
 
                                     });
                             Snackbar snackbar = Snackbar
-                                    .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                    .make(rootLayout, drugsForTimeGlobal.get(position).getName() + " został usunięty!", Snackbar.LENGTH_LONG);
                             snackbar.setAction("COFNIJ!", view -> {
 
-                                drugListAdapter.restoreItem(removedItem, position);
+                                drugListAdapter.restoreItem(drugsForTimeGlobal.get(position), position);
                                 drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0))
                                         .subscribe(drugTime_ -> {
                                             iActivityCommunication.setOrUpdateAlarms();

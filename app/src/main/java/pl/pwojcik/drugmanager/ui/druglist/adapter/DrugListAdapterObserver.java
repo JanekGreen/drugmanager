@@ -38,8 +38,9 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
 
     private void checkIfEmpty() {
 
-        android.os.Handler handler = new android.os.Handler();
-        handler.postDelayed(this::swapViews,100);
+        //android.os.Handler handler = new android.os.Handler();
+        //handler.postDelayed(this::swapViews,150);
+        swapViews();
     }
 
     public void onChanged() {

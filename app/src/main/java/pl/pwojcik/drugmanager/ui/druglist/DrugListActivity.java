@@ -2,6 +2,7 @@ package pl.pwojcik.drugmanager.ui.druglist;
 
 import android.Manifest;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -316,5 +317,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     @Override
     public void refreshActivityViewForFragment() {
         drugListViewModel.getDefinedTimes();
+
     }
 }
