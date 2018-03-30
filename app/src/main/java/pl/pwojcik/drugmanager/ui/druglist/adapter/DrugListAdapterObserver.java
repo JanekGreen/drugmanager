@@ -37,9 +37,6 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
 
 
     private void checkIfEmpty() {
-        for(View v:  emptyViews.values())
-            v.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
 
         android.os.Handler handler = new android.os.Handler();
         handler.postDelayed(this::swapViews,100);
@@ -61,6 +58,10 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
     }
     private void swapViews(){
         View emptyView = emptyViews.get(activeFragment);
+
+        for(View v:  emptyViews.values())
+            v.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
 
         if (emptyView != null && recyclerView.getAdapter() != null) {
             boolean emptyViewVisible = recyclerView.getAdapter().getItemCount() == 0;
