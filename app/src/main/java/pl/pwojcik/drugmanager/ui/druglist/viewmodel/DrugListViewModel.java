@@ -2,7 +2,6 @@ package pl.pwojcik.drugmanager.ui.druglist.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
@@ -26,7 +25,6 @@ import pl.pwojcik.drugmanager.retrofit.DrugRestService;
 public class DrugListViewModel extends AndroidViewModel {
 
     private DrugRepository drugListRepository;
-    private MutableLiveData<List<String>> drugListLiveData;
 
     public DrugListViewModel(@NonNull Application application) {
         super(application);
@@ -36,14 +34,12 @@ public class DrugListViewModel extends AndroidViewModel {
         DrugmanagerApplication.getDbInstance(application).getDrugTimeDao(), DrugmanagerApplication.getDbInstance(application).getDrugDbDao(),
                 DrugmanagerApplication.getDbInstance(application).getDefinedTimesDao(), DrugmanagerApplication.getDbInstance(application).getDefinedTimesDaysDao());
 
-        drugListLiveData = new MutableLiveData<>();
     }
 
-    public MutableLiveData<List<String>> getDefinedTimes() {
-          drugListRepository
-                .getAllDefinedTimesWithNames()
-          .subscribe(list -> drugListLiveData.postValue(list));
-          return drugListLiveData;
+    public Maybe<List<String>> getDefinedTimes() {
+       //return LiveDataReactiveStreams.fromPublisher(drugListRepository.getAllDefinedTimesWithNames().toFlowable());
+       return drugListRepository.getAllDefinedTimesWithNames();
+
     }
 
     public Maybe<List<DrugDb>> getDrugsForTime(String timeName){

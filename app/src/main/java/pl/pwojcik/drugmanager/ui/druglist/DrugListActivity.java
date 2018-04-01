@@ -1,43 +1,33 @@
 package pl.pwojcik.drugmanager.ui.druglist;
 
-import android.Manifest;
 import android.app.NotificationManager;
-import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 import pl.pwojcik.drugmanager.ui.adddrug.AddDrugActivity;
 import pl.pwojcik.drugmanager.ui.adddrug.fragment.SearchTypeListDialogFragment;
@@ -64,16 +54,20 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     @BindView(R.id.container)
     NestedScrollView nestedScrollView;
 
-    String currentFragmentSelected = DRUG_NOTIFICATION;
-    String currentTimeSelected = "";
     private DrugListViewModel drugListViewModel;
-    private int selectedItemPosition;
     private List<String> listDefinedTimes;
+    private DrugListState drugListState;
     private boolean initialized = false;
+    private boolean refreshCalled = false;
+
+
+    public DrugListActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("onCreate called ");
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_drug_list2);
         ButterKnife.bind(this);
@@ -85,77 +79,15 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(0);
 
-        if (savedInstanceState != null) {
-            selectedItemPosition = savedInstanceState.getInt("SELECTED_ITEM", 0);
-            currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
-            bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("BOTTOM_NAV", R.id.notificationItem));
-            if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
-                if(spinner.getAdapter()!=null &&  selectedItemPosition<= spinner.getAdapter().getCount()-1)
-                spinner.setSelection(selectedItemPosition);
-            } else {
-                switchFragments(DRUG_LIST, true);
-            }
-        }
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
-        drugListViewModel.getDefinedTimes().observe(this, listDefinedTimes -> {
-                if (listDefinedTimes == null || listDefinedTimes.isEmpty() && !currentFragmentSelected.equals(DRUG_LIST)) {
-                    currentTimeSelected = "";
-                    spinner.setVisibility(View.GONE);
-                    getSupportActionBar().setDisplayShowTitleEnabled(true);
-                    getSupportActionBar().setTitle("Powiadomienia");
-                } else {
-                    this.listDefinedTimes = listDefinedTimes;
-                    spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), listDefinedTimes));
-                    if(currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
-                        getSupportActionBar().setDisplayShowTitleEnabled(false);
-                        spinner.setVisibility(View.VISIBLE);
-                    }
-
-                }
-                if (savedInstanceState != null) {
-                    if (spinner.getAdapter() != null && selectedItemPosition <= spinner.getAdapter().getCount() - 1)
-                        spinner.setSelection(selectedItemPosition);
-                }
-                if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
-
-                    Bundle bundle = getIntent().getExtras();
-
-                    if (bundle != null && bundle.getBoolean("NOTIFICATION_OFF", false)) {
-
-                        NotificationManager notificationManager = (NotificationManager) this
-                                .getSystemService(Context.NOTIFICATION_SERVICE);
-
-                        if (notificationManager != null) {
-                            notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
-                        }
-
-                        int requestCode = bundle.getInt("REQUEST_CODE", -1);
-
-                        if (requestCode != -1) {
-                            drugListViewModel.getDefinedTimeForRequestCode(requestCode)
-                                    .filter(list -> list.size() > 0)
-                                    .map(list -> list.get(0))
-                                    .subscribe(definedTime -> {
-                                                if (this.listDefinedTimes != null && this.listDefinedTimes.contains(definedTime)) {
-                                                    spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(definedTime));
-                                                }
-                                            },
-                                            e -> System.out.println(e.getMessage()));
-                        }
-
-                        getIntent().putExtra("NOTIFICATION_OFF", false);
-                    }
-                }
-                if (!initialized) {
-                    handleViewChange(R.id.notificationItem, true);
-                    initialized = true;
-                }
-
-        });
+        refresh(savedInstanceState);
+        // flag if set refresh will not be called inside onResume
+        refreshCalled = true;
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                handleViewChange(R.id.notificationItem, true);
+                drugListState.handleSpinnerSelectionChange();
+
             }
 
             @Override
@@ -163,30 +95,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> handleViewChange(item.getItemId(), false));
-
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> drugListState.changeMode(item.getItemId(), false));
     }
 
-
-    private void changeViewForMode() {
-        if (currentFragmentSelected.equals(DRUG_LIST)) {
-            spinner.setVisibility(View.GONE);
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-            getSupportActionBar().setTitle("Lista leków");
-            fab.show();
-        } else if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
-            if (listDefinedTimes != null && !listDefinedTimes.isEmpty()) {
-                spinner.setVisibility(View.VISIBLE);
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
-            } else {
-                spinner.setVisibility(View.GONE);
-                getSupportActionBar().setDisplayShowTitleEnabled(true);
-                getSupportActionBar().setTitle("Powiadomienia");
-            }
-
-            fab.hide();
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -231,79 +142,49 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("On resume");
-        drugListViewModel.getDefinedTimes();
+        if(!refreshCalled) {
+            refresh(null);
+        }
+        refreshCalled = false;
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        getIntent().putExtra("SELECTED_ITEM",spinner.getSelectedItemPosition());
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("SELECTED_ITEM", selectedItemPosition);
-        outState.putString("SELECTED_FRAGMENT", currentFragmentSelected);
-        outState.putInt("BOTTOM_NAV", bottomNavigationView.getSelectedItemId());
+        outState.putInt("SELECTED_ITEM", drugListState.getSpinnerPosition());
+        outState.putString("SELECTED_FRAGMENT", drugListState.getActiveFragmentTag());
         super.onSaveInstanceState(outState);
     }
 
-    private void switchFragments(String argument, boolean noAnimation) {
-
-        FragmentManager manager = getSupportFragmentManager();
-        Fragment fragment = manager.findFragmentByTag(argument);
-        Bundle args = new Bundle();
-        if (fragment == null) {
-            args.putString("SELECTED_TIME", argument);
-            fragment = DrugListFragment.newInstance();
-            fragment.setArguments(args);
-        }
-        android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
-        if (!argument.equals(DRUG_LIST)) {
-            if (!noAnimation)
-                transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
-        } else {
-            if (!noAnimation)
-                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
-            if (drugListViewModel != null)
-                drugListViewModel.getDefinedTimes();
-        }
-
-        changeViewForMode();
-        transaction
-                .replace(R.id.container, fragment, argument)
-                .commitAllowingStateLoss();
-
-    }
-
-    private boolean handleViewChange(int type, boolean noAnimation) {
-        switch (type) {
-            case R.id.drugListItem:
-                if (currentFragmentSelected.equals(DRUG_NOTIFICATION)) {
-                    currentFragmentSelected = DRUG_LIST;
-                    currentTimeSelected = "";
-                    switchFragments(DRUG_LIST, noAnimation);
-                    return true;
-                }
-                break;
-            case R.id.notificationItem:
-                String selectedTime = "";
-                selectedItemPosition = spinner.getSelectedItemPosition();
-                if (selectedItemPosition != -1) {
-                    if (spinner.getSelectedItem() != null) {
-                        selectedTime = spinner.getSelectedItem().toString()
-                                .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+    private void refresh(Bundle savedInstanceState){
+        System.out.println("refresh called!");
+        drugListViewModel.getDefinedTimes().subscribe(definedTimes->{
+            this.listDefinedTimes = definedTimes;
+            spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), definedTimes));
+            if (savedInstanceState == null) {
+                drugListState = new DrugListState();
+                drugListState.handleNotificationCall();
+            } else {
+                if (!initialized) {
+                    String currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
+                    int spinnerPosition = savedInstanceState.getInt("SELECTED_ITEM", -1);
+                    if (currentFragmentSelected.equals(DRUG_LIST)) {
+                        drugListState = new DrugListState(DRUG_LIST);
+                        drugListState.setSpinnerSelection(spinnerPosition);
+                    } else {
+                        drugListState = new DrugListState(spinnerPosition);
                     }
-                } else {
-                    drugListViewModel.getDefinedTimes();
+                    initialized = true;
                 }
-                if (!selectedTime.equals(currentFragmentSelected)) {
-                    currentTimeSelected = selectedTime;
-                    currentFragmentSelected = DRUG_NOTIFICATION;
-                    switchFragments(selectedTime, noAnimation);
-                }
-                return true;
-        }
+            }
 
-        return false;
+        }, Throwable::printStackTrace);
     }
-
     public void setLayoutForView(int viewId) {
         nestedScrollView.setLayoutParams(Misc.getCoordinatorLayoutParams(this, viewId));
     }
@@ -316,7 +197,166 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     @Override
     public void refreshActivityViewForFragment() {
-        drugListViewModel.getDefinedTimes();
+        refresh(null);
 
     }
+
+    class DrugListState {
+        private static final String DRUG_NOTIFICATION = Constants.DRUG_NOTIFICATION;
+        private static final String DRUG_LIST = Constants.DRUG_LIST;
+
+        DrugListState() {
+            changeMode(bottomNavigationView.getSelectedItemId(), true);
+        }
+
+        DrugListState(int spinnerPosition) {
+            applyViewDrugNotification();
+            setSpinnerSelection(spinnerPosition);
+        }
+
+        DrugListState(String fragmentType) {
+            if (fragmentType.equals(DRUG_LIST))
+                changeMode(R.id.drugListItem, true);
+            else {
+                changeMode(R.id.notificationItem, true);
+            }
+
+        }
+
+        private void handleSpinnerSelectionChange() {
+            switchFragments(getTimeNameFromSpinner(), true);
+        }
+
+        private boolean changeMode(int type, boolean noAnimation) {
+
+            switch (type) {
+                case R.id.notificationItem:
+                    applyViewDrugNotification();
+                    if(getIntent().getExtras()!=null) {
+                       int spinnerPosition = getIntent().getExtras().getInt("SELECTED_ITEM", 0);
+                        setSpinnerSelection(spinnerPosition);
+                    }
+                    switchFragments(getTimeNameFromSpinner(), false);
+                    break;
+                case R.id.drugListItem:
+                    applyViewDrugList();
+                    switchFragments(DRUG_LIST, false);
+                    break;
+            }
+            return true;
+        }
+
+        private String getTimeNameFromSpinner() {
+            if (spinner.getSelectedItem() == null)
+                return "";
+
+            return spinner.getSelectedItem().toString()
+                    .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+        }
+
+        private void applyViewDrugList() {
+            applyViewLackOfSpinnerWithTitle("Lista leków", true);
+        }
+
+        private void applyViewDrugNotification() {
+            if (isSpinnerEmpty()) {
+                applyViewLackOfSpinnerWithTitle("Powiadomienia", false);
+            } else {
+                if (getSupportActionBar() == null)
+                    throw new NullPointerException("SupportActionBar is null");
+
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+                spinner.setVisibility(View.VISIBLE);
+            }
+        }
+
+        private void applyViewLackOfSpinnerWithTitle(String title, boolean fabVisible) {
+            if (getSupportActionBar() == null)
+                throw new NullPointerException("SupportActionBar is null");
+            spinner.setVisibility(View.GONE);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle(title);
+
+            if (fabVisible)
+                fab.show();
+            else {
+                fab.hide();
+            }
+        }
+
+        private boolean isSpinnerEmpty() {
+            return spinner.getAdapter().getCount() == 0;
+        }
+
+        private int getSpinnerPosition() {
+            return spinner.getSelectedItemPosition();
+        }
+
+        private void setSpinnerSelection(int index) {
+            if (index == -1)
+                return;
+            if (spinner.getAdapter() != null &&
+                    index <= spinner.getAdapter().getCount() - 1)
+                spinner.setSelection(index);
+        }
+
+        private void handleNotificationCall() {
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null && bundle.getBoolean("NOTIFICATION_OFF", false)) {
+
+                NotificationManager notificationManager = (NotificationManager)
+                        DrugListActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+                if (notificationManager != null) {
+                    notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+                }
+
+                int requestCode = bundle.getInt("REQUEST_CODE", -1);
+
+                if (requestCode != -1) {
+                    drugListViewModel.getDefinedTimeForRequestCode(requestCode)
+                            .filter(list -> list.size() > 0)
+                            .map(list -> list.get(0))
+                            .subscribe(definedTime -> {
+                                        if (listDefinedTimes != null && listDefinedTimes.contains(definedTime)) {
+                                            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(definedTime));
+                                        }
+                                    },
+                                    e -> System.out.println(e.getMessage()));
+                }
+
+                getIntent().putExtra("NOTIFICATION_OFF", false);
+            }
+        }
+
+        private void switchFragments(String viewId, boolean noAnimation) {
+            FragmentManager manager = getSupportFragmentManager();
+            Fragment fragment = manager.findFragmentByTag(viewId);
+            Bundle args = new Bundle();
+            if (fragment == null) {
+                args.putString("VIEW_ID", viewId);
+                fragment = DrugListFragment.newInstance();
+                fragment.setArguments(args);
+            }
+            android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
+            if (!viewId.equals(DRUG_LIST)) {
+                if (!noAnimation)
+                    transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+            } else {
+                if (!noAnimation)
+                    transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+            }
+            transaction
+                    .replace(R.id.container, fragment, viewId)
+                    .commitAllowingStateLoss();
+
+        }
+
+        private String getActiveFragmentTag() {
+            FragmentManager manager = getSupportFragmentManager();
+            Fragment fragment = manager.findFragmentById(R.id.container);
+            return fragment != null ? fragment.getTag() : "__EMPTY__";
+        }
+    }
+
 }

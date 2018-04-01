@@ -44,7 +44,7 @@ public class DrugListAdapterObserver extends RecyclerView.AdapterDataObserver {
     }
 
     public void onChanged() {
-        System.out.println("onChanged");
+        //System.out.println("onChanged");
         checkIfEmpty();
     }
 

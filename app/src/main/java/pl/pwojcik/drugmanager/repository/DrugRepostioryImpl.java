@@ -177,6 +177,7 @@ public class DrugRepostioryImpl implements DrugRepository {
         return definedTimeDao.getAllActive()
                 .toObservable()
                 .subscribeOn(Schedulers.io())
+                .doOnError(Throwable::printStackTrace)
                 .flatMap(list -> Observable.fromIterable(list)
                         .map(definedTime -> definedTime.getName() + " - " + definedTime.getTime()))
                 .toList()

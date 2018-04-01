@@ -191,7 +191,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
 
     private void refreshView() {
         Bundle args = getArguments();
-        selectedTimeName = args.getString("SELECTED_TIME", "Rano");
+        selectedTimeName = args.getString("VIEW_ID", "");
         currentView = "DRUG_LIST__".equals(selectedTimeName)? Constants.DRUG_LIST : Constants.DRUG_NOTIFICATION;
         observer.setActiveFragment(currentView);
         if (!selectedTimeName.equals("DRUG_LIST__")) {
@@ -225,7 +225,6 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                                     iActivityCommunication.refreshActivityViewForFragment();
                                 Snackbar snackbar = Snackbar
                                         .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
-                                drugListViewModel.getDefinedTimes();
                                 snackbar.setAction("COFNIJ!", view -> {
                                     drugListAdapter.restoreItem(removedItem, position);
                                     drugListViewModel.restoreDrug(removedItem)
