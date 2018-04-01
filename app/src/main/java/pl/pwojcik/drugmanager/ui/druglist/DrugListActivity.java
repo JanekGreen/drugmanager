@@ -236,11 +236,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                        int spinnerPosition = getIntent().getExtras().getInt("SELECTED_ITEM", 0);
                         setSpinnerSelection(spinnerPosition);
                     }
-                    switchFragments(getTimeNameFromSpinner(), false);
+                    switchFragments(getTimeNameFromSpinner(), noAnimation);
                     break;
                 case R.id.drugListItem:
                     applyViewDrugList();
-                    switchFragments(DRUG_LIST, false);
+                    switchFragments(DRUG_LIST, noAnimation);
                     break;
             }
             return true;
