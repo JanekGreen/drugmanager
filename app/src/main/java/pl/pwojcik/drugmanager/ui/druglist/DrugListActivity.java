@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -60,10 +61,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     private boolean initialized = false;
     private boolean refreshCalled = false;
 
-
-    public DrugListActivity() {
-    }
-
+    //todo wywala się jak będąc na liście leków przechodze do leku, odznaczam go i wracam na powiadomienia (wtedy można 2x kliknąć na bottom nav powiadomienia)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +93,10 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> drugListState.changeMode(item.getItemId(), false));
+        bottomNavigationView.setOnNavigationItemSelectedListener(item ->
+        {
+            System.out.println("onBottomnavigationClicked "+item.getItemId());
+            return drugListState.changeMode(item.getItemId(), false);});
     }
 
 
@@ -167,10 +168,12 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             this.listDefinedTimes = definedTimes;
             spinner.setAdapter(new MainListSpinnerAdapter(toolbar.getContext(), definedTimes));
             if (savedInstanceState == null) {
+                //savedInstanceState is null create new state object
                 drugListState = new DrugListState();
                 drugListState.handleNotificationCall();
             } else {
                 if (!initialized) {
+                    //flag to ensure that state will be restored only once after orientation change
                     String currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
                     int spinnerPosition = savedInstanceState.getInt("SELECTED_ITEM", -1);
                     if (currentFragmentSelected.equals(DRUG_LIST)) {
@@ -183,7 +186,10 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 }
             }
 
-        }, Throwable::printStackTrace);
+        }, e ->{
+            e.printStackTrace();
+            Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+        });
     }
     public void setLayoutForView(int viewId) {
         nestedScrollView.setLayoutParams(Misc.getCoordinatorLayoutParams(this, viewId));
@@ -232,10 +238,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             switch (type) {
                 case R.id.notificationItem:
                     applyViewDrugNotification();
-                    if(getIntent().getExtras()!=null) {
-                       int spinnerPosition = getIntent().getExtras().getInt("SELECTED_ITEM", 0);
-                        setSpinnerSelection(spinnerPosition);
-                    }
                     switchFragments(getTimeNameFromSpinner(), noAnimation);
                     break;
                 case R.id.drugListItem:
@@ -251,9 +253,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 return "";
 
             return spinner.getSelectedItem().toString()
-                    .substring(0, spinner.getSelectedItem().toString().indexOf(" "));
+                    .substring(0, spinner.getSelectedItem().toString().lastIndexOf("-")).trim();
         }
-
+        private int getSavedSpinnerPosition(){
+            return getIntent().getExtras() == null ? 0 : getIntent().getExtras().getInt("SELECTED_ITEM", 0);
+        }
         private void applyViewDrugList() {
             applyViewLackOfSpinnerWithTitle("Lista leków", true);
         }
@@ -267,6 +271,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
                 getSupportActionBar().setDisplayShowTitleEnabled(false);
                 spinner.setVisibility(View.VISIBLE);
+                spinner.setSelection(getSavedSpinnerPosition());
             }
         }
 
