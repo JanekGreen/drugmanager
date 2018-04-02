@@ -157,7 +157,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("SELECTED_ITEM", drugListState.getSpinnerPosition());
+        outState.putString("SELECTED_ITEM", drugListState.getSpinnerSelection());
         outState.putString("SELECTED_FRAGMENT", drugListState.getActiveFragmentTag());
         super.onSaveInstanceState(outState);
     }
@@ -175,12 +175,12 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 if (!initialized) {
                     //flag to ensure that state will be restored only once after orientation change
                     String currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
-                    int spinnerPosition = savedInstanceState.getInt("SELECTED_ITEM", -1);
+                    String spinnerSelection = savedInstanceState.getString("SELECTED_ITEM", "");
                     if (currentFragmentSelected.equals(DRUG_LIST)) {
                         drugListState = new DrugListState(DRUG_LIST);
-                        drugListState.setSpinnerSelection(spinnerPosition);
+                        drugListState.setSpinnerSelection(spinnerSelection);
                     } else {
-                        drugListState = new DrugListState(spinnerPosition);
+                        drugListState = new DrugListState(null, spinnerSelection);
                     }
                     initialized = true;
                 }
@@ -228,6 +228,13 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
 
         }
+        DrugListState(String fragmentType, String spinnerSelection){
+            if (listDefinedTimes != null && listDefinedTimes.contains(spinnerSelection)) {
+                spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(spinnerSelection));
+                applyViewDrugNotification();
+            }
+        }
+
 
         private void handleSpinnerSelectionChange() {
             switchFragments(getTimeNameFromSpinner(), true);
@@ -297,7 +304,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         private int getSpinnerPosition() {
             return spinner.getSelectedItemPosition();
         }
-
+        private String getSpinnerSelection(){
+            return (String)spinner.getSelectedItem();
+        }
         private void setSpinnerSelection(int index) {
             if (index == -1)
                 return;
