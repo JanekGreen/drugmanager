@@ -152,7 +152,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     @Override
     protected void onStop() {
         super.onStop();
-        getIntent().putExtra("SELECTED_ITEM",spinner.getSelectedItemPosition());
+        getIntent().putExtra("SELECTED_ITEM",(String) spinner.getSelectedItem());
     }
 
     @Override
@@ -255,8 +255,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             return spinner.getSelectedItem().toString()
                     .substring(0, spinner.getSelectedItem().toString().lastIndexOf("-")).trim();
         }
-        private int getSavedSpinnerPosition(){
-            return getIntent().getExtras() == null ? 0 : getIntent().getExtras().getInt("SELECTED_ITEM", 0);
+        private String getSavedSpinnerTimeName(){
+            return getIntent().getExtras() == null ? "" : getIntent().getExtras().getString("SELECTED_ITEM", "");
         }
         private void applyViewDrugList() {
             applyViewLackOfSpinnerWithTitle("Lista leków", true);
@@ -271,7 +271,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
                 getSupportActionBar().setDisplayShowTitleEnabled(false);
                 spinner.setVisibility(View.VISIBLE);
-                spinner.setSelection(getSavedSpinnerPosition());
+                //spinner.setSelection(getSavedSpinnerPosition());
+                setSpinnerSelection(getSavedSpinnerTimeName());
             }
         }
 
@@ -305,6 +306,11 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 spinner.setSelection(index);
         }
 
+        private void setSpinnerSelection(String definedTimeName){
+            if (listDefinedTimes != null && listDefinedTimes.contains(definedTimeName)) {
+                spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(definedTimeName));
+            }
+        }
         private void handleNotificationCall() {
             Bundle bundle = getIntent().getExtras();
             if (bundle != null && bundle.getBoolean("NOTIFICATION_OFF", false)) {
