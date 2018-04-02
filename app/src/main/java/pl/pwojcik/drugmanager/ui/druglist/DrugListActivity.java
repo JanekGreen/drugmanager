@@ -61,7 +61,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     private boolean initialized = false;
     private boolean refreshCalled = false;
 
-    //todo wywala się jak będąc na liście leków przechodze do leku, odznaczam go i wracam na powiadomienia (wtedy można 2x kliknąć na bottom nav powiadomienia)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +69,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         setContentView(R.layout.activity_drug_list2);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        spinner.setVisibility(View.GONE);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setTitle("Powiadomienia");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -172,8 +173,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 drugListState = new DrugListState();
                 drugListState.handleNotificationCall();
             } else {
-                if (!initialized) {
-                    //flag to ensure that state will be restored only once after orientation change
+                //flag to ensure that state will be restored only once after orientation change
+                //if (!initialized) {
                     String currentFragmentSelected = savedInstanceState.getString("SELECTED_FRAGMENT", "");
                     String spinnerSelection = savedInstanceState.getString("SELECTED_ITEM", "");
                     if (currentFragmentSelected.equals(DRUG_LIST)) {
@@ -183,7 +184,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                         drugListState = new DrugListState(null, spinnerSelection);
                     }
                     initialized = true;
-                }
+                //}
+                savedInstanceState.clear();
             }
 
         }, e ->{
@@ -206,6 +208,10 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         refresh(null);
 
     }
+
+    /**
+     * Class that manages DrugList (switching between fragments, replacing views etc.)
+     * **/
 
     class DrugListState {
         private static final String DRUG_NOTIFICATION = Constants.DRUG_NOTIFICATION;
@@ -337,11 +343,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                     drugListViewModel.getDefinedTimeForRequestCode(requestCode)
                             .filter(list -> list.size() > 0)
                             .map(list -> list.get(0))
-                            .subscribe(definedTime -> {
-                                        if (listDefinedTimes != null && listDefinedTimes.contains(definedTime)) {
-                                            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(definedTime));
-                                        }
-                                    },
+                            .subscribe(this::setSpinnerSelection,
                                     e -> System.out.println(e.getMessage()));
                 }
 

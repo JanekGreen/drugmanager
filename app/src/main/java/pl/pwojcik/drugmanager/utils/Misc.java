@@ -169,7 +169,7 @@ public class Misc {
 
     public static CoordinatorLayout.LayoutParams getCoordinatorLayoutParams(Context context, int id) {
         CoordinatorLayout.LayoutParams pms = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        pms.bottomMargin = Misc.pxToDp(context, 60);
+        pms.bottomMargin = Misc.dpToPx(context, 60);
         switch (id) {
             case Constants.EMPTY_VIEW:
                 pms.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
