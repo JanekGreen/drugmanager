@@ -84,6 +84,7 @@ public class DrugListAdapter extends RecyclerView.Adapter<DrugListAdapter.DrugLi
     public DrugDb removeItem(int position){
         DrugDb removedItem = drugsForTime.remove(position);
         notifyItemRemoved(position);
+        notifyItemRangeChanged(position, drugsForTime.size());
         return  removedItem;
     }
 

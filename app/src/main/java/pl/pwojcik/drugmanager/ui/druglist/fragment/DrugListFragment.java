@@ -215,6 +215,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
         }
     }
     private void deleteDrugWithDrugs(List<DrugTime> list, int position){
+        drugsForTimeGlobal.remove(position);
         DrugDb removedItem = drugListAdapter.removeItem(position);
         drugListAdapter.notifyItemRemoved(position);
         drugListViewModel.removeDrugTimes(list)
@@ -226,6 +227,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
                                 Snackbar snackbar = Snackbar
                                         .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
                                 snackbar.setAction("COFNIJ!", view -> {
+                                    drugsForTimeGlobal.add(position, removedItem);
                                     drugListAdapter.restoreItem(removedItem, position);
                                     drugListViewModel.restoreDrug(removedItem)
                                             .subscribe(drugDb -> {
@@ -250,6 +252,7 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
     }
     private void deleteDrugTime(long drugId, int position){
         final List<DrugTime> relatedDrugTimes = new ArrayList<>();
+        drugsForTimeGlobal.remove(position);
         DrugDb removedItem = drugListAdapter.removeItem(position);
         drugListViewModel.getIdDefinedTimeIdForName(selectedTimeName)
                 .doOnSuccess(definedTimeId -> drugListViewModel.getDrugTime(drugId, definedTimeId)
@@ -262,10 +265,10 @@ public class DrugListFragment extends Fragment implements DrugListAdapterTouchHe
 
                                     });
                             Snackbar snackbar = Snackbar
-                                    .make(rootLayout, drugsForTimeGlobal.get(position).getName() + " został usunięty!", Snackbar.LENGTH_LONG);
+                                    .make(rootLayout, removedItem.getName() + " został usunięty!", Snackbar.LENGTH_LONG);
                             snackbar.setAction("COFNIJ!", view -> {
-
-                                drugListAdapter.restoreItem(drugsForTimeGlobal.get(position), position);
+                                drugsForTimeGlobal.add(position, removedItem);
+                                drugListAdapter.restoreItem(removedItem, position);
                                 drugListViewModel.restoreDrugTime(relatedDrugTimes.get(0))
                                         .subscribe(drugTime_ -> {
                                             iActivityCommunication.setOrUpdateAlarms();
