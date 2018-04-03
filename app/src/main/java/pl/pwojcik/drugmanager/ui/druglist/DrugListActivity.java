@@ -58,7 +58,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     private DrugListViewModel drugListViewModel;
     private List<String> listDefinedTimes;
     private DrugListState drugListState;
-    private boolean initialized = false;
     private boolean refreshCalled = false;
 
     @Override
@@ -74,6 +73,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
         getSupportActionBar().setTitle("Powiadomienia");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
+        fab.hide();
 
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(0);
@@ -183,7 +183,6 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                     } else {
                         drugListState = new DrugListState(null, spinnerSelection);
                     }
-                    initialized = true;
                 //}
                 savedInstanceState.clear();
             }
@@ -286,6 +285,7 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
                 spinner.setVisibility(View.VISIBLE);
                 //spinner.setSelection(getSavedSpinnerPosition());
                 setSpinnerSelection(getSavedSpinnerTimeName());
+                fab.hide();
             }
         }
 
@@ -327,16 +327,10 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             }
         }
         private void handleNotificationCall() {
+
+            stopNotification();
             Bundle bundle = getIntent().getExtras();
             if (bundle != null && bundle.getBoolean("NOTIFICATION_OFF", false)) {
-
-                NotificationManager notificationManager = (NotificationManager)
-                        DrugListActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-                if (notificationManager != null) {
-                    notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
-                }
-
                 int requestCode = bundle.getInt("REQUEST_CODE", -1);
 
                 if (requestCode != -1) {
@@ -349,6 +343,14 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
                 getIntent().putExtra("NOTIFICATION_OFF", false);
             }
+        }
+        private void stopNotification() {
+                NotificationManager notificationManager = (NotificationManager)
+                        DrugListActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+                if (notificationManager != null) {
+                    notificationManager.cancel(Constants.INTENT_REQUEST_CODE);
+                }
         }
 
         private void switchFragments(String viewId, boolean noAnimation) {
