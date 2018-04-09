@@ -23,6 +23,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.List;
 
@@ -54,6 +56,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
     BottomNavigationView bottomNavigationView;
     @BindView(R.id.container)
     NestedScrollView nestedScrollView;
+    @BindView(R.id.adView)
+    AdView adView;
 
     private DrugListViewModel drugListViewModel;
     private List<String> listDefinedTimes;
@@ -77,6 +81,9 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
 
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(0);
+
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("393C97A25E1B20071163D9DE0BB7CF8B").build();
+        adView.loadAd(adRequest);
 
         drugListViewModel = ViewModelProviders.of(this).get(DrugListViewModel.class);
         refresh(savedInstanceState);
@@ -118,8 +125,8 @@ public class DrugListActivity extends AppCompatActivity implements SearchTypeLis
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.crashApp:
-                throw new UnsupportedOperationException("Test crash to check error reporting");
+          /*  case R.id.crashApp:
+                throw new UnsupportedOperationException("Test crash to check error reporting");*/
         }
 
         return super.onOptionsItemSelected(item);

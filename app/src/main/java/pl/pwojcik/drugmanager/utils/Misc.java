@@ -7,6 +7,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
@@ -168,7 +169,9 @@ public class Misc {
     }
 
     public static CoordinatorLayout.LayoutParams getCoordinatorLayoutParams(Context context, int id) {
+        //this method renders xml settings in activity_drug_list2 useless
         CoordinatorLayout.LayoutParams pms = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        pms.topMargin = Misc.dpToPx(context,65);
         pms.bottomMargin = Misc.dpToPx(context, 60);
         switch (id) {
             case Constants.EMPTY_VIEW:
@@ -180,4 +183,5 @@ public class Misc {
         }
         return pms;
     }
+
 }

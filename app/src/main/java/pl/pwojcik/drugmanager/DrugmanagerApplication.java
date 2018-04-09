@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 
 
+import com.google.android.gms.ads.MobileAds;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,6 +28,9 @@ public class DrugmanagerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
         getApplicationContext().
                 registerReceiver(new ConnectivityChangeReceiver(),
                         new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));

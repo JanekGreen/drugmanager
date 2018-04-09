@@ -39,7 +39,7 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
     private AlertDialog dialog;
     private CustomTimePicker timePicker;
     private DayPicker dayPicker;
-    private  EditText etDefinedTimeName;
+    private EditText etDefinedTimeName;
 
 
     public interface OnDialogButtonClickedListener {
@@ -121,29 +121,42 @@ public class DefinedTimesDialog implements DayPicker.DaySelectionChangedListener
                 Toast.makeText(activity, "Należy podać nazwę pory przyjmowania leku", Toast.LENGTH_SHORT).show();
                 return;
             }
+            String newHour = String.format(Locale.getDefault(), "%02d", getHour()) + ":" + String.format(Locale.getDefault(), "%02d", getMinute());
 
-            definedTimeDao.getDefinedTimeIdForName(etDefinedTimeName.getText().toString())
+            definedTimeDao.getAll()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .switchIfEmpty(Maybe.just(-1L))
-                    .subscribe(id -> {
-                        if (id != -1 && id != definedTime.getId()) {
-                            Toast.makeText(activity, "Nazwa powinna być unikalna", Toast.LENGTH_SHORT).show();
-                        } else {
-                            definedTime.setTime(String.format(Locale.getDefault(), "%02d", getHour()) + ":" + String.format(Locale.getDefault(), "%02d", getMinute()));
-                            definedTime.setName(etDefinedTimeName.getText().toString());
-                            onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
-                            dialog.dismiss();
+                    .subscribe(list -> {
+                        for (DefinedTime dt : list) {
+                            if (dt.getTime().trim().equals(newHour.trim())) {
+                                Toast.makeText(activity, "Pora " + dt.getName() + " jest już zdefiniowana na tą godzinę, użyj jej", Toast.LENGTH_LONG).show();
+                                return;
+                            }
                         }
-                    });
+                        definedTimeDao.getDefinedTimeIdForName(etDefinedTimeName.getText().toString())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .switchIfEmpty(Maybe.just(-1L))
+                                .subscribe(id -> {
+                                    if (id != -1 && id != definedTime.getId()) {
+                                        Toast.makeText(activity, "Nazwa powinna być unikalna", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        definedTime.setTime(String.format(Locale.getDefault(), "%02d", getHour()) + ":" + String.format(Locale.getDefault(), "%02d", getMinute()));
+                                        definedTime.setName(etDefinedTimeName.getText().toString());
+                                        onDialogButtonClicked.onDialogPositiveButtonClicked(definedTime, activeDays);
+                                        dialog.dismiss();
+                                    }
+                                });
 
+                    }, Throwable::printStackTrace);
         });
     }
-    public void setDefinedTimeName(String name){
+
+    public void setDefinedTimeName(String name) {
         etDefinedTimeName.setText(name);
     }
 
-    public String getDefinedTimeName(){
+    public String getDefinedTimeName() {
         return etDefinedTimeName.getText().toString();
     }
 

@@ -72,11 +72,13 @@ dependencies {
     //Rxjava2
     compile 'io.reactivex.rxjava2:rxjava:2.1.3'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'android.arch.persistence.room:rxjava2:1.1.0-beta1'
+    compile 'android.arch.persistence.room:rxjava2:1.1.0-beta2'
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     // Android vision api
-    compile 'com.google.android.gms:play-services-vision:11.8.0'
-    annotationProcessor 'android.arch.persistence.room:compiler:1.1.0-beta1'
+    compile 'com.google.android.gms:play-services-vision:12.0.1'
+    compile 'com.google.android.gms:play-services-ads:12.0.1'
+
+    annotationProcessor 'android.arch.persistence.room:compiler:1.1.0-beta2'
     // ReactiveStreams support for LiveData
     implementation 'android.arch.lifecycle:reactivestreams:1.1.1'
     // material letter icon

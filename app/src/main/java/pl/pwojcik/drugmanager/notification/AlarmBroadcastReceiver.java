@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 
+import java.util.stream.StreamSupport;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pl.pwojcik.drugmanager.DrugmanagerApplication;
@@ -163,7 +165,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
 
             requestCode = extras.getInt("REQUEST_CODE");
-            drugListRepository
+/*            drugListRepository
                     .getDefinedTimes()
                     .flatMap(list -> io.reactivex.Observable.fromIterable(list)
                             .filter(definedTime -> definedTime.getRequestCode() == requestCode)
@@ -188,9 +190,15 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                                 .subscribe(day -> {
                                     alarmHelper.setAlarmForTimeRepeating(hour, minute, day, definedTime.getRequestCode(), 0, false);
                                 });
+                    });*/
+
+            drugListRepository
+                    .updateSaveAlarms(context)
+                    .subscribe(listDefinedTimes ->{
+                        System.out.println("times were reset");
+                        sendNotification(context, requestCode);
                     });
 
-            sendNotification(context, requestCode);
 
         }
             /*Intent newActivityIntent = new Intent(context, NotificationActivity.class);
